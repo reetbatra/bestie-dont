@@ -1,0 +1,178 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-dmsans);
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-display: var(--font-fraunces);
+
+  /* brand palette, exposed as utilities: bg-terracotta, text-forest, etc. */
+  --color-terracotta: var(--terracotta);
+  --color-forest: var(--forest);
+  --color-butter: var(--butter);
+  --color-blush: var(--blush);
+  --color-cream: var(--cream);
+  --color-ink: var(--ink);
+
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.55);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/*
+  Bestie, Don't brand tokens.
+  Light = cream/ink/terracotta from the wireframe swatches.
+  Dark is the primary mode this app gets used in (1am, post-breakup) —
+  it is not a dimmed-down afterthought, terracotta brightens rather than just fading.
+*/
+:root {
+  --cream: #faf5ef;
+  --ink: #23201c;
+  --ink-muted: #6f6659;
+  --terracotta: #b5442d;
+  --forest: #2e4b3f;
+  --butter: #f3c969;
+  --blush: #e8b4a8;
+  --surface: #fffefb;
+  --surface-2: #f1e9de;
+
+  --background: var(--cream);
+  --foreground: var(--ink);
+  --card: var(--surface);
+  --card-foreground: var(--ink);
+  --popover: var(--surface);
+  --popover-foreground: var(--ink);
+  --primary: var(--terracotta);
+  --primary-foreground: var(--cream);
+  --secondary: var(--forest);
+  --secondary-foreground: var(--cream);
+  --muted: var(--surface-2);
+  --muted-foreground: var(--ink-muted);
+  --accent: var(--blush);
+  --accent-foreground: var(--ink);
+  --destructive: #b3261e;
+  --border: color-mix(in oklab, var(--ink) 12%, transparent);
+  --input: color-mix(in oklab, var(--ink) 18%, transparent);
+  --ring: var(--terracotta);
+  --chart-1: var(--terracotta);
+  --chart-2: var(--forest);
+  --chart-3: var(--butter);
+  --chart-4: var(--blush);
+  --chart-5: var(--ink-muted);
+  --radius: 1.125rem;
+  --sidebar: var(--surface);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--terracotta);
+  --sidebar-primary-foreground: var(--cream);
+  --sidebar-accent: var(--blush);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--terracotta);
+}
+
+.dark {
+  --cream: #1c1917;
+  --ink: #f5efe7;
+  --ink-muted: #b0a699;
+  --terracotta: #e06a4e;
+  --forest: #5c9179;
+  --butter: #f3c969;
+  --blush: #d9a192;
+  --surface: #252120;
+  --surface-2: #2e2926;
+
+  --background: var(--cream);
+  --foreground: var(--ink);
+  --card: var(--surface);
+  --card-foreground: var(--ink);
+  --popover: var(--surface);
+  --popover-foreground: var(--ink);
+  --primary: var(--terracotta);
+  --primary-foreground: #1c1917;
+  --secondary: var(--forest);
+  --secondary-foreground: #1c1917;
+  --muted: var(--surface-2);
+  --muted-foreground: var(--ink-muted);
+  --accent: var(--blush);
+  --accent-foreground: #1c1917;
+  --destructive: #e5493b;
+  --border: color-mix(in oklab, var(--ink) 12%, transparent);
+  --input: color-mix(in oklab, var(--ink) 18%, transparent);
+  --ring: var(--terracotta);
+  --chart-1: var(--terracotta);
+  --chart-2: var(--forest);
+  --chart-3: var(--butter);
+  --chart-4: var(--blush);
+  --chart-5: var(--ink-muted);
+  --sidebar: var(--surface);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--terracotta);
+  --sidebar-primary-foreground: #1c1917;
+  --sidebar-accent: var(--blush);
+  --sidebar-accent-foreground: #1c1917;
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--terracotta);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+  ::selection {
+    background: var(--butter);
+    color: var(--ink);
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}

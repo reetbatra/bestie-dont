@@ -1,0 +1,49 @@
+import type { Metadata, Viewport } from "next";
+import { SerwistProvider } from "@serwist/turbopack/react";
+import { fraunces, dmSans } from "@/lib/fonts";
+import { Toaster } from "@/components/ui/sonner";
+import { InstallProvider } from "@/components/pwa/install-provider";
+import "./globals.css";
+
+export const metadata: Metadata = {
+  title: "bestie, don't.",
+  description: "The friend who takes your phone. No contact, but make it survivable.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "bestie, don't.",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FAF5EF" },
+    { media: "(prefers-color-scheme: dark)", color: "#1C1917" },
+  ],
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html
+      lang="en"
+      className={`${fraunces.variable} ${dmSans.variable} h-full antialiased`}
+      suppressHydrationWarning
+    >
+      <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
+        <SerwistProvider swUrl="/serwist/sw.js" disable={process.env.NODE_ENV === "development"}>
+          <InstallProvider>
+            {children}
+            <Toaster />
+          </InstallProvider>
+        </SerwistProvider>
+      </body>
+    </html>
+  );
+}
