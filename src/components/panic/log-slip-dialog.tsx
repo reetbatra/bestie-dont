@@ -33,7 +33,6 @@ export function LogSlipDialog({ trigger }: { trigger: React.ReactNode }) {
       setOpen(false);
       setNote("");
       router.push("/home");
-      router.refresh();
     });
   }
 

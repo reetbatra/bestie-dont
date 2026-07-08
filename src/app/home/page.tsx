@@ -25,23 +25,18 @@ export default async function HomePage() {
   const day = streakDayNumber(streak.start_date);
   const journalDayIndex = Math.min(day, 56);
 
-  const { data: prompt } = await supabase
-    .from("journal_prompts")
-    .select("prompt_text")
-    .eq("day_index", journalDayIndex)
-    .single();
-
-  const { data: journalEntry } = await supabase
-    .from("journal_entries")
-    .select("id")
-    .eq("user_id", user.id)
-    .eq("day_index", journalDayIndex)
-    .maybeSingle();
-
-  const { data: reached } = await supabase
-    .from("milestones_reached")
-    .select("day_number")
-    .eq("user_id", user.id);
+  // These three are independent of each other once the streak day is known
+  // — run them together instead of one network round-trip at a time.
+  const [{ data: prompt }, { data: journalEntry }, { data: reached }] = await Promise.all([
+    supabase.from("journal_prompts").select("prompt_text").eq("day_index", journalDayIndex).single(),
+    supabase
+      .from("journal_entries")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("day_index", journalDayIndex)
+      .maybeSingle(),
+    supabase.from("milestones_reached").select("day_number").eq("user_id", user.id),
+  ]);
 
   const pendingMilestone = nextUncelebratedMilestone(
     day,

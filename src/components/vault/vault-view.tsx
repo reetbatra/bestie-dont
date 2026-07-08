@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { ScreenHeader } from "@/components/shared/screen-header";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,7 +14,6 @@ function formatDate(iso: string) {
 }
 
 function ResurfaceCard({ entry }: { entry: DecryptedVaultEntry }) {
-  const router = useRouter();
   const [response, setResponse] = useState("");
   const [isPending, startTransition] = useTransition();
   const [answered, setAnswered] = useState(false);
@@ -24,7 +22,6 @@ function ResurfaceCard({ entry }: { entry: DecryptedVaultEntry }) {
     startTransition(async () => {
       await resurfaceEntry(entry.id, response.trim());
       setAnswered(true);
-      router.refresh();
     });
   }
 
@@ -54,7 +51,6 @@ function ResurfaceCard({ entry }: { entry: DecryptedVaultEntry }) {
 }
 
 export function VaultView({ initialEntries }: { initialEntries: DecryptedVaultEntry[] }) {
-  const router = useRouter();
   const [entries, setEntries] = useState(initialEntries);
   const [draft, setDraft] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -78,7 +74,6 @@ export function VaultView({ initialEntries }: { initialEntries: DecryptedVaultEn
         ...prev,
       ]);
       setDraft("");
-      router.refresh();
     });
   }
 

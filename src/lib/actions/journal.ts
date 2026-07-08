@@ -47,29 +47,28 @@ export async function getTodayJournal(): Promise<TodayJournal | null> {
 
   const dayIndex = Math.min(streakDayNumber(streak.start_date), 56);
 
-  const { data: prompt } = await supabase
-    .from("journal_prompts")
-    .select("id, arc, prompt_text")
-    .eq("day_index", dayIndex)
-    .single();
+  // prompt, profile, and this day's entry are all independent of each other
+  // once dayIndex is known — fire them together instead of one round-trip
+  // at a time (this was a big chunk of the "laggy" navigation feel).
+  const [{ data: prompt }, { data: profile }, { data: entry }] = await Promise.all([
+    supabase
+      .from("journal_prompts")
+      .select("id, arc, prompt_text")
+      .eq("day_index", dayIndex)
+      .single(),
+    supabase.from("profiles").select("has_purchased").eq("id", userId).single(),
+    supabase
+      .from("journal_entries")
+      .select("response_encrypted, response_iv, skipped")
+      .eq("user_id", userId)
+      .eq("day_index", dayIndex)
+      .maybeSingle(),
+  ]);
 
   if (!prompt) return null;
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("has_purchased")
-    .eq("id", userId)
-    .single();
-
   const hasPurchased = profile?.has_purchased ?? false;
   const locked = !hasPurchased && dayIndex > JOURNAL_FREE_DAYS;
-
-  const { data: entry } = await supabase
-    .from("journal_entries")
-    .select("response_encrypted, response_iv, skipped")
-    .eq("user_id", userId)
-    .eq("day_index", dayIndex)
-    .maybeSingle();
 
   return {
     dayIndex,

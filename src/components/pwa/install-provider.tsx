@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { isIOS, isStandalone } from "@/lib/platform";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -10,12 +11,14 @@ interface BeforeInstallPromptEvent extends Event {
 interface InstallContextValue {
   canInstall: boolean;
   isInstalled: boolean;
+  isIOS: boolean;
   promptInstall: () => Promise<"accepted" | "dismissed" | "unavailable">;
 }
 
 const InstallContext = createContext<InstallContextValue>({
   canInstall: false,
   isInstalled: false,
+  isIOS: false,
   promptInstall: async () => "unavailable",
 });
 
@@ -26,6 +29,7 @@ export function useInstallPrompt() {
 export function InstallProvider({ children }: { children: ReactNode }) {
   const [deferredEvent, setDeferredEvent] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [onIOS, setOnIOS] = useState(false);
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -34,8 +38,8 @@ export function InstallProvider({ children }: { children: ReactNode }) {
     };
     window.addEventListener("beforeinstallprompt", handler);
 
-    const standalone = window.matchMedia("(display-mode: standalone)").matches;
-    setIsInstalled(standalone);
+    setIsInstalled(isStandalone());
+    setOnIOS(isIOS());
 
     const installedHandler = () => setIsInstalled(true);
     window.addEventListener("appinstalled", installedHandler);
@@ -56,7 +60,7 @@ export function InstallProvider({ children }: { children: ReactNode }) {
 
   return (
     <InstallContext.Provider
-      value={{ canInstall: deferredEvent !== null, isInstalled, promptInstall }}
+      value={{ canInstall: deferredEvent !== null, isInstalled, isIOS: onIOS, promptInstall }}
     >
       {children}
     </InstallContext.Provider>

@@ -67,11 +67,10 @@ export async function getMilestoneData(day: number): Promise<MilestoneData | nul
       .select("id", { count: "exact", head: true })
       .eq("user_id", userId)
       .eq("skipped", false),
+    supabase
+      .from("milestones_reached")
+      .upsert({ user_id: userId, day_number: day }, { onConflict: "user_id,day_number", ignoreDuplicates: true }),
   ]);
-
-  await supabase
-    .from("milestones_reached")
-    .upsert({ user_id: userId, day_number: day }, { onConflict: "user_id,day_number", ignoreDuplicates: true });
 
   return {
     day,

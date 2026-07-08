@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { ScreenHeader } from "@/components/shared/screen-header";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -30,26 +30,34 @@ function todayISO() {
   return new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 }
 
+const FREE_TIER_LIMIT = 3;
+
 export function ReceiptsView({
   initialReceipts,
-  atFreeLimit,
+  atFreeLimit: initialAtFreeLimit,
   hasPurchased,
 }: {
   initialReceipts: DecryptedReceipt[];
   atFreeLimit: boolean;
   hasPurchased: boolean;
 }) {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [receipts, setReceipts] = useState(initialReceipts);
   const [tab, setTab] = useState<"all" | "raw" | "settled">("all");
-  const [dialogOpen, setDialogOpen] = useState(searchParams.get("new") === "1" && !atFreeLimit);
+  const [dialogOpen, setDialogOpen] = useState(
+    searchParams.get("new") === "1" && !initialAtFreeLimit,
+  );
   const [paywallOpen, setPaywallOpen] = useState(false);
   const [fact, setFact] = useState("");
   const [feeling, setFeeling] = useState("");
   const [occurredOn, setOccurredOn] = useState(todayISO());
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+
+  // Derived from live local state instead of the initial server prop, so
+  // crossing the free-tier limit updates the paywall banner the instant the
+  // optimistic insert lands — no round-trip refetch required.
+  const atFreeLimit = !hasPurchased && receipts.length >= FREE_TIER_LIMIT;
 
   const filtered = useMemo(() => {
     if (tab === "raw") return receipts.filter((r) => r.isRaw);
@@ -82,7 +90,6 @@ export function ReceiptsView({
       setDialogOpen(false);
       setFact("");
       setFeeling("");
-      router.refresh();
       setReceipts((prev) => [
         {
           id: crypto.randomUUID(),

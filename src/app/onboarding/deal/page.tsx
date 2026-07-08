@@ -2,20 +2,25 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { OnboardingScreen } from "@/components/onboarding/onboarding-screen";
 import { Button } from "@/components/ui/button";
 import { useInstallPrompt } from "@/components/pwa/install-provider";
 import { setNotificationPreference } from "@/lib/actions/onboarding";
-import { Smartphone } from "lucide-react";
+import { Smartphone, Share, MoreVertical } from "lucide-react";
 
 export default function TheDealPage() {
   const router = useRouter();
-  const { canInstall, isInstalled, promptInstall } = useInstallPrompt();
+  const { canInstall, isInstalled, isIOS, promptInstall } = useInstallPrompt();
   const [installed, setInstalled] = useState(false);
   const [notifChoice, setNotifChoice] = useState<"allowed" | "declined" | null>(null);
   const [isPending, startTransition] = useTransition();
 
   async function handleInstall() {
+    if (!canInstall) {
+      toast("Look for “Install app” or “Add to Home screen” in your browser's menu (usually the ⋮ in the top corner).");
+      return;
+    }
     const outcome = await promptInstall();
     if (outcome === "accepted") setInstalled(true);
   }
@@ -31,7 +36,9 @@ export default function TheDealPage() {
   }
 
   function handleFinish() {
-    router.push("/home");
+    startTransition(() => {
+      router.push("/home");
+    });
   }
 
   return (
@@ -40,7 +47,7 @@ export default function TheDealPage() {
       footer={
         <>
           <Button size="lg" className="w-full text-base" onClick={handleFinish} disabled={isPending}>
-            Take me home →
+            {isPending ? "One sec…" : "Take me home →"}
           </Button>
         </>
       }
@@ -63,16 +70,38 @@ export default function TheDealPage() {
         </p>
       </div>
 
-      {!isInstalled && !installed && (
+      {!isInstalled && !installed && isIOS && (
+        <div className="mt-4 rounded-3xl border border-border bg-card p-5 shadow-sm">
+          <div className="flex items-center gap-4">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-butter/40 text-ink">
+              <Share className="h-5 w-5" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-semibold">Put your bestie one tap away</p>
+              <p className="text-xs text-muted-foreground">
+                Tap the Share icon below, then &quot;Add to Home Screen&quot;
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {!isInstalled && !installed && !isIOS && (
         <div className="mt-4 flex items-center gap-4 rounded-3xl border border-border bg-card p-5 shadow-sm">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-butter/40 text-ink">
-            <Smartphone className="h-5 w-5" />
+            {canInstall ? (
+              <Smartphone className="h-5 w-5" />
+            ) : (
+              <MoreVertical className="h-5 w-5" />
+            )}
           </div>
           <div className="flex-1">
             <p className="text-sm font-semibold">Put your bestie one tap away</p>
-            <p className="text-xs text-muted-foreground">Add to your homescreen</p>
+            <p className="text-xs text-muted-foreground">
+              {canInstall ? "Add to your homescreen" : "Check your browser menu to install"}
+            </p>
           </div>
-          <Button size="sm" variant="secondary" onClick={handleInstall} disabled={!canInstall}>
+          <Button size="sm" variant="secondary" onClick={handleInstall}>
             Add
           </Button>
         </div>
