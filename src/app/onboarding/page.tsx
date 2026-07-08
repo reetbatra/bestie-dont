@@ -2,9 +2,22 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { OnboardingScreen } from "@/components/onboarding/onboarding-screen";
 import { Button } from "@/components/ui/button";
 import { startAnonymousSession } from "@/lib/actions/auth";
+
+/**
+ * Maps technical auth errors to copy she'd actually understand. Anything
+ * unmapped falls back to a generic retry message — never surface a raw
+ * Supabase error string to her.
+ */
+function friendlyAuthError(message: string): string {
+  if (message.toLowerCase().includes("anonymous")) {
+    return "We're not quite ready yet. Give us a minute and try again.";
+  }
+  return "That didn't go through. Try again?";
+}
 
 export default function WelcomePage() {
   const router = useRouter();
@@ -16,7 +29,9 @@ export default function WelcomePage() {
     startTransition(async () => {
       const result = await startAnonymousSession();
       if ("error" in result && result.error) {
-        setError(result.error);
+        const friendly = friendlyAuthError(result.error);
+        setError(friendly);
+        toast.error(friendly);
         return;
       }
       router.push("/onboarding/date");
