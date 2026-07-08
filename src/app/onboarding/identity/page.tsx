@@ -13,10 +13,17 @@ const SUGGESTIONS: IdentityItemInput[] = [
   { label: "Reading", category: "hobby" },
   { label: "Pilates & lifting", category: "hobby" },
   { label: "Pottery", category: "hobby" },
-  { label: "My career", category: "goal" },
+  { label: "Cooking", category: "hobby" },
   { label: "Morning walks", category: "hobby" },
+  { label: "My career", category: "goal" },
   { label: "Solo travel", category: "goal" },
+  { label: "Grad school", category: "goal" },
+  { label: "My best friend", category: "friend" },
+  { label: "My sister", category: "friend" },
+  { label: "The group chat", category: "friend" },
+  { label: "My parents", category: "friend" },
   { label: "Writing", category: "trait" },
+  { label: "Being the funny one", category: "trait" },
 ];
 
 export default function IdentityPage() {
