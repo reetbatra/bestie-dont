@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createRecordEntry, type RecordEntry } from "@/lib/actions/record";
 import { PaywallDialog } from "@/components/shared/paywall-dialog";
+import { VoiceInputButton } from "@/components/shared/voice-input-button";
 
 const FREE_TIER_LIMIT = 3;
 
@@ -200,32 +201,58 @@ export function RecordView({
           <div className="flex flex-col gap-4">
             <div>
               <Label htmlFor="fact">What happened</Label>
-              <Textarea
-                id="fact"
-                value={fact}
-                onChange={(e) => setFact(e.target.value)}
-                className="mt-1.5 min-h-24 resize-none"
-                placeholder="Fact, not the story you're telling yourself about it."
-              />
+              <div className="relative mt-1.5">
+                <Textarea
+                  id="fact"
+                  value={fact}
+                  onChange={(e) => setFact(e.target.value)}
+                  className="min-h-24 resize-none pr-12"
+                  placeholder="Fact, not the story you're telling yourself about it."
+                />
+                <VoiceInputButton
+                  className="absolute bottom-2.5 right-2.5"
+                  onTranscript={(chunk) =>
+                    setFact((prev) => (prev && !prev.endsWith(" ") ? `${prev} ${chunk}` : prev + chunk))
+                  }
+                />
+              </div>
             </div>
             <div>
               <Label htmlFor="feeling">How it felt (optional)</Label>
-              <Textarea
-                id="feeling"
-                value={feeling}
-                onChange={(e) => setFeeling(e.target.value)}
-                className="mt-1.5 min-h-16 resize-none"
-              />
+              <div className="relative mt-1.5">
+                <Textarea
+                  id="feeling"
+                  value={feeling}
+                  onChange={(e) => setFeeling(e.target.value)}
+                  className="min-h-16 resize-none pr-12"
+                />
+                <VoiceInputButton
+                  className="absolute bottom-2.5 right-2.5"
+                  onTranscript={(chunk) =>
+                    setFeeling((prev) => (prev && !prev.endsWith(" ") ? `${prev} ${chunk}` : prev + chunk))
+                  }
+                />
+              </div>
             </div>
             <div>
               <Label htmlFor="self-facing">What you told yourself (optional)</Label>
-              <Textarea
-                id="self-facing"
-                value={selfFacing}
-                onChange={(e) => setSelfFacing(e.target.value)}
-                className="mt-1.5 min-h-16 resize-none"
-                placeholder="He was just busy. He wasn't."
-              />
+              <div className="relative mt-1.5">
+                <Textarea
+                  id="self-facing"
+                  value={selfFacing}
+                  onChange={(e) => setSelfFacing(e.target.value)}
+                  className="min-h-16 resize-none pr-12"
+                  placeholder="He was just busy. He wasn't."
+                />
+                <VoiceInputButton
+                  className="absolute bottom-2.5 right-2.5"
+                  onTranscript={(chunk) =>
+                    setSelfFacing((prev) =>
+                      prev && !prev.endsWith(" ") ? `${prev} ${chunk}` : prev + chunk,
+                    )
+                  }
+                />
+              </div>
               <p className="mt-1.5 text-xs text-muted-foreground">
                 The excuse you made for him. This is the part that transfers to the next one.
               </p>
