@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { PaywallDialog } from "@/components/shared/paywall-dialog";
 import { VoiceInputButton } from "@/components/shared/voice-input-button";
+import { EncryptedNote } from "@/components/shared/encrypted-note";
 import {
   saveJournalEntry,
   skipJournalEntry,
@@ -95,6 +96,7 @@ export function JournalView({
                 }
               />
             </div>
+            <EncryptedNote className="mt-2" />
 
             {saved && !isPending && (
               <p className="mt-2 text-xs text-muted-foreground">Saved.</p>

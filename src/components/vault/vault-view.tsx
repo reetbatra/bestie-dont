@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { createVaultEntry, resurfaceEntry, type DecryptedVaultEntry } from "@/lib/actions/vault";
 import { VoiceInputButton } from "@/components/shared/voice-input-button";
+import { EncryptedNote } from "@/components/shared/encrypted-note";
 
 function formatDate(iso: string) {
   return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(
@@ -97,6 +98,7 @@ export function VaultView({ initialEntries }: { initialEntries: DecryptedVaultEn
             }
           />
         </div>
+        <EncryptedNote className="mt-2" />
         <Button
           onClick={handleLockIn}
           disabled={isPending || !draft.trim()}

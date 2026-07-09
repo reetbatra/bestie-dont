@@ -19,6 +19,7 @@ import { createRecordEntry, type RecordEntry } from "@/lib/actions/record";
 import { PaywallDialog } from "@/components/shared/paywall-dialog";
 import { VoiceInputButton } from "@/components/shared/voice-input-button";
 import { SaveAccessForm } from "@/components/shared/save-access-form";
+import { EncryptedNote } from "@/components/shared/encrypted-note";
 
 const FREE_TIER_LIMIT = 3;
 
@@ -176,6 +177,7 @@ export function RecordView({
           <DialogHeader>
             <DialogTitle>Add to the record</DialogTitle>
           </DialogHeader>
+          <EncryptedNote />
           <div className="flex flex-col gap-4">
             <div>
               <Label htmlFor="fact">What happened</Label>
