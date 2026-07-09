@@ -36,10 +36,12 @@ export function RecordView({
   initialEntries,
   atFreeLimit: initialAtFreeLimit,
   hasPurchased,
+  inTrial,
 }: {
   initialEntries: RecordEntry[];
   atFreeLimit: boolean;
   hasPurchased: boolean;
+  inTrial: boolean;
 }) {
   const searchParams = useSearchParams();
   const [entries, setEntries] = useState(initialEntries);
@@ -55,7 +57,8 @@ export function RecordView({
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  const atFreeLimit = !hasPurchased && entries.length >= FREE_TIER_LIMIT;
+  const hasFullAccess = hasPurchased || inTrial;
+  const atFreeLimit = !hasFullAccess && entries.length >= FREE_TIER_LIMIT;
 
   const filtered = useMemo(() => {
     if (tab === "raw") return entries.filter((r) => r.isRaw);
@@ -120,6 +123,12 @@ export function RecordView({
           </Button>
         }
       />
+
+      {inTrial && !hasPurchased && (
+        <div className="mx-6 mb-4 rounded-2xl bg-forest/10 px-4 py-2.5 text-center text-xs font-medium text-forest">
+          Free trial week. Unlimited, no card needed.
+        </div>
+      )}
 
       <div className="px-6">
         <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>

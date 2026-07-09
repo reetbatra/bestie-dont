@@ -10,7 +10,14 @@ export default async function RecordPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/onboarding");
 
-  const { entries, atFreeLimit, hasPurchased } = await listRecordEntries();
+  const { entries, atFreeLimit, hasPurchased, inTrial } = await listRecordEntries();
 
-  return <RecordView initialEntries={entries} atFreeLimit={atFreeLimit} hasPurchased={hasPurchased} />;
+  return (
+    <RecordView
+      initialEntries={entries}
+      atFreeLimit={atFreeLimit}
+      hasPurchased={hasPurchased}
+      inTrial={inTrial}
+    />
+  );
 }

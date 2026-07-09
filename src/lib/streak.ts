@@ -12,6 +12,32 @@ export const MILESTONE_DAYS = [3, 7, 14, 21, 30, 60] as const;
 /** Free tier gets the first 3 days of the journal arc as a teaser, same numeric cap as the Record. */
 export const JOURNAL_FREE_DAYS = 3;
 
+/**
+ * The program is 60 days, not a folk-wisdom "30 day rule" — research on
+ * no-contact recovery finds roughly 30-90 days for real emotional
+ * improvement, with contact in the first 28 days specifically slowing
+ * recovery. 60 sits in the middle of that range and lines up with the
+ * upper bound of habit-formation research (21-66 days). See /why.
+ */
+export const PROGRAM_LENGTH_DAYS = 60;
+
+/**
+ * The first week is free, full access, automatically — no card, no Dodo
+ * subscription object. Deliberately NOT implemented as a billing "trial"
+ * (which requires holding a card and auto-charging), since that's a
+ * subscription pattern and this product is explicitly a one-time purchase.
+ * It's just a calendar window: day <= 7 of her streak unlocks everything.
+ */
+export const TRIAL_DAYS = 7;
+
+export function isInTrial(day: number): boolean {
+  return day <= TRIAL_DAYS;
+}
+
+export function daysRemaining(day: number): number {
+  return Math.max(0, PROGRAM_LENGTH_DAYS - day);
+}
+
 const MILESTONE_COPY: Record<number, string> = {
   1: "The hardest one. You showed up.",
   3: "Three days. The urge is loudest right around now, and you're still here.",

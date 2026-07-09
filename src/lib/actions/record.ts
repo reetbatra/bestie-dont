@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { decryptField, decryptOptionalField, encryptField, encryptOptionalField } from "@/lib/crypto";
+import { streakDayNumber, isInTrial } from "@/lib/streak";
 
 const FREE_TIER_LIMIT = 3;
 
@@ -12,6 +13,25 @@ async function requireUserId() {
   } = await supabase.auth.getUser();
   if (!user) throw new Error("No session.");
   return { supabase, userId: user.id };
+}
+
+async function getAccessState(supabase: Awaited<ReturnType<typeof createClient>>, userId: string) {
+  const [{ data: profile }, { data: streak }] = await Promise.all([
+    supabase.from("profiles").select("has_purchased, breakup_date").eq("id", userId).single(),
+    supabase
+      .from("streaks")
+      .select("start_date")
+      .eq("user_id", userId)
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single(),
+  ]);
+
+  const hasPurchased = profile?.has_purchased ?? false;
+  const inTrial = streak ? isInTrial(streakDayNumber(streak.start_date)) : false;
+
+  return { profile, hasFullAccess: hasPurchased || inTrial, hasPurchased, inTrial };
 }
 
 export interface RecordEntry {
@@ -28,19 +48,20 @@ export async function listRecordEntries(): Promise<{
   entries: RecordEntry[];
   atFreeLimit: boolean;
   hasPurchased: boolean;
+  inTrial: boolean;
 }> {
   const { supabase, userId } = await requireUserId();
 
   // The underlying table is still named `receipts` — renaming it means
   // another manual migration step, and nothing user-facing reads the table
   // name. The app-layer naming ("Record") is what she actually sees.
-  const [{ data: rows }, { data: profile }] = await Promise.all([
+  const [{ data: rows }, access] = await Promise.all([
     supabase
       .from("receipts")
       .select("*")
       .eq("user_id", userId)
       .order("occurred_on", { ascending: false }),
-    supabase.from("profiles").select("has_purchased").eq("id", userId).single(),
+    getAccessState(supabase, userId),
   ]);
 
   const entries: RecordEntry[] = (rows ?? []).map((row) => ({
@@ -53,12 +74,11 @@ export async function listRecordEntries(): Promise<{
     createdAt: row.created_at,
   }));
 
-  const hasPurchased = profile?.has_purchased ?? false;
-
   return {
     entries,
-    atFreeLimit: !hasPurchased && entries.length >= FREE_TIER_LIMIT,
-    hasPurchased,
+    atFreeLimit: !access.hasFullAccess && entries.length >= FREE_TIER_LIMIT,
+    hasPurchased: access.hasPurchased,
+    inTrial: access.inTrial,
   };
 }
 
@@ -70,25 +90,19 @@ export async function createRecordEntry(input: {
 }) {
   const { supabase, userId } = await requireUserId();
 
-  const { count } = await supabase
-    .from("receipts")
-    .select("id", { count: "exact", head: true })
-    .eq("user_id", userId);
+  const [{ count }, access] = await Promise.all([
+    supabase.from("receipts").select("id", { count: "exact", head: true }).eq("user_id", userId),
+    getAccessState(supabase, userId),
+  ]);
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("has_purchased, breakup_date")
-    .eq("id", userId)
-    .single();
-
-  if (!profile?.has_purchased && (count ?? 0) >= FREE_TIER_LIMIT) {
+  if (!access.hasFullAccess && (count ?? 0) >= FREE_TIER_LIMIT) {
     return { error: "paywall" as const };
   }
 
   let isRaw = true;
-  if (profile?.breakup_date) {
+  if (access.profile?.breakup_date) {
     const hoursSinceBreakup =
-      (Date.now() - new Date(profile.breakup_date).getTime()) / (1000 * 60 * 60);
+      (Date.now() - new Date(access.profile.breakup_date).getTime()) / (1000 * 60 * 60);
     isRaw = hoursSinceBreakup <= 48;
   }
 

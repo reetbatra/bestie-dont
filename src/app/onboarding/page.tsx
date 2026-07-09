@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { toast } from "sonner";
 import { OnboardingScreen } from "@/components/onboarding/onboarding-screen";
 import { Button } from "@/components/ui/button";
@@ -49,6 +50,12 @@ export default function WelcomePage() {
           <p className="text-center text-xs text-muted-foreground">
             No account needed. Not yet, at least.
           </p>
+          <Link
+            href="/why"
+            className="text-center text-xs font-medium text-terracotta underline underline-offset-4"
+          >
+            Skeptical? Here's why this works.
+          </Link>
           {error && <p className="text-center text-xs text-destructive">{error}</p>}
         </>
       }

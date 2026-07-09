@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import Link from "next/link";
 import { setNotificationPreference } from "@/lib/actions/onboarding";
 import { updateHisName, exportUserData, deleteAccount, type SettingsData } from "@/lib/actions/settings";
 import { signOut } from "@/lib/actions/auth";
@@ -74,6 +75,18 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
       <ScreenHeader title="Settings" />
 
       <div className="flex flex-col gap-6 px-6">
+        <Link
+          href="/why"
+          className="rounded-3xl border border-terracotta/30 bg-terracotta/5 p-5 shadow-sm transition-colors hover:border-terracotta/50"
+        >
+          <p className="text-xs font-semibold uppercase tracking-wide text-terracotta">
+            Not just vibes
+          </p>
+          <p className="mt-1 text-sm font-medium text-foreground">
+            Why this app works, backed by research →
+          </p>
+        </Link>
+
         <section className="rounded-3xl border border-border bg-card p-5 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Notifications

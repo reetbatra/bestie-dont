@@ -51,6 +51,12 @@ export function JournalView({
         subtitle={`Week ${today.weekNumber} · ${today.arcLabel}`}
       />
 
+      {today.inTrial && (
+        <div className="mx-6 mb-4 rounded-2xl bg-forest/10 px-4 py-2.5 text-center text-xs font-medium text-forest">
+          Free trial week. Unlimited, no card needed.
+        </div>
+      )}
+
       <div className="px-6">
         {today.locked ? (
           <button

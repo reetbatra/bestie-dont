@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { decryptOptionalField, encryptField } from "@/lib/crypto";
-import { streakDayNumber, JOURNAL_FREE_DAYS } from "@/lib/streak";
+import { streakDayNumber, JOURNAL_FREE_DAYS, isInTrial } from "@/lib/streak";
 
 async function requireUserId() {
   const supabase = await createClient();
@@ -29,6 +29,7 @@ export interface TodayJournal {
   skipped: boolean;
   locked: boolean;
   hasPurchased: boolean;
+  inTrial: boolean;
 }
 
 export async function getTodayJournal(): Promise<TodayJournal | null> {
@@ -68,7 +69,8 @@ export async function getTodayJournal(): Promise<TodayJournal | null> {
   if (!prompt) return null;
 
   const hasPurchased = profile?.has_purchased ?? false;
-  const locked = !hasPurchased && dayIndex > JOURNAL_FREE_DAYS;
+  const hasFullAccess = hasPurchased || isInTrial(dayIndex);
+  const locked = !hasFullAccess && dayIndex > JOURNAL_FREE_DAYS;
 
   return {
     dayIndex,
@@ -81,6 +83,7 @@ export async function getTodayJournal(): Promise<TodayJournal | null> {
     skipped: entry?.skipped ?? false,
     locked,
     hasPurchased,
+    inTrial: isInTrial(dayIndex) && !hasPurchased,
   };
 }
 

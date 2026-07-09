@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { streakDayNumber, streakSubtext, nextUncelebratedMilestone } from "@/lib/streak";
+import { streakDayNumber, streakSubtext, nextUncelebratedMilestone, daysRemaining } from "@/lib/streak";
 import { HomeShell } from "@/components/home/home-shell";
 
 export default async function HomePage() {
@@ -46,6 +46,7 @@ export default async function HomePage() {
   return (
     <HomeShell
       day={day}
+      daysLeft={daysRemaining(day)}
       subtext={streakSubtext(day)}
       promptText={prompt?.prompt_text ?? null}
       promptAnswered={Boolean(journalEntry)}

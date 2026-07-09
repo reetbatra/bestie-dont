@@ -13,12 +13,14 @@ const NAV_ITEMS = [
 
 export function HomeShell({
   day,
+  daysLeft,
   subtext,
   promptText,
   promptAnswered,
   pendingMilestone,
 }: {
   day: number;
+  daysLeft: number;
   subtext: string;
   promptText: string | null;
   promptAnswered: boolean;
@@ -45,6 +47,23 @@ export function HomeShell({
           </p>
           <p className="mt-4 max-w-[36ch] text-base text-foreground">{subtext}</p>
         </div>
+
+        <Link
+          href="/calendar"
+          className="mt-6 flex items-center justify-between rounded-3xl border border-border bg-card p-5 shadow-sm transition-colors hover:border-terracotta/40"
+        >
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              The 60 days
+            </p>
+            <p className="mt-1 text-sm text-foreground">
+              {daysLeft > 0
+                ? `${daysLeft} ${daysLeft === 1 ? "day" : "days"} left`
+                : "You made it through all sixty."}
+            </p>
+          </div>
+          <span className="text-sm font-medium text-terracotta">View →</span>
+        </Link>
 
         {pendingMilestone && (
           <Link
