@@ -34,7 +34,9 @@ export function SaveAccessForm({
         return;
       }
       setSent(true);
-      onDone?.();
+      // Give her time to actually read the confirmation before the dialog
+      // (if any) auto-closes out from under it.
+      setTimeout(() => onDone?.(), 2500);
     });
   }
 
