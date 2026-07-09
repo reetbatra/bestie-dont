@@ -1,11 +1,9 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
 import { ScreenHeader } from "@/components/shared/screen-header";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -46,7 +44,6 @@ export function RecordView({
 }) {
   const searchParams = useSearchParams();
   const [entries, setEntries] = useState(initialEntries);
-  const [tab, setTab] = useState<"all" | "raw" | "settled">("all");
   const [dialogOpen, setDialogOpen] = useState(
     searchParams.get("new") === "1" && !initialAtFreeLimit,
   );
@@ -60,12 +57,6 @@ export function RecordView({
 
   const hasFullAccess = hasPurchased || inTrial;
   const atFreeLimit = !hasFullAccess && entries.length >= FREE_TIER_LIMIT;
-
-  const filtered = useMemo(() => {
-    if (tab === "raw") return entries.filter((r) => r.isRaw);
-    if (tab === "settled") return entries.filter((r) => !r.isRaw);
-    return entries;
-  }, [entries, tab]);
 
   function openCreate() {
     if (atFreeLimit) {
@@ -131,42 +122,19 @@ export function RecordView({
         </div>
       )}
 
-      <div className="px-6">
-        <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
-          <TabsList className="w-full">
-            <TabsTrigger value="all" className="flex-1">
-              All
-            </TabsTrigger>
-            <TabsTrigger value="raw" className="flex-1">
-              Raw
-            </TabsTrigger>
-            <TabsTrigger value="settled" className="flex-1">
-              Settled
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
-
       <div className="mt-4 flex flex-col gap-3 px-6">
-        {filtered.length === 0 && (
+        {entries.length === 0 && (
           <div className="rounded-3xl border border-dashed border-border p-8 text-center">
             <p className="text-sm text-muted-foreground">
               Nothing here yet. Your memory is still doing PR for him. Fix that.
             </p>
           </div>
         )}
-        {filtered.map((entry) => (
+        {entries.map((entry) => (
           <div key={entry.id} className="rounded-3xl border border-border bg-card p-5 shadow-sm">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-medium text-muted-foreground">
-                {formatDate(entry.occurredOn)}
-              </p>
-              {entry.isRaw && (
-                <Badge variant="outline" className="border-terracotta/40 text-terracotta">
-                  raw
-                </Badge>
-              )}
-            </div>
+            <p className="text-xs font-medium text-muted-foreground">
+              {formatDate(entry.occurredOn)}
+            </p>
             <p className="mt-2 text-base leading-snug text-foreground">{entry.fact}</p>
             {entry.feeling && (
               <p className="mt-2 text-sm text-muted-foreground">{entry.feeling}</p>
