@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { ScreenHeader } from "@/components/shared/screen-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,14 +18,17 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Link from "next/link";
+import { Smartphone, Share, MoreVertical } from "lucide-react";
 import { setNotificationPreference } from "@/lib/actions/onboarding";
 import { updateHisName, exportUserData, deleteAccount, type SettingsData } from "@/lib/actions/settings";
 import { signOut } from "@/lib/actions/auth";
 import { CrisisLink } from "@/components/shared/crisis-link";
 import { SaveAccessForm } from "@/components/shared/save-access-form";
+import { useInstallPrompt } from "@/components/pwa/install-provider";
 
 export function SettingsView({ settings }: { settings: SettingsData }) {
   const router = useRouter();
+  const { canInstall, isInstalled, isIOS, promptInstall } = useInstallPrompt();
   const [notifOptIn, setNotifOptIn] = useState(settings.notifOptIn);
   const [hisName, setHisName] = useState(settings.hisName ?? "");
   const [nameSaved, setNameSaved] = useState(false);
@@ -42,6 +46,14 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
     }
     void signOut();
     router.push("/");
+  }
+
+  async function handleInstallClick() {
+    if (!canInstall) {
+      toast("Look for “Install app” or “Add to Home screen” in your browser's menu (usually the ⋮ in the top corner).");
+      return;
+    }
+    await promptInstall();
   }
 
   function handleNotifToggle(checked: boolean) {
@@ -130,6 +142,42 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
             </>
           )}
         </section>
+
+        {!isInstalled && (
+          <section className="rounded-3xl border border-border bg-card p-5 shadow-sm">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Put your bestie one tap away
+            </p>
+            {isIOS ? (
+              <div className="mt-3 flex items-center gap-4">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-butter/40 text-ink">
+                  <Share className="h-5 w-5" />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Tap the Share icon in Safari, then &quot;Add to Home Screen&quot;.
+                </p>
+              </div>
+            ) : (
+              <div className="mt-3 flex items-center gap-4">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-butter/40 text-ink">
+                  {canInstall ? (
+                    <Smartphone className="h-5 w-5" />
+                  ) : (
+                    <MoreVertical className="h-5 w-5" />
+                  )}
+                </div>
+                <p className="flex-1 text-xs text-muted-foreground">
+                  {canInstall
+                    ? "One tap and it's on your homescreen, like a real app."
+                    : "Check your browser menu to install."}
+                </p>
+                <Button size="sm" variant="secondary" onClick={handleInstallClick}>
+                  Add
+                </Button>
+              </div>
+            )}
+          </section>
+        )}
 
         <section className="rounded-3xl border border-border bg-card p-5 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
