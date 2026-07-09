@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { OnboardingScreen } from "@/components/onboarding/onboarding-screen";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { addFirstReceipt } from "@/lib/actions/onboarding";
+import { addFirstRecordEntry } from "@/lib/actions/onboarding";
 
 function todayISO() {
   const now = new Date();
@@ -13,7 +13,7 @@ function todayISO() {
   return new Date(now.getTime() - offset * 60 * 1000).toISOString().slice(0, 10);
 }
 
-export default function FirstReceiptPage() {
+export default function FirstRecordPage() {
   const router = useRouter();
   const [fact, setFact] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -23,7 +23,7 @@ export default function FirstReceiptPage() {
     if (!fact.trim()) return;
     setError(null);
     startTransition(async () => {
-      const result = await addFirstReceipt(fact.trim(), todayISO());
+      const result = await addFirstRecordEntry(fact.trim(), todayISO());
       if (result?.error) {
         setError(result.error);
         return;

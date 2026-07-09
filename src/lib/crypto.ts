@@ -3,7 +3,7 @@ import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 
 /**
  * Field-level encryption for anything that could name or describe a third
- * party (him): receipts, vault entries, journal responses, slip notes.
+ * party (him): Record entries, vault entries, journal responses, slip notes.
  *
  * This runs server-side only (Server Actions / Route Handlers), keyed by
  * ENCRYPTION_MASTER_KEY. It protects the data at rest — a raw Postgres dump,

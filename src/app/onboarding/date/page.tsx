@@ -37,7 +37,7 @@ export default function DatePage() {
         setError(result.error);
         return;
       }
-      router.push("/onboarding/receipt");
+      router.push("/onboarding/record");
     });
   }
 

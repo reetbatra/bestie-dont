@@ -101,12 +101,12 @@ export function UrgeTimer() {
       </div>
 
       <div className="mt-10 flex flex-col gap-3">
-        {card?.receiptFact && (
+        {card?.recordFact && (
           <div className="rounded-3xl border border-border bg-card p-5 shadow-sm">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              He said to you. The Receipts.
+              He said to you. The Record.
             </p>
-            <p className="mt-2 text-base leading-snug text-foreground">{card.receiptFact}</p>
+            <p className="mt-2 text-base leading-snug text-foreground">{card.recordFact}</p>
           </div>
         )}
         {card?.identityLabel && (
@@ -117,10 +117,10 @@ export function UrgeTimer() {
             <p className="mt-2 text-base leading-snug text-foreground">{card.identityLabel}</p>
           </div>
         )}
-        {card && !card.receiptFact && !card.identityLabel && (
+        {card && !card.recordFact && !card.identityLabel && (
           <div className="rounded-3xl border border-border bg-card p-5 text-sm text-muted-foreground shadow-sm">
-            You haven&apos;t logged a Receipt yet. When you have one, it&apos;ll show up right
-            here, at exactly the moment it&apos;s useful.
+            Nothing in the Record yet. When you add something, it&apos;ll show up right here, at
+            exactly the moment it&apos;s useful.
           </div>
         )}
       </div>

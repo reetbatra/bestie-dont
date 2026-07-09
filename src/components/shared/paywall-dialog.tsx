@@ -48,7 +48,7 @@ export function PaywallDialog({
           </DialogDescription>
         </DialogHeader>
         <ul className="flex flex-col gap-2 text-sm text-foreground">
-          <li>Unlimited Receipts, not just three</li>
+          <li>Unlimited entries in your Record, not just three</li>
           <li>The full 8-week journaling arc</li>
           <li>Vault draft resurfacing after 30 days</li>
           <li>Milestone share cards</li>

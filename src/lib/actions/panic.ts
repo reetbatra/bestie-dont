@@ -13,19 +13,19 @@ async function requireUserId() {
 }
 
 export interface ResistCard {
-  receiptFact: string | null;
+  recordFact: string | null;
   identityLabel: string | null;
 }
 
 /**
- * Screen 08, the urge timer. Pulls one Receipt and one identity reminder at
- * random so the same pair never gets stared at twice in a row (habituation
- * kills impact, per the strategy doc).
+ * Screen 08, the urge timer. Pulls one Record entry and one identity
+ * reminder at random so the same pair never gets stared at twice in a row
+ * (habituation kills impact, per the strategy doc).
  */
 export async function getResistCard(): Promise<ResistCard> {
   const { supabase, userId } = await requireUserId();
 
-  const [{ data: receipts }, { data: identities }] = await Promise.all([
+  const [{ data: entries }, { data: identities }] = await Promise.all([
     supabase
       .from("receipts")
       .select("fact_encrypted, fact_iv")
@@ -34,10 +34,10 @@ export async function getResistCard(): Promise<ResistCard> {
     supabase.from("identity_items").select("label").eq("user_id", userId).limit(50),
   ]);
 
-  let receiptFact: string | null = null;
-  if (receipts && receipts.length > 0) {
-    const pick = receipts[Math.floor(Math.random() * receipts.length)];
-    receiptFact = decryptField(pick.fact_encrypted, pick.fact_iv);
+  let recordFact: string | null = null;
+  if (entries && entries.length > 0) {
+    const pick = entries[Math.floor(Math.random() * entries.length)];
+    recordFact = decryptField(pick.fact_encrypted, pick.fact_iv);
   }
 
   let identityLabel: string | null = null;
@@ -45,7 +45,7 @@ export async function getResistCard(): Promise<ResistCard> {
     identityLabel = identities[Math.floor(Math.random() * identities.length)].label;
   }
 
-  return { receiptFact, identityLabel };
+  return { recordFact, identityLabel };
 }
 
 /**

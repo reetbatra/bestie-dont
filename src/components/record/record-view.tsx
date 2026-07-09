@@ -16,8 +16,10 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createReceipt, type DecryptedReceipt } from "@/lib/actions/receipts";
+import { createRecordEntry, type RecordEntry } from "@/lib/actions/record";
 import { PaywallDialog } from "@/components/shared/paywall-dialog";
+
+const FREE_TIER_LIMIT = 3;
 
 function formatDate(iso: string) {
   return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(
@@ -30,19 +32,17 @@ function todayISO() {
   return new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 }
 
-const FREE_TIER_LIMIT = 3;
-
-export function ReceiptsView({
-  initialReceipts,
+export function RecordView({
+  initialEntries,
   atFreeLimit: initialAtFreeLimit,
   hasPurchased,
 }: {
-  initialReceipts: DecryptedReceipt[];
+  initialEntries: RecordEntry[];
   atFreeLimit: boolean;
   hasPurchased: boolean;
 }) {
   const searchParams = useSearchParams();
-  const [receipts, setReceipts] = useState(initialReceipts);
+  const [entries, setEntries] = useState(initialEntries);
   const [tab, setTab] = useState<"all" | "raw" | "settled">("all");
   const [dialogOpen, setDialogOpen] = useState(
     searchParams.get("new") === "1" && !initialAtFreeLimit,
@@ -50,20 +50,18 @@ export function ReceiptsView({
   const [paywallOpen, setPaywallOpen] = useState(false);
   const [fact, setFact] = useState("");
   const [feeling, setFeeling] = useState("");
+  const [selfFacing, setSelfFacing] = useState("");
   const [occurredOn, setOccurredOn] = useState(todayISO());
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  // Derived from live local state instead of the initial server prop, so
-  // crossing the free-tier limit updates the paywall banner the instant the
-  // optimistic insert lands — no round-trip refetch required.
-  const atFreeLimit = !hasPurchased && receipts.length >= FREE_TIER_LIMIT;
+  const atFreeLimit = !hasPurchased && entries.length >= FREE_TIER_LIMIT;
 
   const filtered = useMemo(() => {
-    if (tab === "raw") return receipts.filter((r) => r.isRaw);
-    if (tab === "settled") return receipts.filter((r) => !r.isRaw);
-    return receipts;
-  }, [receipts, tab]);
+    if (tab === "raw") return entries.filter((r) => r.isRaw);
+    if (tab === "settled") return entries.filter((r) => !r.isRaw);
+    return entries;
+  }, [entries, tab]);
 
   function openCreate() {
     if (atFreeLimit) {
@@ -77,7 +75,12 @@ export function ReceiptsView({
     if (!fact.trim()) return;
     setError(null);
     startTransition(async () => {
-      const result = await createReceipt({ fact: fact.trim(), feeling: feeling.trim(), occurredOn });
+      const result = await createRecordEntry({
+        fact: fact.trim(),
+        feeling: feeling.trim(),
+        selfFacing: selfFacing.trim(),
+        occurredOn,
+      });
       if (result.error === "paywall") {
         setDialogOpen(false);
         setPaywallOpen(true);
@@ -90,12 +93,13 @@ export function ReceiptsView({
       setDialogOpen(false);
       setFact("");
       setFeeling("");
-      setReceipts((prev) => [
+      setSelfFacing("");
+      setEntries((prev) => [
         {
           id: crypto.randomUUID(),
           fact: fact.trim(),
           feeling: feeling.trim() || null,
-          selfFacing: null,
+          selfFacing: selfFacing.trim() || null,
           occurredOn,
           isRaw: true,
           createdAt: new Date().toISOString(),
@@ -108,8 +112,8 @@ export function ReceiptsView({
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col pb-24">
       <ScreenHeader
-        title="The Receipts"
-        subtitle="The honest record. Memory this PR."
+        title="The Record"
+        subtitle="The honest version. Not the highlight reel."
         action={
           <Button size="sm" onClick={openCreate}>
             + New
@@ -141,21 +145,29 @@ export function ReceiptsView({
             </p>
           </div>
         )}
-        {filtered.map((receipt) => (
-          <div key={receipt.id} className="rounded-3xl border border-border bg-card p-5 shadow-sm">
+        {filtered.map((entry) => (
+          <div key={entry.id} className="rounded-3xl border border-border bg-card p-5 shadow-sm">
             <div className="flex items-center justify-between">
               <p className="text-xs font-medium text-muted-foreground">
-                {formatDate(receipt.occurredOn)}
+                {formatDate(entry.occurredOn)}
               </p>
-              {receipt.isRaw && (
+              {entry.isRaw && (
                 <Badge variant="outline" className="border-terracotta/40 text-terracotta">
                   raw
                 </Badge>
               )}
             </div>
-            <p className="mt-2 text-base leading-snug text-foreground">{receipt.fact}</p>
-            {receipt.feeling && (
-              <p className="mt-2 text-sm text-muted-foreground">{receipt.feeling}</p>
+            <p className="mt-2 text-base leading-snug text-foreground">{entry.fact}</p>
+            {entry.feeling && (
+              <p className="mt-2 text-sm text-muted-foreground">{entry.feeling}</p>
+            )}
+            {entry.selfFacing && (
+              <div className="mt-3 rounded-2xl bg-butter/15 p-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  What you told yourself
+                </p>
+                <p className="mt-1 text-sm text-foreground">{entry.selfFacing}</p>
+              </div>
             )}
           </div>
         ))}
@@ -166,7 +178,7 @@ export function ReceiptsView({
             onClick={() => setPaywallOpen(true)}
             className="rounded-3xl border border-dashed border-terracotta/40 bg-terracotta/5 p-5 text-center text-sm font-medium text-terracotta"
           >
-            Unlock unlimited Receipts →
+            Unlock the full Record →
           </button>
         )}
       </div>
@@ -174,7 +186,7 @@ export function ReceiptsView({
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add a Receipt</DialogTitle>
+            <DialogTitle>Add to the record</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-4">
             <div>
@@ -195,6 +207,19 @@ export function ReceiptsView({
                 onChange={(e) => setFeeling(e.target.value)}
                 className="mt-1.5 min-h-16 resize-none"
               />
+            </div>
+            <div>
+              <Label htmlFor="self-facing">What you told yourself (optional)</Label>
+              <Textarea
+                id="self-facing"
+                value={selfFacing}
+                onChange={(e) => setSelfFacing(e.target.value)}
+                className="mt-1.5 min-h-16 resize-none"
+                placeholder="He was just busy. He wasn't."
+              />
+              <p className="mt-1.5 text-xs text-muted-foreground">
+                The excuse you made for him. This is the part that transfers to the next one.
+              </p>
             </div>
             <div>
               <Label htmlFor="occurred">Date</Label>

@@ -60,7 +60,7 @@ export async function getMilestoneData(day: number): Promise<MilestoneData | nul
   const currentDay = streakDayNumber(streak.start_date);
   if (currentDay < day) return null;
 
-  const [{ count: receiptCount }, { count: journalCount }] = await Promise.all([
+  const [{ count: recordEntryCount }, { count: journalCount }] = await Promise.all([
     supabase.from("receipts").select("id", { count: "exact", head: true }).eq("user_id", userId),
     supabase
       .from("journal_entries")
@@ -75,7 +75,7 @@ export async function getMilestoneData(day: number): Promise<MilestoneData | nul
   return {
     day,
     nightsSurvived: currentDay,
-    memoriesLogged: receiptCount ?? 0,
+    memoriesLogged: recordEntryCount ?? 0,
     journalEntriesWritten: journalCount ?? 0,
   };
 }

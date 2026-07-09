@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function ReceiptsLoading() {
+export default function RecordLoading() {
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col px-6 pb-16 pt-10">
       <Skeleton className="h-3 w-12" />

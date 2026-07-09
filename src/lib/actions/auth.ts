@@ -23,10 +23,10 @@ export async function startAnonymousSession() {
 }
 
 /**
- * Deferred signup — fires after her 2nd Receipts entry. Converts the
+ * Deferred signup — fires after her 2nd Record entry. Converts the
  * anonymous session into a permanent one via magic-link email, keeping the
- * same user id so every Receipt, streak day, and journal entry she's already
- * written stays attached to her account.
+ * same user id so every Record entry, streak day, and journal entry she's
+ * already written stays attached to her account.
  */
 export async function linkEmail(email: string) {
   const supabase = await createClient();

@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { Home, Receipt, BookOpen, PenLine, Settings } from "lucide-react";
+import { Home, NotebookText, BookOpen, PenLine, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
   { href: "/home", label: "Home", icon: Home },
-  { href: "/receipts", label: "Receipts", icon: Receipt },
+  { href: "/record", label: "Record", icon: NotebookText },
   { href: "/journal", label: "Journal", icon: BookOpen },
   { href: "/vault", label: "Vault", icon: PenLine },
 ];

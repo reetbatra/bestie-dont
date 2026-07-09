@@ -63,7 +63,7 @@ export async function updateHisName(name: string) {
 export async function exportUserData() {
   const { supabase, userId } = await requireUserId();
 
-  const [profile, streaks, receipts, vaultEntries, journalEntries, identityItems, milestones] =
+  const [profile, streaks, recordEntries, vaultEntries, journalEntries, identityItems, milestones] =
     await Promise.all([
       supabase.from("profiles").select("*").eq("id", userId).single(),
       supabase.from("streaks").select("*").eq("user_id", userId),
@@ -83,7 +83,7 @@ export async function exportUserData() {
         }
       : null,
     streaks: streaks.data ?? [],
-    receipts: (receipts.data ?? []).map((r) => ({
+    record: (recordEntries.data ?? []).map((r) => ({
       occurredOn: r.occurred_on,
       isRaw: r.is_raw,
       fact: decryptField(r.fact_encrypted, r.fact_iv),

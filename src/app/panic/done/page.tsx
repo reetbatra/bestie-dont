@@ -25,14 +25,14 @@ export default function PanicDonePage() {
         Twenty minutes. Done. It&apos;s gone.
       </p>
 
-      {(card?.receiptFact || card?.identityLabel) && (
+      {(card?.recordFact || card?.identityLabel) && (
         <div className="mt-8 flex flex-col gap-3">
-          {card.receiptFact && (
+          {card.recordFact && (
             <div className="rounded-3xl border border-border bg-card p-5 shadow-sm">
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                He said to you. The Receipts.
+                He said to you. The Record.
               </p>
-              <p className="mt-2 text-sm leading-snug text-foreground">{card.receiptFact}</p>
+              <p className="mt-2 text-sm leading-snug text-foreground">{card.recordFact}</p>
             </div>
           )}
           {card.identityLabel && (
@@ -59,7 +59,7 @@ export default function PanicDonePage() {
             trigger={<span className="cursor-pointer underline underline-offset-4">That didn&apos;t work</span>}
           />
           <span>·</span>
-          <Link href="/receipts?new=1" className="underline underline-offset-4">
+          <Link href="/record?new=1" className="underline underline-offset-4">
             Add a memory
           </Link>
         </div>

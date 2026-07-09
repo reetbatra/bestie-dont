@@ -9,8 +9,8 @@ export default function CheckoutSuccessPage() {
         The full sixty days, unlocked.
       </h1>
       <p className="mt-4 text-sm text-muted-foreground">
-        Unlimited Receipts, the whole journaling arc, draft resurfacing, and share cards. Thank
-        you for trusting us with this.
+        Unlimited entries in your Record, the whole journaling arc, draft resurfacing, and share
+        cards. Thank you for trusting us with this.
       </p>
       <Button size="lg" className="mt-10 w-full" render={<Link href="/home" />}>
         Take me home

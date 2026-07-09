@@ -31,12 +31,13 @@ export async function startStreak(startDate: string) {
 }
 
 /**
- * Screen 03, First Receipt — is_raw is set by how close to the breakup this
- * was written (within 48h = raw, still-bleeding), not how close occurred_on
- * is to today. That's what the resist-screen rotation (Screen 08) actually
- * needs: whether this memory was captured before nostalgia had time to edit it.
+ * Screen 03, First Record entry — is_raw is set by how close to the breakup
+ * this was written (within 48h = raw, still-bleeding), not how close
+ * occurred_on is to today. That's what the resist-screen rotation (Screen 08)
+ * actually needs: whether this memory was captured before nostalgia had time
+ * to edit it.
  */
-export async function addFirstReceipt(fact: string, occurredOn: string) {
+export async function addFirstRecordEntry(fact: string, occurredOn: string) {
   const { supabase, userId } = await requireUserId();
 
   const { data: profile } = await supabase

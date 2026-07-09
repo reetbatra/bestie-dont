@@ -14,7 +14,7 @@ async function requireUserId() {
   return { supabase, userId: user.id };
 }
 
-export interface DecryptedReceipt {
+export interface RecordEntry {
   id: string;
   fact: string;
   feeling: string | null;
@@ -24,13 +24,16 @@ export interface DecryptedReceipt {
   createdAt: string;
 }
 
-export async function listReceipts(): Promise<{
-  receipts: DecryptedReceipt[];
+export async function listRecordEntries(): Promise<{
+  entries: RecordEntry[];
   atFreeLimit: boolean;
   hasPurchased: boolean;
 }> {
   const { supabase, userId } = await requireUserId();
 
+  // The underlying table is still named `receipts` — renaming it means
+  // another manual migration step, and nothing user-facing reads the table
+  // name. The app-layer naming ("Record") is what she actually sees.
   const [{ data: rows }, { data: profile }] = await Promise.all([
     supabase
       .from("receipts")
@@ -40,7 +43,7 @@ export async function listReceipts(): Promise<{
     supabase.from("profiles").select("has_purchased").eq("id", userId).single(),
   ]);
 
-  const receipts: DecryptedReceipt[] = (rows ?? []).map((row) => ({
+  const entries: RecordEntry[] = (rows ?? []).map((row) => ({
     id: row.id,
     fact: decryptField(row.fact_encrypted, row.fact_iv),
     feeling: decryptOptionalField(row.feeling_encrypted, row.feeling_iv),
@@ -53,13 +56,13 @@ export async function listReceipts(): Promise<{
   const hasPurchased = profile?.has_purchased ?? false;
 
   return {
-    receipts,
-    atFreeLimit: !hasPurchased && receipts.length >= FREE_TIER_LIMIT,
+    entries,
+    atFreeLimit: !hasPurchased && entries.length >= FREE_TIER_LIMIT,
     hasPurchased,
   };
 }
 
-export async function createReceipt(input: {
+export async function createRecordEntry(input: {
   fact: string;
   feeling?: string;
   selfFacing?: string;
@@ -108,7 +111,7 @@ export async function createReceipt(input: {
   return { success: true as const };
 }
 
-export async function deleteReceipt(id: string) {
+export async function deleteRecordEntry(id: string) {
   const { supabase, userId } = await requireUserId();
   const { error } = await supabase.from("receipts").delete().eq("id", id).eq("user_id", userId);
   if (error) return { error: error.message };

@@ -9,7 +9,7 @@ export function streakDayNumber(startDate: string): number {
 
 export const MILESTONE_DAYS = [3, 7, 14, 21, 30, 60] as const;
 
-/** Free tier gets the first 3 days of the journal arc as a teaser, same numeric cap as Receipts. */
+/** Free tier gets the first 3 days of the journal arc as a teaser, same numeric cap as the Record. */
 export const JOURNAL_FREE_DAYS = 3;
 
 const MILESTONE_COPY: Record<number, string> = {
