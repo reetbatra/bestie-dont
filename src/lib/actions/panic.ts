@@ -1,16 +1,7 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { requireUserId } from "@/lib/supabase/server";
 import { decryptField, encryptOptionalField } from "@/lib/crypto";
-
-async function requireUserId() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("No session.");
-  return { supabase, userId: user.id };
-}
 
 export interface ResistCard {
   recordFact: string | null;

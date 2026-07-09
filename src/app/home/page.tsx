@@ -1,20 +1,15 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { requireSession } from "@/lib/supabase/server";
 import { streakDayNumber, streakSubtext, nextUncelebratedMilestone, daysRemaining } from "@/lib/streak";
 import { HomeShell } from "@/components/home/home-shell";
 
 export default async function HomePage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) redirect("/onboarding");
+  const { supabase, userId } = await requireSession();
 
   const { data: streak } = await supabase
     .from("streaks")
     .select("id, start_date")
-    .eq("user_id", user.id)
+    .eq("user_id", userId)
     .eq("is_active", true)
     .order("created_at", { ascending: false })
     .limit(1)
@@ -32,10 +27,10 @@ export default async function HomePage() {
     supabase
       .from("journal_entries")
       .select("id")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .eq("day_index", journalDayIndex)
       .maybeSingle(),
-    supabase.from("milestones_reached").select("day_number").eq("user_id", user.id),
+    supabase.from("milestones_reached").select("day_number").eq("user_id", userId),
   ]);
 
   const pendingMilestone = nextUncelebratedMilestone(

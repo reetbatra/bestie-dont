@@ -1,16 +1,7 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { requireUserId } from "@/lib/supabase/server";
 import { streakDayNumber, MILESTONE_DAYS, nextUncelebratedMilestone } from "@/lib/streak";
-
-async function requireUserId() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("No session.");
-  return { supabase, userId: user.id };
-}
 
 export async function getNextMilestone(): Promise<number | null> {
   const { supabase, userId } = await requireUserId();

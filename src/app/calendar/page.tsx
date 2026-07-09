@@ -1,19 +1,15 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { requireSession } from "@/lib/supabase/server";
 import { streakDayNumber, daysRemaining, MILESTONE_DAYS, PROGRAM_LENGTH_DAYS } from "@/lib/streak";
 import { CalendarGrid } from "@/components/calendar/calendar-grid";
 
 export default async function CalendarPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/onboarding");
+  const { supabase, userId } = await requireSession();
 
   const { data: streak } = await supabase
     .from("streaks")
     .select("id, start_date")
-    .eq("user_id", user.id)
+    .eq("user_id", userId)
     .eq("is_active", true)
     .order("created_at", { ascending: false })
     .limit(1)

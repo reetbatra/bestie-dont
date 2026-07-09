@@ -1,20 +1,11 @@
 "use server";
 
-import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
+import { createClient, createServiceRoleClient, requireUserId } from "@/lib/supabase/server";
 import {
   decryptField,
   decryptOptionalField,
   encryptOptionalField,
 } from "@/lib/crypto";
-
-async function requireUserId() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("No session.");
-  return { supabase, userId: user.id };
-}
 
 export interface SettingsData {
   notifOptIn: boolean;
@@ -24,22 +15,19 @@ export interface SettingsData {
 }
 
 export async function getSettings(): Promise<SettingsData> {
-  const { supabase, userId } = await requireUserId();
+  const { supabase, userId, email } = await requireUserId();
 
-  const [{ data: profile }, { data: userRes }] = await Promise.all([
-    supabase
-      .from("profiles")
-      .select("notif_opt_in, his_name_encrypted, his_name_iv, has_purchased")
-      .eq("id", userId)
-      .single(),
-    supabase.auth.getUser(),
-  ]);
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("notif_opt_in, his_name_encrypted, his_name_iv, has_purchased")
+    .eq("id", userId)
+    .single();
 
   return {
     notifOptIn: profile?.notif_opt_in ?? false,
     hisName: decryptOptionalField(profile?.his_name_encrypted ?? null, profile?.his_name_iv ?? null),
     hasPurchased: profile?.has_purchased ?? false,
-    email: userRes.user?.email ?? null,
+    email,
   };
 }
 

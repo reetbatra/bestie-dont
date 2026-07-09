@@ -1,18 +1,9 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { requireUserId } from "@/lib/supabase/server";
 import { decryptField, decryptOptionalField, encryptField, encryptOptionalField } from "@/lib/crypto";
 
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
-
-async function requireUserId() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("No session.");
-  return { supabase, userId: user.id };
-}
 
 export interface DecryptedVaultEntry {
   id: string;

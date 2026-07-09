@@ -1,19 +1,10 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, requireUserId } from "@/lib/supabase/server";
 import { decryptField, decryptOptionalField, encryptField, encryptOptionalField } from "@/lib/crypto";
 import { streakDayNumber, isInTrial } from "@/lib/streak";
 
 const FREE_TIER_LIMIT = 3;
-
-async function requireUserId() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("No session.");
-  return { supabase, userId: user.id };
-}
 
 async function getAccessState(supabase: Awaited<ReturnType<typeof createClient>>, userId: string) {
   const [{ data: profile }, { data: streak }] = await Promise.all([

@@ -1,14 +1,9 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { requireSession } from "@/lib/supabase/server";
 import { listVaultEntries } from "@/lib/actions/vault";
 import { VaultView } from "@/components/vault/vault-view";
 
 export default async function VaultPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/onboarding");
+  await requireSession();
 
   const entries = await listVaultEntries();
 

@@ -1,17 +1,8 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { requireUserId } from "@/lib/supabase/server";
 import { decryptOptionalField, encryptField } from "@/lib/crypto";
 import { streakDayNumber, JOURNAL_FREE_DAYS, isInTrial } from "@/lib/streak";
-
-async function requireUserId() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("No session.");
-  return { supabase, userId: user.id };
-}
 
 const ARC_LABEL: Record<string, string> = {
   stabilize: "Stabilize",
