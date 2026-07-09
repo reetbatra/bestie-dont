@@ -9,8 +9,13 @@ export default function CheckoutSuccessPage() {
         The full sixty days, unlocked.
       </h1>
       <p className="mt-4 text-sm text-muted-foreground">
-        Unlimited entries in your Record, the whole journaling arc, draft resurfacing, and share
-        cards. Thank you for trusting us with this.
+        Unlimited entries in your Record, the whole 8-week journaling arc, Vault drafts that
+        resurface after 30 days, and milestone share cards. All of it, once. No renewal, nothing
+        to cancel.
+      </p>
+      <p className="mt-4 text-sm text-muted-foreground">
+        Thank you for trusting us with more than the money. Genuinely: we hope you graduate on day
+        sixty and never need to open this again.
       </p>
       <Button size="lg" className="mt-10 w-full" render={<Link href="/home" />}>
         Take me home

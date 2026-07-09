@@ -44,20 +44,24 @@ export function PaywallDialog({
         <DialogHeader>
           <DialogTitle>The 60-Day Program</DialogTitle>
           <DialogDescription>
-            The price of one sad delivery order, for sixty days of not texting him.
+            One payment, ₹399 / $9.99. Here&apos;s exactly what it unlocks.
           </DialogDescription>
         </DialogHeader>
         <ul className="flex flex-col gap-2 text-sm text-foreground">
           <li>Unlimited entries in your Record, not just three</li>
-          <li>The full 8-week journaling arc</li>
-          <li>Vault draft resurfacing after 30 days</li>
+          <li>The full 8-week journaling arc, not just the first 3 days</li>
+          <li>Vault drafts resurface after 30 days, so you can see how far you've come</li>
           <li>Milestone share cards</li>
-          <li>One payment. No subscription, ever.</li>
         </ul>
+        <p className="text-xs text-muted-foreground">
+          That&apos;s it. No subscription, no auto-renew, nothing to remember to cancel. We built
+          it one-time on purpose: a good breakup app is one you outgrow. If day sixty comes and
+          you never open this again, that was always the plan.
+        </p>
         {error && <p className="text-xs text-destructive">{error}</p>}
         <DialogFooter>
           <Button onClick={handleUnlock} disabled={isPending} className="w-full">
-            {isPending ? "One sec…" : "Unlock the full 60 days"}
+            {isPending ? "One sec…" : "Get the full 60 days"}
           </Button>
         </DialogFooter>
       </DialogContent>
