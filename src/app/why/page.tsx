@@ -12,6 +12,12 @@ interface Section {
 
 const SECTIONS: Section[] = [
   {
+    eyebrow: "Why no contact, specifically",
+    title: "This is hardest if you're anxiously attached. That's not a flaw.",
+    body: "If your attachment system is wired to reach out the moment a connection feels at risk, no contact can feel like confirming your worst fear: that you'll be abandoned. That's not weakness, it's how anxious attachment is built to respond under threat. The popular \"30-day rule\" isn't actually backed by research; most of what protects you takes closer to 60 to 90 days. That's exactly why this is a 60-day program, not a weekend fix.",
+    accent: "butter",
+  },
+  {
     eyebrow: "The panic button's 20-minute timer",
     title: "Urges have a shelf life.",
     body: "This isn't a willpower test. Psychologist Alan Marlatt studied cravings and found they behave like waves: they build, peak, and fall, usually within 15 to 30 minutes, whether you act on them or not. You don't have to beat the urge. You just have to outlast it. That's the whole timer.",
@@ -40,12 +46,6 @@ const SECTIONS: Section[] = [
     title: "You didn't just lose him. You lost the parts of you that grew around him.",
     body: "Psychologists call it self-expansion: relationships grow your sense of self, new interests, new versions of you. Losing the relationship can feel like losing pieces of your identity, not just the person. Research on post-breakup recovery found people who actively rebuild their own interests and identity report better long-term wellbeing than people who rush into someone new. That's the whole point of the hobbies, friends, and goals you added on day one.",
     accent: "forest",
-  },
-  {
-    eyebrow: "Why no contact, specifically",
-    title: "This is hardest if you're anxiously attached. That's not a flaw.",
-    body: "If your attachment system is wired to reach out the moment a connection feels at risk, no contact can feel like confirming your worst fear: that you'll be abandoned. That's not weakness, it's how anxious attachment is built to respond under threat. The popular \"30-day rule\" isn't actually backed by research; most of what protects you takes closer to 60 to 90 days. That's exactly why this is a 60-day program, not a weekend fix.",
-    accent: "butter",
   },
 ];
 
