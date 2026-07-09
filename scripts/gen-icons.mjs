@@ -4,19 +4,19 @@ import { mkdirSync } from "node:fs";
 const CREAM = "#FAF5EF";
 const TERRACOTTA = "#B5442D";
 
-// An abstract knot mark: two rounded ribbon bars crossing in an X, with a
-// small cream "cinch" at the center to suggest a tied knot. Abstract on
-// purpose — legible at any size, reads as an intentional brand mark rather
-// than a literal illustration.
+// A crossed-out speech bubble: the literal core mechanic of the app (the
+// text that doesn't get sent), not an abstract mark. A rounded chat bubble
+// with a tail, terracotta on cream, with a single thick cream diagonal
+// slash through it — the universal "blocked/muted" convention.
 function markPaths(scale, offsetX, offsetY) {
   const s = scale;
   const tx = offsetX;
   const ty = offsetY;
   return `
     <g transform="translate(${tx}, ${ty}) scale(${s})">
-      <rect x="86" y="211" width="340" height="90" rx="45" fill="${TERRACOTTA}" transform="rotate(45 256 256)" />
-      <rect x="86" y="211" width="340" height="90" rx="45" fill="${TERRACOTTA}" transform="rotate(-45 256 256)" />
-      <circle cx="256" cy="256" r="40" fill="${CREAM}" />
+      <rect x="106" y="126" width="300" height="210" rx="70" fill="${TERRACOTTA}" />
+      <path d="M 195 336 L 165 410 L 255 336 Z" fill="${TERRACOTTA}" />
+      <rect x="66" y="207" width="380" height="48" rx="24" fill="${CREAM}" transform="rotate(-45 256 231)" />
     </g>
   `;
 }
