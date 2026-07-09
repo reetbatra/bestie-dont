@@ -21,6 +21,7 @@ import { setNotificationPreference } from "@/lib/actions/onboarding";
 import { updateHisName, exportUserData, deleteAccount, type SettingsData } from "@/lib/actions/settings";
 import { signOut } from "@/lib/actions/auth";
 import { CrisisLink } from "@/components/shared/crisis-link";
+import { SaveAccessForm } from "@/components/shared/save-access-form";
 
 export function SettingsView({ settings }: { settings: SettingsData }) {
   const router = useRouter();
@@ -31,7 +32,17 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
   const [isDeleting, startDelete] = useTransition();
   const [deleteConfirm, setDeleteConfirm] = useState("");
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [signOutWarningOpen, setSignOutWarningOpen] = useState(false);
   const [, startTransition] = useTransition();
+
+  function handleSignOutClick() {
+    if (!settings.email) {
+      setSignOutWarningOpen(true);
+      return;
+    }
+    void signOut();
+    router.push("/");
+  }
 
   function handleNotifToggle(checked: boolean) {
     setNotifOptIn(checked);
@@ -98,6 +109,26 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
             </div>
             <Switch checked={notifOptIn} onCheckedChange={handleNotifToggle} />
           </div>
+        </section>
+
+        <section className="rounded-3xl border border-border bg-card p-5 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Account access
+          </p>
+          {settings.email ? (
+            <p className="mt-2 text-sm text-foreground">Recoverable at {settings.email}.</p>
+          ) : (
+            <>
+              <p className="mt-1 text-xs text-muted-foreground">
+                No email saved. Your account only exists in this browser right now — clear
+                cookies or switch devices and it&apos;s gone for good, including anything you paid
+                for.
+              </p>
+              <div className="mt-3">
+                <SaveAccessForm compact />
+              </div>
+            </>
+          )}
         </section>
 
         <section className="rounded-3xl border border-border bg-card p-5 shadow-sm">
@@ -170,19 +201,36 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
           </Dialog>
         </section>
 
-        <Button
-          variant="ghost"
-          className="text-muted-foreground"
-          onClick={() => {
-            void signOut();
-            router.push("/");
-          }}
-        >
+        <Button variant="ghost" className="text-muted-foreground" onClick={handleSignOutClick}>
           Sign out
         </Button>
 
         <CrisisLink className="text-center" />
       </div>
+
+      <Dialog open={signOutWarningOpen} onOpenChange={setSignOutWarningOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Wait — you&apos;ll lose this.</DialogTitle>
+            <DialogDescription>
+              You have no email saved. Signing out means there&apos;s no way back into this
+              account, including anything you&apos;ve paid for. Save an email first, or sign out
+              anyway if you&apos;re sure.
+            </DialogDescription>
+          </DialogHeader>
+          <SaveAccessForm onDone={() => setSignOutWarningOpen(false)} />
+          <Button
+            variant="ghost"
+            className="text-xs text-muted-foreground"
+            onClick={() => {
+              void signOut();
+              router.push("/");
+            }}
+          >
+            Sign out anyway, I understand
+          </Button>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

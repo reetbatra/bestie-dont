@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -17,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { createRecordEntry, type RecordEntry } from "@/lib/actions/record";
 import { PaywallDialog } from "@/components/shared/paywall-dialog";
 import { VoiceInputButton } from "@/components/shared/voice-input-button";
+import { SaveAccessForm } from "@/components/shared/save-access-form";
 
 const FREE_TIER_LIMIT = 3;
 
@@ -36,11 +38,13 @@ export function RecordView({
   atFreeLimit: initialAtFreeLimit,
   hasPurchased,
   inTrial,
+  hasEmail,
 }: {
   initialEntries: RecordEntry[];
   atFreeLimit: boolean;
   hasPurchased: boolean;
   inTrial: boolean;
+  hasEmail: boolean;
 }) {
   const searchParams = useSearchParams();
   const [entries, setEntries] = useState(initialEntries);
@@ -48,6 +52,7 @@ export function RecordView({
     searchParams.get("new") === "1" && !initialAtFreeLimit,
   );
   const [paywallOpen, setPaywallOpen] = useState(false);
+  const [saveAccessOpen, setSaveAccessOpen] = useState(false);
   const [fact, setFact] = useState("");
   const [feeling, setFeeling] = useState("");
   const [selfFacing, setSelfFacing] = useState("");
@@ -89,18 +94,23 @@ export function RecordView({
       setFact("");
       setFeeling("");
       setSelfFacing("");
-      setEntries((prev) => [
-        {
-          id: crypto.randomUUID(),
-          fact: fact.trim(),
-          feeling: feeling.trim() || null,
-          selfFacing: selfFacing.trim() || null,
-          occurredOn,
-          isRaw: true,
-          createdAt: new Date().toISOString(),
-        },
-        ...prev,
-      ]);
+      setEntries((prev) => {
+        const next = [
+          {
+            id: crypto.randomUUID(),
+            fact: fact.trim(),
+            feeling: feeling.trim() || null,
+            selfFacing: selfFacing.trim() || null,
+            occurredOn,
+            isRaw: true,
+            createdAt: new Date().toISOString(),
+          },
+          ...prev,
+        ];
+        // Deferred signup: the first moment she has data worth losing.
+        if (next.length === 2 && !hasEmail) setSaveAccessOpen(true);
+        return next;
+      });
     });
   }
 
@@ -247,6 +257,19 @@ export function RecordView({
       </Dialog>
 
       <PaywallDialog open={paywallOpen} onOpenChange={setPaywallOpen} hasPurchased={hasPurchased} />
+
+      <Dialog open={saveAccessOpen} onOpenChange={setSaveAccessOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Want to make sure you never lose these?</DialogTitle>
+            <DialogDescription>
+              Right now this is saved to this browser only. Add an email and it&apos;s yours
+              wherever you log back in from. Skippable, no pressure.
+            </DialogDescription>
+          </DialogHeader>
+          <SaveAccessForm onDone={() => setSaveAccessOpen(false)} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

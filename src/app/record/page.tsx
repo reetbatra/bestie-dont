@@ -3,7 +3,7 @@ import { listRecordEntries } from "@/lib/actions/record";
 import { RecordView } from "@/components/record/record-view";
 
 export default async function RecordPage() {
-  await requireSession();
+  const { email } = await requireSession();
 
   const { entries, atFreeLimit, hasPurchased, inTrial } = await listRecordEntries();
 
@@ -13,6 +13,7 @@ export default async function RecordPage() {
       atFreeLimit={atFreeLimit}
       hasPurchased={hasPurchased}
       inTrial={inTrial}
+      hasEmail={Boolean(email)}
     />
   );
 }

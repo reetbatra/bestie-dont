@@ -71,7 +71,7 @@ export async function requireSession(redirectTo = "/onboarding") {
     data: { session },
   } = await supabase.auth.getSession();
   if (!session) redirect(redirectTo);
-  return { supabase, userId: session.user.id };
+  return { supabase, userId: session.user.id, email: session.user.email ?? null };
 }
 
 /** For the one spot (root page) that branches instead of hard-requiring a session. */
