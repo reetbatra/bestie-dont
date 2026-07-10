@@ -139,17 +139,24 @@ export function MilestoneView({ data }: { data: MilestoneData }) {
   }
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col items-center px-6 pb-8 pt-10 text-center">
+    <div className="mx-auto flex h-dvh w-full max-w-[480px] flex-col items-center px-6 pb-6 pt-8 text-center">
       <p className="font-display text-2xl italic text-terracotta">{data.day} days.</p>
-      <h1 className="mt-2 font-display text-3xl font-semibold text-balance">
+      <h1 className="mt-2 font-display text-3xl font-semibold text-balance [@media(max-height:700px)]:text-2xl">
         {streakSubtext(data.day)}
       </h1>
 
-      <div className="mt-8 w-full overflow-hidden rounded-3xl border border-border shadow-lg">
-        <canvas ref={canvasRef} className="aspect-[9/16] w-full bg-[#1C1917]" />
+      {/* flex-1 + min-h-0 hands the card whatever height is left, so the
+          page never scrolls; the canvas keeps 9:16 via its intrinsic size */}
+      <div className="mt-5 flex min-h-0 w-full flex-1 items-center justify-center">
+        <canvas
+          ref={canvasRef}
+          width={CARD_WIDTH}
+          height={CARD_HEIGHT}
+          className="max-h-full max-w-full rounded-3xl border border-border bg-[#1C1917] shadow-lg"
+        />
       </div>
 
-      <div className="mt-8 flex w-full flex-col gap-3">
+      <div className="mt-5 flex w-full flex-col gap-3">
         <Button size="lg" onClick={handleShare} disabled={!ready} className="w-full">
           Share this
         </Button>
