@@ -1,4 +1,4 @@
--- Bestie, Don't — initial schema
+-- Bestie, Don't - initial schema
 -- Every table that can name or describe a third party (him) stores ciphertext
 -- (AES-GCM, encrypted client-side) plus its IV, never plaintext. Encryption
 -- happens in the app before insert; Postgres only ever sees opaque bytes.
@@ -187,7 +187,7 @@ create policy "milestones_reached: all own" on public.milestones_reached
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 -- ---------------------------------------------------------------------------
--- purchases (Dodo Payments — metadata only, no card data ever lands here)
+-- purchases (Dodo Payments - metadata only, no card data ever lands here)
 -- ---------------------------------------------------------------------------
 create table public.purchases (
   id uuid primary key default gen_random_uuid(),
@@ -213,12 +213,12 @@ insert into public.journal_prompts (arc, day_index, prompt_text) values
   ('stabilize', 1, 'What did your body feel like today when you thought of him?'),
   ('stabilize', 2, 'Write the text you wanted to send. Now write what you actually needed in that moment.'),
   ('stabilize', 3, 'Who else could have met that need?'),
-  ('stabilize', 4, 'Where do you feel the urge to text him — chest, hands, stomach? Describe it like weather.'),
+  ('stabilize', 4, 'Where do you feel the urge to text him - chest, hands, stomach? Describe it like weather.'),
   ('stabilize', 5, 'What time of day is hardest? What''s actually happening in your life at that hour?'),
   ('stabilize', 6, 'Name three things you did today that had nothing to do with him.'),
   ('stabilize', 7, 'What''s the first thing you''d tell a friend going through exactly this?'),
   ('stabilize', 8, 'What did you used to do for fun before this relationship that you haven''t done since?'),
-  ('stabilize', 9, 'Name one thing your body needs right now — sleep, water, a walk, quiet — and go do it before you finish this.'),
+  ('stabilize', 9, 'Name one thing your body needs right now - sleep, water, a walk, quiet - and go do it before you finish this.'),
   ('stabilize', 10, 'What''s a sound, smell, or place that still catches you off guard? Name it so it has less power tomorrow.'),
   ('stabilize', 11, 'If today were a weather report, what would it say?'),
   ('stabilize', 12, 'What''s one text message you''re glad you didn''t send this week?'),
@@ -232,16 +232,16 @@ insert into public.journal_prompts (arc, day_index, prompt_text) values
   ('pattern', 20, 'Describe a moment you shrank yourself to keep the peace. What were you afraid would happen if you didn''t?'),
   ('pattern', 21, 'What did "if he really loved me, he would ___" sound like in your head? Where did you learn that math?'),
   ('pattern', 22, 'Name one thing you apologized for that wasn''t your fault.'),
-  ('pattern', 23, 'What does your anxious brain do first when it doesn''t get an immediate reply — to anyone, not just him?'),
+  ('pattern', 23, 'What does your anxious brain do first when it doesn''t get an immediate reply - to anyone, not just him?'),
   ('pattern', 24, 'Who in your life has earned the anxious version of you, and who hasn''t?'),
   ('pattern', 25, 'What''s the difference between "I miss him" and "I miss being chosen"?'),
   ('pattern', 26, 'Write about a time before this relationship when someone''s silence felt like danger. What happened?'),
   ('pattern', 27, 'What did you learn to perform in this relationship that isn''t actually you?'),
   ('pattern', 28, 'If your attachment style could talk, what would it have said on your worst night with him?'),
-  ('pattern', 29, 'What''s one thing you gave up access to — a friend, a hobby, a version of yourself — that you didn''t notice leaving?'),
+  ('pattern', 29, 'What''s one thing you gave up access to - a friend, a hobby, a version of yourself - that you didn''t notice leaving?'),
   ('pattern', 30, 'When did you last feel secure, fully, with no performance required? What made that possible?'),
   ('pattern', 31, 'What''s a boundary you stated once and then let get walked over?'),
-  ('pattern', 32, 'Whose voice is in your head when you replay the arguments — his, or someone older?'),
+  ('pattern', 32, 'Whose voice is in your head when you replay the arguments - his, or someone older?'),
   ('pattern', 33, 'What did you need to hear after a fight that you never got to hear?'),
   ('pattern', 34, 'Name the story you told yourself to make the hard parts make sense.'),
   ('pattern', 35, 'Day 35. Read back your Day 15 answer. What do you know now that you didn''t then?'),

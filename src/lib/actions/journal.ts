@@ -40,7 +40,7 @@ export async function getTodayJournal(): Promise<TodayJournal | null> {
   const dayIndex = Math.min(streakDayNumber(streak.start_date), 56);
 
   // prompt, profile, and this day's entry are all independent of each other
-  // once dayIndex is known — fire them together instead of one round-trip
+  // once dayIndex is known - fire them together instead of one round-trip
   // at a time (this was a big chunk of the "laggy" navigation feel).
   const [{ data: prompt }, { data: profile }, { data: entry }] = await Promise.all([
     supabase

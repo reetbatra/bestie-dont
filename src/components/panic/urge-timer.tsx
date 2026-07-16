@@ -22,7 +22,7 @@ function writeCachedCard(card: ResistCard) {
   try {
     localStorage.setItem(CACHE_KEY, JSON.stringify(card));
   } catch {
-    // storage unavailable (private mode) — the timer still works, it just
+    // storage unavailable (private mode) - the timer still works, it just
     // won't have a cached card to fall back on next time offline
   }
 }
@@ -44,7 +44,7 @@ export function UrgeTimer() {
         setCard(fresh);
         writeCachedCard(fresh);
       } catch {
-        // offline or the action failed — the cached card (if any) stands
+        // offline or the action failed - the cached card (if any) stands
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -56,7 +56,7 @@ export function UrgeTimer() {
     try {
       sessionStorage.setItem("bestie:last-resist-card", JSON.stringify(card));
     } catch {
-      // sessionStorage unavailable (private mode) — the done screen just
+      // sessionStorage unavailable (private mode) - the done screen just
       // won't have the recap, no functional loss.
     }
     router.push("/panic/done");
@@ -78,7 +78,7 @@ export function UrgeTimer() {
         setCard(next);
         writeCachedCard(next);
       } catch {
-        // offline — keep showing the current card, nothing to rotate to
+        // offline - keep showing the current card, nothing to rotate to
       }
     });
   }

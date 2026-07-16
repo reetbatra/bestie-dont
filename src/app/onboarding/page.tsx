@@ -10,7 +10,7 @@ import { startAnonymousSession } from "@/lib/actions/auth";
 
 /**
  * Maps technical auth errors to copy she'd actually understand. Anything
- * unmapped falls back to a generic retry message — never surface a raw
+ * unmapped falls back to a generic retry message - never surface a raw
  * Supabase error string to her.
  */
 function friendlyAuthError(message: string): string {

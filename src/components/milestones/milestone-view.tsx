@@ -21,11 +21,17 @@ async function drawCard(canvas: HTMLCanvasElement, data: MilestoneData) {
   canvas.width = CARD_WIDTH;
   canvas.height = CARD_HEIGHT;
 
+  // day 60 is graduation: the card trades terracotta for gold
+  const graduated = data.day === 60;
+  const accent = graduated ? "#F3C969" : "#E06A4E";
+  const glowRgb = graduated ? "243, 201, 105" : "224, 106, 78";
+  const statColor = graduated ? "#E06A4E" : "#F3C969";
+
   // background
   ctx.fillStyle = "#1C1917";
   ctx.fillRect(0, 0, CARD_WIDTH, CARD_HEIGHT);
 
-  // soft terracotta glow behind the number
+  // soft glow behind the number
   const gradient = ctx.createRadialGradient(
     CARD_WIDTH / 2,
     720,
@@ -34,8 +40,8 @@ async function drawCard(canvas: HTMLCanvasElement, data: MilestoneData) {
     720,
     620,
   );
-  gradient.addColorStop(0, "rgba(224, 106, 78, 0.28)");
-  gradient.addColorStop(1, "rgba(224, 106, 78, 0)");
+  gradient.addColorStop(0, `rgba(${glowRgb}, 0.28)`);
+  gradient.addColorStop(1, `rgba(${glowRgb}, 0)`);
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, CARD_WIDTH, CARD_HEIGHT);
 
@@ -49,30 +55,33 @@ async function drawCard(canvas: HTMLCanvasElement, data: MilestoneData) {
   ctx.letterSpacing = "0px";
 
   // big day number
-  ctx.fillStyle = "#E06A4E";
+  ctx.fillStyle = accent;
   ctx.font = `600 420px ${fraunces}`;
   ctx.fillText(String(data.day), CARD_WIDTH / 2, 900);
 
   ctx.fillStyle = "#F5EFE7";
   ctx.font = `500 48px ${dmSans}`;
-  ctx.fillText(data.day === 1 ? "DAY" : "DAYS", CARD_WIDTH / 2, 990);
+  ctx.letterSpacing = graduated ? "6px" : "0px";
+  ctx.fillText(graduated ? "DAYS. GRADUATED." : "DAYS", CARD_WIDTH / 2, 990);
+  ctx.letterSpacing = "0px";
 
   // subtext
   ctx.fillStyle = "#F5EFE7";
   ctx.font = `400 42px ${fraunces}`;
   wrapText(ctx, streakSubtext(data.day), CARD_WIDTH / 2, 1130, 780, 56);
 
-  // stats row
+  // stats row; a zero on a celebration card reads as failure, so only
+  // earned stats render (nights survived is always >= the milestone day)
   const stats = [
     { label: "nights survived", value: data.nightsSurvived },
     { label: "memories saved", value: data.memoriesLogged },
     { label: "days journaled", value: data.journalEntriesWritten },
-  ];
+  ].filter((stat) => stat.value > 0);
   const statY = 1600;
-  const colWidth = CARD_WIDTH / 3;
+  const colWidth = CARD_WIDTH / stats.length;
   stats.forEach((stat, i) => {
     const x = colWidth * i + colWidth / 2;
-    ctx.fillStyle = "#F3C969";
+    ctx.fillStyle = statColor;
     ctx.font = `600 72px ${fraunces}`;
     ctx.fillText(String(stat.value), x, statY);
     ctx.fillStyle = "#B0A699";

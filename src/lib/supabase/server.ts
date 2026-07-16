@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { Database } from "@/lib/supabase/types";
 
-/** Server Component / Server Action client — reads and refreshes the session cookie. */
+/** Server Component / Server Action client - reads and refreshes the session cookie. */
 export async function createClient() {
   const cookieStore = await cookies();
 
@@ -22,7 +22,7 @@ export async function createClient() {
               cookieStore.set(name, value, options);
             }
           } catch {
-            // called from a Server Component with no request context to write to —
+            // called from a Server Component with no request context to write to -
             // middleware.ts refreshes the session on the next request instead.
           }
         },
@@ -43,7 +43,7 @@ export function createServiceRoleClient() {
 /**
  * Shared by every Server Action that needs the current user. Uses
  * getSession() (reads the already-verified JWT from cookies) rather than
- * getUser() (a network round-trip to Supabase Auth every call) — proxy.ts
+ * getUser() (a network round-trip to Supabase Auth every call) - proxy.ts
  * middleware already did the authoritative revalidation for this request,
  * so re-checking per action was pure redundant latency stacking up across
  * every data fetch on a page. RLS is the real security boundary regardless
@@ -63,7 +63,7 @@ export async function requireUserId() {
  * Same getSession()-not-getUser() reasoning as requireUserId, for the
  * page-level "redirect if not signed in" check every protected route
  * needs. Was previously duplicated 8x across app/ as its own getUser()
- * network call — same redundant-latency problem, different call site.
+ * network call - same redundant-latency problem, different call site.
  */
 export async function requireSession(redirectTo = "/onboarding") {
   const supabase = await createClient();

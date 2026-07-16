@@ -24,6 +24,6 @@ Run `supabase/migrations/0001_init.sql` against your Supabase project's SQL edit
 
 ## Scripts
 
-- `pnpm dev` — local dev server (service worker disabled in dev)
-- `pnpm build` / `pnpm start` — production build and serve
-- `node scripts/gen-icons.mjs` — regenerate the app icon set from the brand mark
+- `pnpm dev` - local dev server (service worker disabled in dev)
+- `pnpm build` / `pnpm start` - production build and serve
+- `node scripts/gen-icons.mjs` - regenerate the app icon set from the brand mark

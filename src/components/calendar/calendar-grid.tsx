@@ -1,23 +1,55 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
+import { LogSlipDialog } from "@/components/panic/log-slip-dialog";
+
+/** The calendar date a streak day falls on, in the viewer's timezone. */
+function dayToDate(startDate: string, day: number): string {
+  const start = new Date(`${startDate}T00:00:00`);
+  const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + (day - 1));
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${d.getFullYear()}-${mm}-${dd}`;
+}
+
+function dayLabel(startDate: string, day: number): string {
+  const [y, m, d] = dayToDate(startDate, day).split("-").map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString(undefined, {
+    month: "long",
+    day: "numeric",
+  });
+}
 
 export function CalendarGrid({
   currentDay,
   totalDays,
   daysLeft,
+  startDate,
   slipDays,
+  slipInsight,
   milestoneDays,
   graduated,
 }: {
   currentDay: number;
   totalDays: number;
   daysLeft: number;
-  slipDays: Set<number>;
+  startDate: string;
+  slipDays: number[];
+  slipInsight: string | null;
   milestoneDays: readonly number[];
   graduated: boolean;
 }) {
   const days = Array.from({ length: totalDays }, (_, i) => i + 1);
+  const slipped = new Set(slipDays);
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
+
+  const sel = selectedDay;
+  const selIsSlipped = sel !== null && slipped.has(sel);
+  const selIsReached = sel !== null && (graduated || sel <= currentDay);
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col px-6 pb-16 pt-10">
@@ -39,36 +71,81 @@ export function CalendarGrid({
         {days.map((d) => {
           const isPast = d < currentDay;
           const isToday = d === currentDay && !graduated;
-          const isSlipped = slipDays.has(d);
+          const isSlipped = slipped.has(d);
           const isMilestone = milestoneDays.includes(d as (typeof milestoneDays)[number]);
           const filled = isPast || isToday || graduated;
+          const isSelected = d === selectedDay;
 
           return (
-            <div
+            <button
               key={d}
+              type="button"
+              onClick={() => setSelectedDay(isSelected ? null : d)}
+              aria-label={
+                isSlipped
+                  ? `Day ${d}, logged a slip, streak continued`
+                  : isMilestone
+                    ? `Day ${d}, milestone`
+                    : `Day ${d}`
+              }
+              aria-pressed={isSelected}
               className={cn(
-                "relative flex aspect-square items-center justify-center rounded-lg text-[10px] font-medium tabular-nums",
+                "relative flex aspect-square cursor-pointer items-center justify-center rounded-lg text-[10px] font-medium tabular-nums transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 filled ? "bg-terracotta text-primary-foreground" : "bg-muted text-muted-foreground",
                 isToday && "ring-2 ring-terracotta ring-offset-2 ring-offset-background",
                 isSlipped && "bg-butter text-[#23201C]",
                 isMilestone && !filled && "border border-dashed border-terracotta/50",
+                isSelected && !isToday && "ring-2 ring-ring ring-offset-2 ring-offset-background",
               )}
-              title={
-                isSlipped
-                  ? `Day ${d} — logged, streak continued`
-                  : isMilestone
-                    ? `Day ${d} — milestone`
-                    : `Day ${d}`
-              }
             >
               {d}
               {isSlipped && (
                 <span className="absolute -right-0.5 -top-0.5 text-[8px] text-[#23201C]">*</span>
               )}
-            </div>
+            </button>
           );
         })}
       </div>
+
+      {!graduated && !slipped.has(currentDay) && (
+        <LogSlipDialog
+          occurredOn={dayToDate(startDate, currentDay)}
+          dayNumber={currentDay}
+          triggerClassName={cn(
+            buttonVariants({ size: "lg" }),
+            "mt-4 w-full bg-butter text-[#23201C] hover:bg-butter/90",
+          )}
+          trigger="Slipped today? Log it - nothing resets."
+        />
+      )}
+
+      {sel !== null && (
+        <div className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Day {sel} · {dayLabel(startDate, sel)}
+          </p>
+          <p className="mt-1.5 text-sm text-foreground">
+            {selIsSlipped
+              ? "Logged a slip this day. The streak kept counting - that's the whole point."
+              : selIsReached
+                ? sel === currentDay && !graduated
+                  ? "Today. Still yours."
+                  : "Clean day. Done and counted."
+                : "Not here yet."}
+          </p>
+          {selIsReached && !selIsSlipped && (
+            <LogSlipDialog
+              occurredOn={dayToDate(startDate, sel)}
+              dayNumber={sel}
+              trigger={
+                <span className="mt-3 inline-block cursor-pointer text-sm font-medium text-terracotta underline underline-offset-4">
+                  Something happened this day? Log a slip
+                </span>
+              }
+            />
+          )}
+        </div>
+      )}
 
       <div className="mt-6 flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground">
         <span className="inline-flex items-center gap-1.5">
@@ -85,6 +162,21 @@ export function CalendarGrid({
           <span className="h-2.5 w-2.5 rounded-full bg-muted" /> Ahead
         </span>
       </div>
+
+      <p className="mt-3 text-xs text-muted-foreground">
+        Tap any day to see it, or to log a slip you didn&apos;t log at the time.
+      </p>
+
+      {slipInsight && (
+        <div className="mt-6 rounded-3xl border border-butter/60 bg-butter/10 p-5 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Pattern
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-foreground/90">
+            {slipInsight} Worth planning around.
+          </p>
+        </div>
+      )}
 
       <div className="mt-8 rounded-3xl border border-border bg-card p-5 shadow-sm">
         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">

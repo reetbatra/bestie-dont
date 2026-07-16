@@ -15,7 +15,24 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { logSlip } from "@/lib/actions/panic";
 
-export function LogSlipDialog({ trigger }: { trigger: React.ReactNode }) {
+/**
+ * Two entry points share this dialog: the panic flow (no `occurredOn`,
+ * logs for right now, exits to /home) and the calendar (backdated to a
+ * tapped day, stays put and refreshes so the day turns yellow in place).
+ */
+export function LogSlipDialog({
+  trigger,
+  triggerClassName,
+  occurredOn,
+  dayNumber,
+}: {
+  trigger: React.ReactNode;
+  /** Styles the trigger button itself - DialogTrigger renders a native
+   * <button>, so callers can't nest a <Button> inside `trigger`. */
+  triggerClassName?: string;
+  occurredOn?: string;
+  dayNumber?: number;
+}) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [note, setNote] = useState("");
@@ -25,25 +42,31 @@ export function LogSlipDialog({ trigger }: { trigger: React.ReactNode }) {
   function handleSubmit() {
     setError(null);
     startTransition(async () => {
-      const result = await logSlip(note.trim());
+      const result = await logSlip(note.trim(), occurredOn);
       if (result?.error) {
         setError(result.error);
         return;
       }
       setOpen(false);
       setNote("");
-      router.push("/home");
+      if (occurredOn) {
+        router.refresh();
+      } else {
+        router.push("/home");
+      }
     });
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>{trigger}</DialogTrigger>
+      <DialogTrigger className={triggerClassName}>{trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Okay. It happened.</DialogTitle>
           <DialogDescription>
-            Log it, learn it, streak continues. Nothing resets here.
+            {dayNumber
+              ? `Logging it for day ${dayNumber}. Nothing resets here - the streak continues.`
+              : "Log it, learn it, streak continues. Nothing resets here."}
           </DialogDescription>
         </DialogHeader>
         <Textarea

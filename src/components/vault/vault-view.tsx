@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { createVaultEntry, resurfaceEntry, type DecryptedVaultEntry } from "@/lib/actions/vault";
-import { VoiceInputButton } from "@/components/shared/voice-input-button";
 import { EncryptedNote } from "@/components/shared/encrypted-note";
 
 function formatDate(iso: string) {
@@ -84,20 +83,12 @@ export function VaultView({ initialEntries }: { initialEntries: DecryptedVaultEn
       <ScreenHeader title="The Vault" subtitle="Say everything. Send nothing." />
 
       <div className="px-6">
-        <div className="relative">
-          <Textarea
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            placeholder="I keep thinking about what you said on Saturday..."
-            className="min-h-32 resize-none pr-12"
-          />
-          <VoiceInputButton
-            className="absolute bottom-2.5 right-2.5"
-            onTranscript={(chunk) =>
-              setDraft((prev) => (prev && !prev.endsWith(" ") ? `${prev} ${chunk}` : prev + chunk))
-            }
-          />
-        </div>
+        <Textarea
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          placeholder="I keep thinking about what you said on Saturday..."
+          className="min-h-32 resize-none"
+        />
         <EncryptedNote className="mt-2" />
         <Button
           onClick={handleLockIn}

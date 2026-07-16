@@ -7,7 +7,7 @@ import { getDodoClient, DODO_PRODUCT_ID } from "@/lib/dodo";
 const PRODUCTION_ORIGIN = "https://bestie.reetbatra.com";
 
 /**
- * The Origin/Host request header is attacker-influenceable in principle —
+ * The Origin/Host request header is attacker-influenceable in principle -
  * relying on it to build the post-payment redirect URL means trusting that
  * header validation elsewhere (Next.js's Server Action CSRF check) always
  * holds. Instead of depending on that implicitly, only trust the header for

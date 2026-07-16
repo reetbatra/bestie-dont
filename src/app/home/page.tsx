@@ -21,7 +21,7 @@ export default async function HomePage() {
   const journalDayIndex = Math.min(day, 56);
 
   // These three are independent of each other once the streak day is known
-  // — run them together instead of one network round-trip at a time.
+  // - run them together instead of one network round-trip at a time.
   const [{ data: prompt }, { data: journalEntry }, { data: reached }] = await Promise.all([
     supabase.from("journal_prompts").select("prompt_text").eq("day_index", journalDayIndex).single(),
     supabase

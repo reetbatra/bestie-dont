@@ -132,7 +132,7 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
           ) : (
             <>
               <p className="mt-1 text-xs text-muted-foreground">
-                No email saved. Your account only exists in this browser right now — clear
+                No email saved. Your account only exists in this browser right now - clear
                 cookies or switch devices and it&apos;s gone for good, including anything you paid
                 for.
               </p>
@@ -259,7 +259,7 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
       <Dialog open={signOutWarningOpen} onOpenChange={setSignOutWarningOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Wait — you&apos;ll lose this.</DialogTitle>
+            <DialogTitle>Wait - you'll lose this.</DialogTitle>
             <DialogDescription>
               You have no email saved. Signing out means there&apos;s no way back into this
               account, including anything you&apos;ve paid for. Save an email first, or sign out

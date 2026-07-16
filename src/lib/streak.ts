@@ -13,7 +13,7 @@ export const MILESTONE_DAYS = [3, 7, 14, 21, 30, 60] as const;
 export const JOURNAL_FREE_DAYS = 3;
 
 /**
- * The program is 60 days, not a folk-wisdom "30 day rule" — research on
+ * The program is 60 days, not a folk-wisdom "30 day rule" - research on
  * no-contact recovery finds roughly 30-90 days for real emotional
  * improvement, with contact in the first 28 days specifically slowing
  * recovery. 60 sits in the middle of that range and lines up with the
@@ -22,7 +22,7 @@ export const JOURNAL_FREE_DAYS = 3;
 export const PROGRAM_LENGTH_DAYS = 60;
 
 /**
- * The first week is free, full access, automatically — no card, no Dodo
+ * The first week is free, full access, automatically - no card, no Dodo
  * subscription object. Deliberately NOT implemented as a billing "trial"
  * (which requires holding a card and auto-charging), since that's a
  * subscription pattern and this product is explicitly a one-time purchase.
@@ -39,7 +39,6 @@ export function daysRemaining(day: number): number {
 }
 
 const MILESTONE_COPY: Record<number, string> = {
-  1: "The hardest one. You showed up.",
   3: "Three days. The urge is loudest right around now, and you're still here.",
   7: "A full week of your own life back.",
   14: "Two weeks. Long enough to notice the difference.",

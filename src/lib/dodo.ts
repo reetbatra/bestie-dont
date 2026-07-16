@@ -13,5 +13,5 @@ export function getDodoClient() {
   return client;
 }
 
-/** The one-time 60-Day Program purchase — created once in the Dodo dashboard. */
+/** The one-time 60-Day Program purchase - created once in the Dodo dashboard. */
 export const DODO_PRODUCT_ID = process.env.DODO_PRODUCT_ID!;

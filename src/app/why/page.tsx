@@ -97,9 +97,9 @@ export default function WhyPage() {
           Where this comes from
         </p>
         <ul className="mt-3 flex flex-col gap-2 text-xs text-muted-foreground">
-          <li>Marlatt, A. — urge surfing and craving cycles in addiction psychology</li>
+          <li>Marlatt, A. - urge surfing and craving cycles in addiction psychology</li>
           <li>Research on prolonged exhale breathing and vagal tone / parasympathetic activation</li>
-          <li>Neff, K. — self-compassion and resilience after setbacks</li>
+          <li>Neff, K. - self-compassion and resilience after setbacks</li>
           <li>Research on rosy retrospection and fading affect bias in memory</li>
           <li>Research on expressive writing, narrative coherence, and rumination risk</li>
           <li>Self-expansion theory and identity reconstruction after relationship loss</li>

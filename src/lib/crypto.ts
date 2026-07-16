@@ -6,7 +6,7 @@ import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
  * party (him): Record entries, vault entries, journal responses, slip notes.
  *
  * This runs server-side only (Server Actions / Route Handlers), keyed by
- * ENCRYPTION_MASTER_KEY. It protects the data at rest — a raw Postgres dump,
+ * ENCRYPTION_MASTER_KEY. It protects the data at rest - a raw Postgres dump,
  * a leaked Supabase service-role key, or a support engineer with table
  * access all see ciphertext, never plaintext. It is not zero-knowledge: the
  * onboarding flow starts with an anonymous session and no password, so
@@ -57,7 +57,7 @@ export function decryptField(ciphertext: string, iv: string): string {
   return decrypted.toString("utf8");
 }
 
-/** Convenience for optional fields — returns nulls through untouched. */
+/** Convenience for optional fields - returns nulls through untouched. */
 export function encryptOptionalField(plaintext: string | null | undefined): {
   ciphertext: string | null;
   iv: string | null;

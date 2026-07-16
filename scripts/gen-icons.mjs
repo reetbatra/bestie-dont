@@ -7,7 +7,7 @@ const TERRACOTTA = "#B5442D";
 // A crossed-out speech bubble: the literal core mechanic of the app (the
 // text that doesn't get sent), not an abstract mark. A rounded chat bubble
 // with a tail, terracotta on cream, with a single thick cream diagonal
-// slash through it — the universal "blocked/muted" convention.
+// slash through it - the universal "blocked/muted" convention.
 function markPaths(scale, offsetX, offsetY) {
   const s = scale;
   const tx = offsetX;
@@ -39,7 +39,7 @@ async function render(svgString, size, outPath) {
   console.log("wrote", outPath);
 }
 
-// "any" purpose icons — mark fills most of the canvas, square corners (OS applies its own mask)
+// "any" purpose icons - mark fills most of the canvas, square corners (OS applies its own mask)
 for (const size of [192, 512]) {
   const scale = size / 512;
   const markup = svg({
@@ -53,7 +53,7 @@ for (const size of [192, 512]) {
   await render(markup, size, `${OUT_ICONS}/icon-${size}.png`);
 }
 
-// maskable — mark scaled down ~65% and centered so Android's circular/squircle
+// maskable - mark scaled down ~65% and centered so Android's circular/squircle
 // mask never clips the hand shape
 {
   const size = 512;
@@ -71,7 +71,7 @@ for (const size of [192, 512]) {
   await render(markup, size, `${OUT_ICONS}/icon-512-maskable.png`);
 }
 
-// apple touch icon — Next.js app/apple-icon.png convention, rounded square
+// apple touch icon - Next.js app/apple-icon.png convention, rounded square
 // (iOS applies its own superellipse mask on top, but a filled square is safest)
 {
   const size = 180;

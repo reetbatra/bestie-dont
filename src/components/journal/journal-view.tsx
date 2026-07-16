@@ -6,7 +6,6 @@ import { ScreenHeader } from "@/components/shared/screen-header";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { PaywallDialog } from "@/components/shared/paywall-dialog";
-import { VoiceInputButton } from "@/components/shared/voice-input-button";
 import { EncryptedNote } from "@/components/shared/encrypted-note";
 import {
   saveJournalEntry,
@@ -82,20 +81,12 @@ export function JournalView({
               <p className="mt-2 text-lg leading-snug text-foreground">{today.promptText}</p>
             </div>
 
-            <div className="relative mt-4">
-              <Textarea
-                value={response}
-                onChange={(e) => setResponse(e.target.value)}
-                placeholder="Write whatever comes. No one's grading this."
-                className="min-h-40 resize-none pr-12"
-              />
-              <VoiceInputButton
-                className="absolute bottom-3 right-3"
-                onTranscript={(chunk) =>
-                  setResponse((prev) => (prev && !prev.endsWith(" ") ? `${prev} ${chunk}` : prev + chunk))
-                }
-              />
-            </div>
+            <Textarea
+              value={response}
+              onChange={(e) => setResponse(e.target.value)}
+              placeholder="Write whatever comes. No one's grading this."
+              className="mt-4 min-h-40 resize-none"
+            />
             <EncryptedNote className="mt-2" />
 
             {saved && !isPending && (

@@ -3,7 +3,7 @@
 import { requireUserId } from "@/lib/supabase/server";
 import { encryptField } from "@/lib/crypto";
 
-/** Screen 02, The Date — sets the breakup date and starts the streak immediately. */
+/** Screen 02, The Date - sets the breakup date and starts the streak immediately. */
 export async function startStreak(startDate: string) {
   const { supabase, userId } = await requireUserId();
 
@@ -22,7 +22,7 @@ export async function startStreak(startDate: string) {
 }
 
 /**
- * Screen 03, First Record entry — is_raw is set by how close to the breakup
+ * Screen 03, First Record entry - is_raw is set by how close to the breakup
  * this was written (within 48h = raw, still-bleeding), not how close
  * occurred_on is to today. That's what the resist-screen rotation (Screen 08)
  * actually needs: whether this memory was captured before nostalgia had time

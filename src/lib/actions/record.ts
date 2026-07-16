@@ -43,7 +43,7 @@ export async function listRecordEntries(): Promise<{
 }> {
   const { supabase, userId } = await requireUserId();
 
-  // The underlying table is still named `receipts` — renaming it means
+  // The underlying table is still named `receipts` - renaming it means
   // another manual migration step, and nothing user-facing reads the table
   // name. The app-layer naming ("Record") is what she actually sees.
   const [{ data: rows }, access] = await Promise.all([

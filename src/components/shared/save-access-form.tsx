@@ -7,7 +7,7 @@ import { linkEmail } from "@/lib/actions/auth";
 
 /**
  * Converts the anonymous session into a permanent one. Without this, her
- * account is just a browser cookie — clear cookies, switch devices, or
+ * account is just a browser cookie - clear cookies, switch devices, or
  * reinstall the PWA and a paid account becomes unrecoverable, with no email
  * or password on file with us to prove she paid. This is the one screen
  * that closes that gap.
@@ -44,7 +44,7 @@ export function SaveAccessForm({
     return (
       <p className={compact ? "text-xs text-forest" : "text-sm text-forest"}>
         Check {email} for a confirmation link. Until you click it, this device stays your access
-        — nothing changes today.
+        - nothing changes today.
       </p>
     );
   }

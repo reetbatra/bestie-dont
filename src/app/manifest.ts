@@ -20,5 +20,21 @@ export default function manifest(): MetadataRoute.Manifest {
         purpose: "maskable",
       },
     ],
+    // long-press the home-screen icon: the panic flow is one tap away at
+    // exactly the moment she'd otherwise open Messages
+    shortcuts: [
+      {
+        name: "Don't text him. Come here.",
+        short_name: "Panic",
+        url: "/panic/reset",
+        icons: [{ src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }],
+      },
+      {
+        name: "Log a slip",
+        short_name: "Log a slip",
+        url: "/calendar",
+        icons: [{ src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }],
+      },
+    ],
   };
 }
