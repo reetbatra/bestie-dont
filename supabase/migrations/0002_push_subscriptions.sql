@@ -1,13 +1,10 @@
 -- ---------------------------------------------------------------------------
--- STAGED - NOT APPLIED. Do not move into supabase/migrations/ until the
--- push-notifications feature is approved for build. The production DB is
--- frozen (real users) as of 2026-07-10.
---
--- What this unlocks: evening web-push check-ins ("You're on day 5. Tonight
--- is the hard part.") sent at each user's chosen risk hour. Additive only -
--- no existing table is touched. Also needs: VAPID keypair in env
--- (WEB_PUSH_VAPID_PUBLIC_KEY / WEB_PUSH_VAPID_PRIVATE_KEY), a service-worker
--- push handler, and a daily cron route that fans out per timezone.
+-- Applied to production 2026-07-16 (additive only - no existing table
+-- touched). Schema for evening web-push check-ins ("You're on day 5.
+-- Tonight is the hard part.") sent at each user's chosen risk hour.
+-- The feature still needs: VAPID keypair in env (WEB_PUSH_VAPID_PUBLIC_KEY
+-- / WEB_PUSH_VAPID_PRIVATE_KEY), a service-worker push handler, and a
+-- daily cron route that fans out per timezone.
 -- ---------------------------------------------------------------------------
 
 create table public.push_subscriptions (
