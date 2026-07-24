@@ -73,14 +73,3 @@ export async function addIdentityItems(items: IdentityItemInput[]) {
   if (error) return { error: error.message };
   return { success: true };
 }
-
-/** Screen 06 notification ask, folded into The Deal. */
-export async function setNotificationPreference(optIn: boolean) {
-  const { supabase, userId } = await requireUserId();
-  const { error } = await supabase
-    .from("profiles")
-    .update({ notif_opt_in: optIn })
-    .eq("id", userId);
-  if (error) return { error: error.message };
-  return { success: true };
-}

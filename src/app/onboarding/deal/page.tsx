@@ -6,14 +6,12 @@ import { toast } from "sonner";
 import { OnboardingScreen } from "@/components/onboarding/onboarding-screen";
 import { Button } from "@/components/ui/button";
 import { useInstallPrompt } from "@/components/pwa/install-provider";
-import { setNotificationPreference } from "@/lib/actions/onboarding";
 import { Smartphone, Share, MoreVertical } from "lucide-react";
 
 export default function TheDealPage() {
   const router = useRouter();
   const { canInstall, isInstalled, isIOS, promptInstall } = useInstallPrompt();
   const [installed, setInstalled] = useState(false);
-  const [notifChoice, setNotifChoice] = useState<"allowed" | "declined" | null>(null);
   const [isPending, startTransition] = useTransition();
 
   async function handleInstall() {
@@ -23,16 +21,6 @@ export default function TheDealPage() {
     }
     const outcome = await promptInstall();
     if (outcome === "accepted") setInstalled(true);
-  }
-
-  function handleNotifChoice(optIn: boolean) {
-    setNotifChoice(optIn ? "allowed" : "declined");
-    startTransition(async () => {
-      await setNotificationPreference(optIn);
-      if (optIn && typeof window !== "undefined" && "Notification" in window) {
-        void Notification.requestPermission();
-      }
-    });
   }
 
   function handleFinish() {
@@ -108,26 +96,10 @@ export default function TheDealPage() {
       )}
 
       <div className="mt-4 rounded-3xl border border-border bg-card p-5 shadow-sm">
-        <p className="text-sm font-semibold">One check-in a day, and milestone hype.</p>
-        <p className="mt-1 text-xs text-muted-foreground">Nothing spammy. Ever.</p>
-        <div className="mt-4 flex gap-2">
-          <Button
-            size="sm"
-            variant={notifChoice === "allowed" ? "default" : "outline"}
-            onClick={() => handleNotifChoice(true)}
-            className="flex-1"
-          >
-            Sounds good
-          </Button>
-          <Button
-            size="sm"
-            variant={notifChoice === "declined" ? "secondary" : "outline"}
-            onClick={() => handleNotifChoice(false)}
-            className="flex-1"
-          >
-            Not now
-          </Button>
-        </div>
+        <p className="text-sm font-semibold">Notifications aren&apos;t live yet.</p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          When they are: one check-in a day, milestone hype. Nothing spammy. Ever.
+        </p>
       </div>
     </OnboardingScreen>
   );

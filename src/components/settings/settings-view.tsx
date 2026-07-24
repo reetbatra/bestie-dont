@@ -6,8 +6,6 @@ import { toast } from "sonner";
 import { ScreenHeader } from "@/components/shared/screen-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import {
   Dialog,
   DialogContent,
@@ -19,7 +17,6 @@ import {
 } from "@/components/ui/dialog";
 import Link from "next/link";
 import { Smartphone, Share, MoreVertical } from "lucide-react";
-import { setNotificationPreference } from "@/lib/actions/onboarding";
 import { updateHisName, exportUserData, deleteAccount, type SettingsData } from "@/lib/actions/settings";
 import { signOut } from "@/lib/actions/auth";
 import { CrisisLink } from "@/components/shared/crisis-link";
@@ -29,7 +26,6 @@ import { useInstallPrompt } from "@/components/pwa/install-provider";
 export function SettingsView({ settings }: { settings: SettingsData }) {
   const router = useRouter();
   const { canInstall, isInstalled, isIOS, promptInstall } = useInstallPrompt();
-  const [notifOptIn, setNotifOptIn] = useState(settings.notifOptIn);
   const [hisName, setHisName] = useState(settings.hisName ?? "");
   const [nameSaved, setNameSaved] = useState(false);
   const [isExporting, startExport] = useTransition();
@@ -54,13 +50,6 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
       return;
     }
     await promptInstall();
-  }
-
-  function handleNotifToggle(checked: boolean) {
-    setNotifOptIn(checked);
-    startTransition(async () => {
-      await setNotificationPreference(checked);
-    });
   }
 
   function handleSaveName() {
@@ -114,13 +103,10 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Notifications
           </p>
-          <div className="mt-3 flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium">Daily check-in and milestone hype</p>
-              <p className="text-xs text-muted-foreground">Nothing spammy. Ever.</p>
-            </div>
-            <Switch checked={notifOptIn} onCheckedChange={handleNotifToggle} />
-          </div>
+          <p className="mt-2 text-sm font-medium">Not live yet.</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            When they are: one check-in a day, milestone hype. Nothing spammy. Ever.
+          </p>
         </section>
 
         <section className="rounded-3xl border border-border bg-card p-5 shadow-sm">

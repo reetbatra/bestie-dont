@@ -8,7 +8,6 @@ import {
 } from "@/lib/crypto";
 
 export interface SettingsData {
-  notifOptIn: boolean;
   hisName: string | null;
   hasPurchased: boolean;
   email: string | null;
@@ -19,12 +18,11 @@ export async function getSettings(): Promise<SettingsData> {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("notif_opt_in, his_name_encrypted, his_name_iv, has_purchased")
+    .select("his_name_encrypted, his_name_iv, has_purchased")
     .eq("id", userId)
     .single();
 
   return {
-    notifOptIn: profile?.notif_opt_in ?? false,
     hisName: decryptOptionalField(profile?.his_name_encrypted ?? null, profile?.his_name_iv ?? null),
     hasPurchased: profile?.has_purchased ?? false,
     email,
