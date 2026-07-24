@@ -62,6 +62,13 @@ export async function POST(request: NextRequest) {
         .from("purchases")
         .update({ status: event.type === "refund.completed" ? "refunded" : "failed" })
         .eq("dodo_payment_id", event.data.payment_id);
+
+      // has_purchased is the flag the paywall actually reads (record.ts,
+      // journal.ts) - without this, a refund leaves the purchases row
+      // correctly marked "refunded" while the user keeps full access forever.
+      if (event.type === "refund.completed") {
+        await supabase.from("profiles").update({ has_purchased: false }).eq("id", userId);
+      }
     }
   }
 

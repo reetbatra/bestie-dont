@@ -80,8 +80,34 @@ export async function getTodayJournal(): Promise<TodayJournal | null> {
   };
 }
 
+/**
+ * getTodayJournal hides the prompt text and locks the UI for days past the
+ * free teaser, but that's a client-side courtesy, not enforcement - without
+ * this check, calling the action directly with any dayIndex writes a locked
+ * day's entry for free. Mirrors the same locked formula getTodayJournal uses.
+ */
+async function assertJournalAccess(
+  supabase: Awaited<ReturnType<typeof requireUserId>>["supabase"],
+  userId: string,
+  dayIndex: number,
+) {
+  if (dayIndex <= JOURNAL_FREE_DAYS || isInTrial(dayIndex)) return null;
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("has_purchased")
+    .eq("id", userId)
+    .single();
+  if (profile?.has_purchased) return null;
+
+  return { error: "paywall" as const };
+}
+
 export async function saveJournalEntry(dayIndex: number, promptId: string, response: string) {
   const { supabase, userId } = await requireUserId();
+  const accessError = await assertJournalAccess(supabase, userId, dayIndex);
+  if (accessError) return accessError;
+
   const { ciphertext, iv } = encryptField(response);
 
   const { error } = await supabase.from("journal_entries").upsert(
@@ -101,6 +127,8 @@ export async function saveJournalEntry(dayIndex: number, promptId: string, respo
 
 export async function skipJournalEntry(dayIndex: number, promptId: string) {
   const { supabase, userId } = await requireUserId();
+  const accessError = await assertJournalAccess(supabase, userId, dayIndex);
+  if (accessError) return accessError;
 
   const { error } = await supabase.from("journal_entries").upsert(
     {
