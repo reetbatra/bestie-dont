@@ -1,23 +1,27 @@
 import { redirect } from "next/navigation";
 import { requireSession } from "@/lib/supabase/server";
 import { streakDayNumber, streakSubtext, nextUncelebratedMilestone, daysRemaining } from "@/lib/streak";
+import { getUserTimeZone } from "@/lib/server/user-timezone";
 import { HomeShell } from "@/components/home/home-shell";
 
 export default async function HomePage() {
   const { supabase, userId } = await requireSession();
 
-  const { data: streak } = await supabase
-    .from("streaks")
-    .select("id, start_date")
-    .eq("user_id", userId)
-    .eq("is_active", true)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .single();
+  const [{ data: streak }, timeZone] = await Promise.all([
+    supabase
+      .from("streaks")
+      .select("id, start_date")
+      .eq("user_id", userId)
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single(),
+    getUserTimeZone(),
+  ]);
 
   if (!streak) redirect("/onboarding/date");
 
-  const day = streakDayNumber(streak.start_date);
+  const day = streakDayNumber(streak.start_date, timeZone);
   const journalDayIndex = Math.min(day, 56);
 
   // These three are independent of each other once the streak day is known

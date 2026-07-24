@@ -2,21 +2,25 @@
 
 import { requireUserId } from "@/lib/supabase/server";
 import { streakDayNumber, MILESTONE_DAYS, nextUncelebratedMilestone } from "@/lib/streak";
+import { getUserTimeZone } from "@/lib/server/user-timezone";
 
 export async function getNextMilestone(): Promise<number | null> {
   const { supabase, userId } = await requireUserId();
 
-  const { data: streak } = await supabase
-    .from("streaks")
-    .select("start_date")
-    .eq("user_id", userId)
-    .eq("is_active", true)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .single();
+  const [{ data: streak }, timeZone] = await Promise.all([
+    supabase
+      .from("streaks")
+      .select("start_date")
+      .eq("user_id", userId)
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single(),
+    getUserTimeZone(),
+  ]);
   if (!streak) return null;
 
-  const day = streakDayNumber(streak.start_date);
+  const day = streakDayNumber(streak.start_date, timeZone);
 
   const { data: reached } = await supabase
     .from("milestones_reached")
@@ -38,17 +42,20 @@ export async function getMilestoneData(day: number): Promise<MilestoneData | nul
 
   if (!MILESTONE_DAYS.includes(day as (typeof MILESTONE_DAYS)[number])) return null;
 
-  const { data: streak } = await supabase
-    .from("streaks")
-    .select("start_date")
-    .eq("user_id", userId)
-    .eq("is_active", true)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .single();
+  const [{ data: streak }, timeZone] = await Promise.all([
+    supabase
+      .from("streaks")
+      .select("start_date")
+      .eq("user_id", userId)
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single(),
+    getUserTimeZone(),
+  ]);
   if (!streak) return null;
 
-  const currentDay = streakDayNumber(streak.start_date);
+  const currentDay = streakDayNumber(streak.start_date, timeZone);
   if (currentDay < day) return null;
 
   const [{ count: recordEntryCount }, { count: journalCount }] = await Promise.all([

@@ -1,9 +1,15 @@
-export function streakDayNumber(startDate: string): number {
-  const start = new Date(`${startDate}T00:00:00`);
-  const now = new Date();
-  const startLocal = new Date(start.getFullYear(), start.getMonth(), start.getDate());
-  const todayLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const diffDays = Math.round((todayLocal.getTime() - startLocal.getTime()) / 86_400_000);
+import { calendarDateEpoch, localDayEpoch } from "@/lib/timezone";
+
+/**
+ * `timeZone` defaults to UTC for callers that haven't been threaded through
+ * yet, but every real call site should pass the caller's actual IANA zone
+ * (see getUserTimeZone in timezone.ts) - the day boundary has to match her
+ * local midnight, not the server process's own clock.
+ */
+export function streakDayNumber(startDate: string, timeZone: string = "UTC"): number {
+  const startEpoch = calendarDateEpoch(startDate);
+  const todayEpoch = localDayEpoch(new Date(), timeZone);
+  const diffDays = Math.round((todayEpoch - startEpoch) / 86_400_000);
   return Math.max(1, diffDays + 1);
 }
 

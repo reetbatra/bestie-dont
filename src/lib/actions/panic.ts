@@ -3,6 +3,7 @@
 import { requireUserId } from "@/lib/supabase/server";
 import { decryptField, encryptOptionalField } from "@/lib/crypto";
 import { streakDayNumber } from "@/lib/streak";
+import { getUserTimeZone } from "@/lib/server/user-timezone";
 
 export interface ResistCard {
   recordFact: string | null;
@@ -71,7 +72,8 @@ export async function logSlip(note: string, occurredOn?: string) {
     const start = new Date(`${streak.start_date}T00:00:00Z`);
     const chosen = new Date(`${occurredOn}T00:00:00Z`);
     const slipDay = Math.round((chosen.getTime() - start.getTime()) / 86_400_000) + 1;
-    if (slipDay < 1 || slipDay > streakDayNumber(streak.start_date)) {
+    const timeZone = await getUserTimeZone();
+    if (slipDay < 1 || slipDay > streakDayNumber(streak.start_date, timeZone)) {
       return { error: "That day isn't part of this streak yet." };
     }
   }

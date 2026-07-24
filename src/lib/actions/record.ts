@@ -3,11 +3,12 @@
 import { createClient, requireUserId } from "@/lib/supabase/server";
 import { decryptField, decryptOptionalField, encryptField, encryptOptionalField } from "@/lib/crypto";
 import { streakDayNumber, isInTrial } from "@/lib/streak";
+import { getUserTimeZone } from "@/lib/server/user-timezone";
 
 const FREE_TIER_LIMIT = 3;
 
 async function getAccessState(supabase: Awaited<ReturnType<typeof createClient>>, userId: string) {
-  const [{ data: profile }, { data: streak }] = await Promise.all([
+  const [{ data: profile }, { data: streak }, timeZone] = await Promise.all([
     supabase.from("profiles").select("has_purchased, breakup_date").eq("id", userId).single(),
     supabase
       .from("streaks")
@@ -17,10 +18,11 @@ async function getAccessState(supabase: Awaited<ReturnType<typeof createClient>>
       .order("created_at", { ascending: false })
       .limit(1)
       .single(),
+    getUserTimeZone(),
   ]);
 
   const hasPurchased = profile?.has_purchased ?? false;
-  const inTrial = streak ? isInTrial(streakDayNumber(streak.start_date)) : false;
+  const inTrial = streak ? isInTrial(streakDayNumber(streak.start_date, timeZone)) : false;
 
   return { profile, hasFullAccess: hasPurchased || inTrial, hasPurchased, inTrial };
 }

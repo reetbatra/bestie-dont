@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { requireSession } from "@/lib/supabase/server";
 import { streakDayNumber, daysRemaining, MILESTONE_DAYS, PROGRAM_LENGTH_DAYS } from "@/lib/streak";
+import { calendarDateEpoch, localDayEpoch } from "@/lib/timezone";
+import { getUserTimeZone } from "@/lib/server/user-timezone";
 import { CalendarGrid } from "@/components/calendar/calendar-grid";
 
 const WEEKDAYS = [
@@ -44,31 +46,32 @@ function slipInsight(occurredAts: string[]): string | null {
 export default async function CalendarPage() {
   const { supabase, userId } = await requireSession();
 
-  const { data: streak } = await supabase
-    .from("streaks")
-    .select("id, start_date")
-    .eq("user_id", userId)
-    .eq("is_active", true)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .single();
+  const [{ data: streak }, timeZone] = await Promise.all([
+    supabase
+      .from("streaks")
+      .select("id, start_date")
+      .eq("user_id", userId)
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single(),
+    getUserTimeZone(),
+  ]);
 
   if (!streak) redirect("/onboarding/date");
 
-  const day = streakDayNumber(streak.start_date);
+  const day = streakDayNumber(streak.start_date, timeZone);
 
   const { data: slips } = await supabase
     .from("slip_events")
     .select("occurred_at")
     .eq("streak_id", streak.id);
 
-  const start = new Date(`${streak.start_date}T00:00:00`);
+  const startEpoch = calendarDateEpoch(streak.start_date);
   const slipDays = new Set(
     (slips ?? []).map((s) => {
-      const occurred = new Date(s.occurred_at);
-      const occurredLocal = new Date(occurred.getFullYear(), occurred.getMonth(), occurred.getDate());
-      const startLocal = new Date(start.getFullYear(), start.getMonth(), start.getDate());
-      return Math.round((occurredLocal.getTime() - startLocal.getTime()) / 86_400_000) + 1;
+      const occurredEpoch = localDayEpoch(new Date(s.occurred_at), timeZone);
+      return Math.round((occurredEpoch - startEpoch) / 86_400_000) + 1;
     }),
   );
 

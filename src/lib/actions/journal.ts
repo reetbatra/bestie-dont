@@ -3,6 +3,7 @@
 import { requireUserId } from "@/lib/supabase/server";
 import { decryptOptionalField, encryptField } from "@/lib/crypto";
 import { streakDayNumber, JOURNAL_FREE_DAYS, isInTrial } from "@/lib/streak";
+import { getUserTimeZone } from "@/lib/server/user-timezone";
 
 const ARC_LABEL: Record<string, string> = {
   stabilize: "Stabilize",
@@ -37,7 +38,8 @@ export async function getTodayJournal(): Promise<TodayJournal | null> {
 
   if (!streak) return null;
 
-  const dayIndex = Math.min(streakDayNumber(streak.start_date), 56);
+  const timeZone = await getUserTimeZone();
+  const dayIndex = Math.min(streakDayNumber(streak.start_date, timeZone), 56);
 
   // prompt, profile, and this day's entry are all independent of each other
   // once dayIndex is known - fire them together instead of one round-trip
