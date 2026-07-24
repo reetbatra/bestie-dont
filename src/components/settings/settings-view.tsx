@@ -103,9 +103,10 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Notifications
           </p>
-          <p className="mt-2 text-sm font-medium">Not live yet.</p>
+          <p className="mt-2 text-sm font-medium">Zero. On purpose.</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            When they are: one check-in a day, milestone hype. Nothing spammy. Ever.
+            We don&apos;t ping, buzz, or check in on you. This app doesn&apos;t get to be one more
+            thing pulling your attention back to your phone.
           </p>
         </section>
 

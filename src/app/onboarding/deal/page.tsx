@@ -96,9 +96,10 @@ export default function TheDealPage() {
       )}
 
       <div className="mt-4 rounded-3xl border border-border bg-card p-5 shadow-sm">
-        <p className="text-sm font-semibold">Notifications aren&apos;t live yet.</p>
+        <p className="text-sm font-semibold">Zero notifications. On purpose.</p>
         <p className="mt-1 text-xs text-muted-foreground">
-          When they are: one check-in a day, milestone hype. Nothing spammy. Ever.
+          We don&apos;t ping, buzz, or check in on you. Come back when you want to, not when we
+          tell you to.
         </p>
       </div>
     </OnboardingScreen>
