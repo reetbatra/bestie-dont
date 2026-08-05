@@ -24,12 +24,17 @@ function dayLabel(startDate: string, day: number): string {
   });
 }
 
+export interface SlipDetail {
+  id: string;
+  note: string | null;
+}
+
 export function CalendarGrid({
   currentDay,
   totalDays,
   daysLeft,
   startDate,
-  slipDays,
+  slipDetails,
   slipInsight,
   milestoneDays,
   graduated,
@@ -38,18 +43,21 @@ export function CalendarGrid({
   totalDays: number;
   daysLeft: number;
   startDate: string;
-  slipDays: number[];
+  slipDetails: [number, SlipDetail][];
   slipInsight: string | null;
   milestoneDays: readonly number[];
   graduated: boolean;
 }) {
   const days = Array.from({ length: totalDays }, (_, i) => i + 1);
-  const slipped = new Set(slipDays);
+  const slipMap = new Map(slipDetails);
+  const slipped = new Set(slipMap.keys());
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
   const sel = selectedDay;
   const selIsSlipped = sel !== null && slipped.has(sel);
   const selIsReached = sel !== null && (graduated || sel <= currentDay);
+  const selSlip = sel !== null ? slipMap.get(sel) : undefined;
+  const currentDaySlip = slipMap.get(currentDay);
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col px-6 pb-16 pt-10">
@@ -107,15 +115,20 @@ export function CalendarGrid({
         })}
       </div>
 
-      {!graduated && !slipped.has(currentDay) && (
+      {!graduated && (
         <LogSlipDialog
+          key={currentDaySlip?.id ?? "new"}
           occurredOn={dayToDate(startDate, currentDay)}
           dayNumber={currentDay}
+          slipId={currentDaySlip?.id}
+          initialNote={currentDaySlip?.note ?? undefined}
           triggerClassName={cn(
             buttonVariants({ size: "lg" }),
             "mt-4 w-full bg-butter text-[#23201C] hover:bg-butter/90",
           )}
-          trigger="Slipped today? Log it - nothing resets."
+          trigger={
+            currentDaySlip ? "See or edit what you logged today" : "Slipped today? Log it - nothing resets."
+          }
         />
       )}
 
@@ -133,13 +146,21 @@ export function CalendarGrid({
                   : "Clean day. Done and counted."
                 : "Not here yet."}
           </p>
-          {selIsReached && !selIsSlipped && (
+          {selIsSlipped && (
+            <p className="mt-2 whitespace-pre-wrap rounded-lg bg-muted/60 p-3 text-sm text-foreground/90">
+              {selSlip?.note || "No details added."}
+            </p>
+          )}
+          {selIsReached && (
             <LogSlipDialog
+              key={selSlip?.id ?? `new-${sel}`}
               occurredOn={dayToDate(startDate, sel)}
               dayNumber={sel}
+              slipId={selSlip?.id}
+              initialNote={selSlip?.note ?? undefined}
               trigger={
                 <span className="mt-3 inline-block cursor-pointer text-sm font-medium text-terracotta underline underline-offset-4">
-                  Something happened this day? Log a slip
+                  {selIsSlipped ? "Edit what happened" : "Something happened this day? Log a slip"}
                 </span>
               }
             />

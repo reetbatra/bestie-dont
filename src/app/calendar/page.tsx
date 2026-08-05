@@ -3,7 +3,8 @@ import { requireSession } from "@/lib/supabase/server";
 import { streakDayNumber, daysRemaining, MILESTONE_DAYS, PROGRAM_LENGTH_DAYS } from "@/lib/streak";
 import { calendarDateEpoch, localDayEpoch } from "@/lib/timezone";
 import { getUserTimeZone } from "@/lib/server/user-timezone";
-import { CalendarGrid } from "@/components/calendar/calendar-grid";
+import { decryptOptionalField } from "@/lib/crypto";
+import { CalendarGrid, type SlipDetail } from "@/components/calendar/calendar-grid";
 
 const WEEKDAYS = [
   "Sunday",
@@ -64,16 +65,23 @@ export default async function CalendarPage() {
 
   const { data: slips } = await supabase
     .from("slip_events")
-    .select("occurred_at")
-    .eq("streak_id", streak.id);
+    .select("id, occurred_at, note_encrypted, note_iv")
+    .eq("streak_id", streak.id)
+    .order("created_at", { ascending: true });
 
   const startEpoch = calendarDateEpoch(streak.start_date);
-  const slipDays = new Set(
-    (slips ?? []).map((s) => {
-      const occurredEpoch = localDayEpoch(new Date(s.occurred_at), timeZone);
-      return Math.round((occurredEpoch - startEpoch) / 86_400_000) + 1;
-    }),
-  );
+  // Last write wins if a day somehow ends up with more than one slip (no
+  // unique constraint enforces one-per-day) - rows are ascending by
+  // created_at, so the most recent slip for a day is what surfaces.
+  const slipDetails = new Map<number, SlipDetail>();
+  for (const s of slips ?? []) {
+    const occurredEpoch = localDayEpoch(new Date(s.occurred_at), timeZone);
+    const dayNumber = Math.round((occurredEpoch - startEpoch) / 86_400_000) + 1;
+    slipDetails.set(dayNumber, {
+      id: s.id,
+      note: decryptOptionalField(s.note_encrypted, s.note_iv),
+    });
+  }
 
   return (
     <CalendarGrid
@@ -81,7 +89,7 @@ export default async function CalendarPage() {
       totalDays={PROGRAM_LENGTH_DAYS}
       daysLeft={daysRemaining(day)}
       startDate={streak.start_date}
-      slipDays={[...slipDays]}
+      slipDetails={[...slipDetails.entries()]}
       slipInsight={slipInsight((slips ?? []).map((s) => s.occurred_at))}
       milestoneDays={MILESTONE_DAYS}
       graduated={day > PROGRAM_LENGTH_DAYS}

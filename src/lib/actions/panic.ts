@@ -90,3 +90,22 @@ export async function logSlip(note: string, occurredOn?: string) {
   if (error) return { error: error.message };
   return { success: true };
 }
+
+/**
+ * Slips were write-only: once logged, the calendar hid the trigger for that
+ * day for good and never read the note back, so there was no way to see or
+ * change what you'd written. This lets an existing slip's note be edited in
+ * place instead of being stuck the moment it's saved.
+ */
+export async function updateSlip(slipId: string, note: string) {
+  const { supabase, userId } = await requireUserId();
+  const { ciphertext, iv } = encryptOptionalField(note);
+
+  const { error } = await supabase
+    .from("slip_events")
+    .update({ note_encrypted: ciphertext, note_iv: iv })
+    .eq("id", slipId)
+    .eq("user_id", userId);
+  if (error) return { error: error.message };
+  return { success: true };
+}
