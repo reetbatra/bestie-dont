@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { logSlip, updateSlip } from "@/lib/actions/panic";
+import { logSlip, updateSlip, deleteSlip } from "@/lib/actions/panic";
 
 /**
  * Two entry points share this dialog: the panic flow (no `occurredOn`,
@@ -46,6 +46,7 @@ export function LogSlipDialog({
   const isEditing = slipId !== undefined;
   const [open, setOpen] = useState(false);
   const [note, setNote] = useState(initialNote ?? "");
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -53,6 +54,7 @@ export function LogSlipDialog({
     setOpen(next);
     if (next) {
       setNote(initialNote ?? "");
+      setConfirmingDelete(false);
       setError(null);
     }
   }
@@ -73,6 +75,20 @@ export function LogSlipDialog({
       } else {
         router.push("/home");
       }
+    });
+  }
+
+  function handleDelete() {
+    if (!isEditing) return;
+    setError(null);
+    startTransition(async () => {
+      const result = await deleteSlip(slipId);
+      if (result?.error) {
+        setError(result.error);
+        return;
+      }
+      setOpen(false);
+      router.refresh();
     });
   }
 
@@ -97,10 +113,48 @@ export function LogSlipDialog({
           className="min-h-28 resize-none"
         />
         {error && <p className="text-xs text-destructive">{error}</p>}
-        <DialogFooter>
-          <Button onClick={handleSubmit} disabled={isPending} className="w-full">
-            {isPending ? "Saving…" : isEditing ? "Save" : "Log it"}
-          </Button>
+        <DialogFooter className="flex-col gap-2 sm:flex-col">
+          {isEditing && confirmingDelete ? (
+            <div className="flex w-full items-center justify-between gap-2 rounded-lg border border-destructive/30 bg-destructive/5 p-3">
+              <p className="text-xs text-foreground/80">Remove this log for good?</p>
+              <div className="flex shrink-0 gap-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setConfirmingDelete(false)}
+                  disabled={isPending}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  onClick={handleDelete}
+                  disabled={isPending}
+                >
+                  {isPending ? "Removing…" : "Yes, un-log it"}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <Button onClick={handleSubmit} disabled={isPending} className="w-full">
+                {isPending ? "Saving…" : isEditing ? "Save" : "Log it"}
+              </Button>
+              {isEditing && (
+                <button
+                  type="button"
+                  onClick={() => setConfirmingDelete(true)}
+                  disabled={isPending}
+                  className="text-xs font-medium text-muted-foreground underline underline-offset-4"
+                >
+                  Un-log this slip
+                </button>
+              )}
+            </>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

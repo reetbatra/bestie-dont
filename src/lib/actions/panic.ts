@@ -109,3 +109,18 @@ export async function updateSlip(slipId: string, note: string) {
   if (error) return { error: error.message };
   return { success: true };
 }
+
+/** Un-logs a slip - removes it from the timeline entirely, e.g. a misfire
+ * or a day logged by mistake. The streak's day count is unaffected either
+ * way, so there's no arithmetic to undo, just the record. */
+export async function deleteSlip(slipId: string) {
+  const { supabase, userId } = await requireUserId();
+
+  const { error } = await supabase
+    .from("slip_events")
+    .delete()
+    .eq("id", slipId)
+    .eq("user_id", userId);
+  if (error) return { error: error.message };
+  return { success: true };
+}
