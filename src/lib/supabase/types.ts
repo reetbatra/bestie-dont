@@ -59,6 +59,7 @@ export interface Database {
           note_encrypted: string | null;
           note_iv: string | null;
           created_at: string;
+          recovery_seen_at: string | null;
         },
         {
           id?: string;
@@ -68,6 +69,7 @@ export interface Database {
           note_encrypted?: string | null;
           note_iv?: string | null;
           created_at?: string;
+          recovery_seen_at?: string | null;
         }
       >;
       receipts: Table<

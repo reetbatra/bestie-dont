@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { requireSession } from "@/lib/supabase/server";
 import { streakDayNumber, streakSubtext, nextUncelebratedMilestone, daysRemaining } from "@/lib/streak";
 import { getUserTimeZone } from "@/lib/server/user-timezone";
+import { getPendingRecovery } from "@/lib/actions/recovery";
 import { HomeShell } from "@/components/home/home-shell";
 
 export default async function HomePage() {
@@ -24,9 +25,9 @@ export default async function HomePage() {
   const day = streakDayNumber(streak.start_date, timeZone);
   const journalDayIndex = Math.min(day, 56);
 
-  // These three are independent of each other once the streak day is known
+  // These four are independent of each other once the streak day is known
   // - run them together instead of one network round-trip at a time.
-  const [{ data: prompt }, { data: journalEntry }, { data: reached }] = await Promise.all([
+  const [{ data: prompt }, { data: journalEntry }, { data: reached }, pendingRecovery] = await Promise.all([
     supabase.from("journal_prompts").select("prompt_text").eq("day_index", journalDayIndex).single(),
     supabase
       .from("journal_entries")
@@ -35,6 +36,7 @@ export default async function HomePage() {
       .eq("day_index", journalDayIndex)
       .maybeSingle(),
     supabase.from("milestones_reached").select("day_number").eq("user_id", userId),
+    getPendingRecovery(),
   ]);
 
   const pendingMilestone = nextUncelebratedMilestone(
@@ -50,6 +52,7 @@ export default async function HomePage() {
       promptText={prompt?.prompt_text ?? null}
       promptAnswered={Boolean(journalEntry)}
       pendingMilestone={pendingMilestone}
+      pendingRecovery={pendingRecovery}
     />
   );
 }

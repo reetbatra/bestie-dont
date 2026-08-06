@@ -18,6 +18,7 @@ export function HomeShell({
   promptText,
   promptAnswered,
   pendingMilestone,
+  pendingRecovery,
 }: {
   day: number;
   daysLeft: number;
@@ -25,6 +26,7 @@ export function HomeShell({
   promptText: string | null;
   promptAnswered: boolean;
   pendingMilestone: number | null;
+  pendingRecovery: { slipId: string; daysSince: number } | null;
 }) {
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col">
@@ -64,6 +66,20 @@ export function HomeShell({
           </div>
           <span className="text-sm font-medium text-terracotta">View →</span>
         </Link>
+
+        {pendingRecovery && (
+          <Link
+            href={`/recovery/${pendingRecovery.slipId}`}
+            className="mt-8 block rounded-3xl border border-forest/40 bg-forest/10 p-5 shadow-sm transition-colors hover:border-forest/60"
+          >
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Checking in
+            </p>
+            <p className="mt-1 font-display text-lg font-semibold text-foreground">
+              Still here.
+            </p>
+          </Link>
+        )}
 
         {pendingMilestone && (
           <Link

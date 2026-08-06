@@ -15,6 +15,13 @@ export function streakDayNumber(startDate: string, timeZone: string = "UTC"): nu
 
 export const MILESTONE_DAYS = [3, 7, 14, 21, 30, 60] as const;
 
+/**
+ * How long after a logged slip the quiet recovery check-in fires - not a
+ * MILESTONE_DAYS entry, since it's keyed off the slip date, not the streak
+ * start, and there's nothing to celebrate. See /recovery/[slipId].
+ */
+export const RECOVERY_CHECKIN_DAYS = 3;
+
 /** Free tier gets the first 3 days of the journal arc as a teaser, same numeric cap as the Record. */
 export const JOURNAL_FREE_DAYS = 3;
 
@@ -56,6 +63,13 @@ const MILESTONE_COPY: Record<number, string> = {
 export function streakSubtext(day: number): string {
   if (MILESTONE_COPY[day]) return MILESTONE_COPY[day];
   return `Day ${day}. Another day that's yours.`;
+}
+
+/** Whole local days elapsed since `isoTimestamp`, using the same local-midnight boundary as streakDayNumber. */
+export function daysSince(isoTimestamp: string, timeZone: string = "UTC"): number {
+  const eventEpoch = localDayEpoch(new Date(isoTimestamp), timeZone);
+  const todayEpoch = localDayEpoch(new Date(), timeZone);
+  return Math.round((todayEpoch - eventEpoch) / 86_400_000);
 }
 
 export function nextUncelebratedMilestone(day: number, celebrated: number[]): number | null {
