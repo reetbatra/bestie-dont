@@ -1,6 +1,12 @@
 import { redirect } from "next/navigation";
 import { requireSession } from "@/lib/supabase/server";
-import { streakDayNumber, streakSubtext, nextUncelebratedMilestone, daysRemaining } from "@/lib/streak";
+import {
+  streakDayNumber,
+  streakSubtext,
+  nextUncelebratedMilestone,
+  daysRemaining,
+  programLengthDays,
+} from "@/lib/streak";
 import { getUserTimeZone } from "@/lib/server/user-timezone";
 import { getPendingRecovery } from "@/lib/actions/recovery";
 import { HomeShell } from "@/components/home/home-shell";
@@ -11,7 +17,7 @@ export default async function HomePage() {
   const [{ data: streak }, timeZone] = await Promise.all([
     supabase
       .from("streaks")
-      .select("id, start_date")
+      .select("id, start_date, is_extended")
       .eq("user_id", userId)
       .eq("is_active", true)
       .order("created_at", { ascending: false })
@@ -42,12 +48,15 @@ export default async function HomePage() {
   const pendingMilestone = nextUncelebratedMilestone(
     day,
     (reached ?? []).map((r) => r.day_number),
+    streak.is_extended,
   );
 
   return (
     <HomeShell
       day={day}
-      daysLeft={daysRemaining(day)}
+      daysLeft={daysRemaining(day, streak.is_extended)}
+      programLengthDays={programLengthDays(streak.is_extended)}
+      isExtended={streak.is_extended}
       subtext={streakSubtext(day)}
       promptText={prompt?.prompt_text ?? null}
       promptAnswered={Boolean(journalEntry)}

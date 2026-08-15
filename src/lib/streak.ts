@@ -47,8 +47,38 @@ export function isInTrial(day: number): boolean {
   return day <= TRIAL_DAYS;
 }
 
-export function daysRemaining(day: number): number {
-  return Math.max(0, PROGRAM_LENGTH_DAYS - day);
+/**
+ * The optional detox extension offered at day 60: 30 more days on the same
+ * streak (no new start date, same slip mechanics), for anyone who wants to
+ * push past graduation into a longer no-contact window.
+ */
+export const EXTENSION_DAYS = 30;
+export const EXTENDED_PROGRAM_LENGTH_DAYS = PROGRAM_LENGTH_DAYS + EXTENSION_DAYS;
+
+/**
+ * Rules for the extension are display-only, not tracked - most of them
+ * ("don't think about him") aren't things an app can log without turning a
+ * detox into a guaranteed-failure checklist. The slip system still governs
+ * the streak itself.
+ */
+export const DETOX_RULES = [
+  "No contact. Still the baseline.",
+  "No checking his socials, stories, or profile.",
+  "No asking mutuals how he's doing.",
+  "No bringing him up in conversation.",
+] as const;
+
+export function programLengthDays(isExtended: boolean): number {
+  return isExtended ? EXTENDED_PROGRAM_LENGTH_DAYS : PROGRAM_LENGTH_DAYS;
+}
+
+export function daysRemaining(day: number, isExtended: boolean = false): number {
+  return Math.max(0, programLengthDays(isExtended) - day);
+}
+
+/** MILESTONE_DAYS plus the extension's day-90 finish line, only once she's opted in. */
+export function milestoneDaysFor(isExtended: boolean): readonly number[] {
+  return isExtended ? [...MILESTONE_DAYS, EXTENDED_PROGRAM_LENGTH_DAYS] : MILESTONE_DAYS;
 }
 
 const MILESTONE_COPY: Record<number, string> = {
@@ -58,6 +88,7 @@ const MILESTONE_COPY: Record<number, string> = {
   21: "Three weeks. This is starting to look like a pattern, and it's a good one.",
   30: "A month of decisions, all yours.",
   60: "Sixty days. Graduation.",
+  90: "Ninety days. Full detox. Nothing left to check, no one left to ask.",
 };
 
 export function streakSubtext(day: number): string {
@@ -72,8 +103,12 @@ export function daysSince(isoTimestamp: string, timeZone: string = "UTC"): numbe
   return Math.round((todayEpoch - eventEpoch) / 86_400_000);
 }
 
-export function nextUncelebratedMilestone(day: number, celebrated: number[]): number | null {
-  for (const milestone of MILESTONE_DAYS) {
+export function nextUncelebratedMilestone(
+  day: number,
+  celebrated: number[],
+  isExtended: boolean = false,
+): number | null {
+  for (const milestone of milestoneDaysFor(isExtended)) {
     if (day >= milestone && !celebrated.includes(milestone)) return milestone;
   }
   return null;

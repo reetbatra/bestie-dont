@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Home, NotebookText, BookOpen, PenLine, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { DETOX_RULES } from "@/lib/streak";
 
 const NAV_ITEMS = [
   { href: "/home", label: "Home", icon: Home },
@@ -14,6 +15,8 @@ const NAV_ITEMS = [
 export function HomeShell({
   day,
   daysLeft,
+  programLengthDays,
+  isExtended,
   subtext,
   promptText,
   promptAnswered,
@@ -22,6 +25,8 @@ export function HomeShell({
 }: {
   day: number;
   daysLeft: number;
+  programLengthDays: number;
+  isExtended: boolean;
   subtext: string;
   promptText: string | null;
   promptAnswered: boolean;
@@ -56,16 +61,32 @@ export function HomeShell({
         >
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              The 60 days
+              The {programLengthDays} days
             </p>
             <p className="mt-1 text-sm text-foreground">
               {daysLeft > 0
                 ? `${daysLeft} ${daysLeft === 1 ? "day" : "days"} left`
-                : "You made it through all sixty."}
+                : `You made it through all ${programLengthDays === 90 ? "ninety" : "sixty"}.`}
             </p>
           </div>
           <span className="text-sm font-medium text-terracotta">View →</span>
         </Link>
+
+        {isExtended && daysLeft > 0 && (
+          <div className="mt-6 rounded-3xl border border-terracotta/30 bg-terracotta/5 p-5 shadow-sm">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Detox mode
+            </p>
+            <ul className="mt-2 flex flex-col gap-1.5 text-sm text-foreground">
+              {DETOX_RULES.map((rule) => (
+                <li key={rule} className="flex gap-2">
+                  <span className="text-terracotta">•</span>
+                  {rule}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {pendingRecovery && (
           <Link

@@ -40,6 +40,7 @@ export interface Database {
           user_id: string;
           start_date: string;
           is_active: boolean;
+          is_extended: boolean;
           created_at: string;
         },
         {
@@ -47,6 +48,7 @@ export interface Database {
           user_id: string;
           start_date: string;
           is_active?: boolean;
+          is_extended?: boolean;
           created_at?: string;
         }
       >;

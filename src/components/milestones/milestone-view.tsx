@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { streakSubtext } from "@/lib/streak";
 import type { MilestoneData } from "@/lib/actions/milestones";
+import { ExtendProgramDialog } from "@/components/milestones/extend-program-dialog";
 
 const CARD_WIDTH = 1080;
 const CARD_HEIGHT = 1920;
@@ -21,8 +22,8 @@ async function drawCard(canvas: HTMLCanvasElement, data: MilestoneData) {
   canvas.width = CARD_WIDTH;
   canvas.height = CARD_HEIGHT;
 
-  // day 60 is graduation: the card trades terracotta for gold
-  const graduated = data.day === 60;
+  // the final milestone of the program (day 60, or day 90 if extended) trades terracotta for gold
+  const graduated = data.isFinalMilestone;
   const accent = graduated ? "#F3C969" : "#E06A4E";
   const glowRgb = graduated ? "243, 201, 105" : "224, 106, 78";
   const statColor = graduated ? "#E06A4E" : "#F3C969";
@@ -169,6 +170,7 @@ export function MilestoneView({ data }: { data: MilestoneData }) {
         <Button size="lg" onClick={handleShare} disabled={!ready} className="w-full">
           Share this
         </Button>
+        {data.showExtensionOffer && <ExtendProgramDialog />}
         <Button variant="ghost" render={<Link href="/home" />} className="w-full">
           Keep going
         </Button>
