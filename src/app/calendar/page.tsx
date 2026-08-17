@@ -5,6 +5,7 @@ import { calendarDateEpoch, localDayEpoch } from "@/lib/timezone";
 import { getUserTimeZone } from "@/lib/server/user-timezone";
 import { decryptOptionalField } from "@/lib/crypto";
 import { CalendarGrid, type SlipDetail } from "@/components/calendar/calendar-grid";
+import { profilePage } from "@/lib/perf/wrap";
 
 const WEEKDAYS = [
   "Sunday",
@@ -44,7 +45,7 @@ function slipInsight(occurredAts: string[]): string | null {
   return null;
 }
 
-export default async function CalendarPage() {
+async function CalendarPage() {
   const { supabase, userId } = await requireSession();
 
   const [{ data: streak }, timeZone] = await Promise.all([
@@ -96,3 +97,5 @@ export default async function CalendarPage() {
     />
   );
 }
+
+export default profilePage("/calendar", CalendarPage);

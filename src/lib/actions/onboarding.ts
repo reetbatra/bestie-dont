@@ -2,23 +2,26 @@
 
 import { requireUserId } from "@/lib/supabase/server";
 import { encryptField } from "@/lib/crypto";
+import { profileAction } from "@/lib/perf/wrap";
 
 /** Screen 02, The Date - sets the breakup date and starts the streak immediately. */
 export async function startStreak(startDate: string) {
-  const { supabase, userId } = await requireUserId();
+  return profileAction("startStreak", async () => {
+    const { supabase, userId } = await requireUserId();
 
-  const { error: profileError } = await supabase
-    .from("profiles")
-    .update({ breakup_date: startDate })
-    .eq("id", userId);
-  if (profileError) return { error: profileError.message };
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .update({ breakup_date: startDate })
+      .eq("id", userId);
+    if (profileError) return { error: profileError.message };
 
-  const { error: streakError } = await supabase
-    .from("streaks")
-    .insert({ user_id: userId, start_date: startDate, is_active: true });
-  if (streakError) return { error: streakError.message };
+    const { error: streakError } = await supabase
+      .from("streaks")
+      .insert({ user_id: userId, start_date: startDate, is_active: true });
+    if (streakError) return { error: streakError.message };
 
-  return { success: true };
+    return { success: true };
+  });
 }
 
 /**
@@ -29,32 +32,34 @@ export async function startStreak(startDate: string) {
  * to edit it.
  */
 export async function addFirstRecordEntry(fact: string, occurredOn: string) {
-  const { supabase, userId } = await requireUserId();
+  return profileAction("addFirstRecordEntry", async () => {
+    const { supabase, userId } = await requireUserId();
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("breakup_date")
-    .eq("id", userId)
-    .single();
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("breakup_date")
+      .eq("id", userId)
+      .single();
 
-  let isRaw = true;
-  if (profile?.breakup_date) {
-    const hoursSinceBreakup =
-      (Date.now() - new Date(profile.breakup_date).getTime()) / (1000 * 60 * 60);
-    isRaw = hoursSinceBreakup <= 48;
-  }
+    let isRaw = true;
+    if (profile?.breakup_date) {
+      const hoursSinceBreakup =
+        (Date.now() - new Date(profile.breakup_date).getTime()) / (1000 * 60 * 60);
+      isRaw = hoursSinceBreakup <= 48;
+    }
 
-  const { ciphertext, iv } = encryptField(fact);
+    const { ciphertext, iv } = encryptField(fact);
 
-  const { error } = await supabase.from("receipts").insert({
-    user_id: userId,
-    fact_encrypted: ciphertext,
-    fact_iv: iv,
-    occurred_on: occurredOn,
-    is_raw: isRaw,
+    const { error } = await supabase.from("receipts").insert({
+      user_id: userId,
+      fact_encrypted: ciphertext,
+      fact_iv: iv,
+      occurred_on: occurredOn,
+      is_raw: isRaw,
+    });
+    if (error) return { error: error.message };
+    return { success: true };
   });
-  if (error) return { error: error.message };
-  return { success: true };
 }
 
 export interface IdentityItemInput {
@@ -64,12 +69,14 @@ export interface IdentityItemInput {
 
 /** Screen 04, What's Yours. */
 export async function addIdentityItems(items: IdentityItemInput[]) {
-  const { supabase, userId } = await requireUserId();
-  if (items.length === 0) return { success: true };
+  return profileAction("addIdentityItems", async () => {
+    const { supabase, userId } = await requireUserId();
+    if (items.length === 0) return { success: true };
 
-  const { error } = await supabase
-    .from("identity_items")
-    .insert(items.map((item) => ({ user_id: userId, ...item })));
-  if (error) return { error: error.message };
-  return { success: true };
+    const { error } = await supabase
+      .from("identity_items")
+      .insert(items.map((item) => ({ user_id: userId, ...item })));
+    if (error) return { error: error.message };
+    return { success: true };
+  });
 }

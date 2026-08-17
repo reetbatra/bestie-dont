@@ -1,5 +1,6 @@
 import "server-only";
 import { headers } from "next/headers";
+import { span } from "@/lib/perf/profiler";
 
 const FALLBACK_TIME_ZONE = "UTC";
 
@@ -11,6 +12,8 @@ const FALLBACK_TIME_ZONE = "UTC";
  * the header is absent (local dev, non-Vercel hosting).
  */
 export async function getUserTimeZone(): Promise<string> {
-  const h = await headers();
-  return h.get("x-user-timezone") ?? FALLBACK_TIME_ZONE;
+  return span("getUserTimeZone", "compute", async () => {
+    const h = await headers();
+    return h.get("x-user-timezone") ?? FALLBACK_TIME_ZONE;
+  });
 }

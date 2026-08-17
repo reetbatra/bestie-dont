@@ -4,6 +4,7 @@ import { requireUserId } from "@/lib/supabase/server";
 import { decryptField, encryptOptionalField } from "@/lib/crypto";
 import { streakDayNumber } from "@/lib/streak";
 import { getUserTimeZone } from "@/lib/server/user-timezone";
+import { profileAction } from "@/lib/perf/wrap";
 
 export interface ResistCard {
   recordFact: string | null;
@@ -16,29 +17,31 @@ export interface ResistCard {
  * (habituation kills impact, per the strategy doc).
  */
 export async function getResistCard(): Promise<ResistCard> {
-  const { supabase, userId } = await requireUserId();
+  return profileAction("getResistCard", async () => {
+    const { supabase, userId } = await requireUserId();
 
-  const [{ data: entries }, { data: identities }] = await Promise.all([
-    supabase
-      .from("receipts")
-      .select("fact_encrypted, fact_iv")
-      .eq("user_id", userId)
-      .limit(50),
-    supabase.from("identity_items").select("label").eq("user_id", userId).limit(50),
-  ]);
+    const [{ data: entries }, { data: identities }] = await Promise.all([
+      supabase
+        .from("receipts")
+        .select("fact_encrypted, fact_iv")
+        .eq("user_id", userId)
+        .limit(50),
+      supabase.from("identity_items").select("label").eq("user_id", userId).limit(50),
+    ]);
 
-  let recordFact: string | null = null;
-  if (entries && entries.length > 0) {
-    const pick = entries[Math.floor(Math.random() * entries.length)];
-    recordFact = decryptField(pick.fact_encrypted, pick.fact_iv);
-  }
+    let recordFact: string | null = null;
+    if (entries && entries.length > 0) {
+      const pick = entries[Math.floor(Math.random() * entries.length)];
+      recordFact = decryptField(pick.fact_encrypted, pick.fact_iv);
+    }
 
-  let identityLabel: string | null = null;
-  if (identities && identities.length > 0) {
-    identityLabel = identities[Math.floor(Math.random() * identities.length)].label;
-  }
+    let identityLabel: string | null = null;
+    if (identities && identities.length > 0) {
+      identityLabel = identities[Math.floor(Math.random() * identities.length)].label;
+    }
 
-  return { recordFact, identityLabel };
+    return { recordFact, identityLabel };
+  });
 }
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -54,41 +57,43 @@ const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
  * chosen date regardless of the server's timezone.
  */
 export async function logSlip(note: string, occurredOn?: string) {
-  const { supabase, userId } = await requireUserId();
+  return profileAction("logSlip", async () => {
+    const { supabase, userId } = await requireUserId();
 
-  const { data: streak } = await supabase
-    .from("streaks")
-    .select("id, start_date")
-    .eq("user_id", userId)
-    .eq("is_active", true)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .single();
+    const { data: streak } = await supabase
+      .from("streaks")
+      .select("id, start_date")
+      .eq("user_id", userId)
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
 
-  if (!streak) return { error: "No active streak found." };
+    if (!streak) return { error: "No active streak found." };
 
-  if (occurredOn !== undefined) {
-    if (!ISO_DATE.test(occurredOn)) return { error: "Invalid date." };
-    const start = new Date(`${streak.start_date}T00:00:00Z`);
-    const chosen = new Date(`${occurredOn}T00:00:00Z`);
-    const slipDay = Math.round((chosen.getTime() - start.getTime()) / 86_400_000) + 1;
-    const timeZone = await getUserTimeZone();
-    if (slipDay < 1 || slipDay > streakDayNumber(streak.start_date, timeZone)) {
-      return { error: "That day isn't part of this streak yet." };
+    if (occurredOn !== undefined) {
+      if (!ISO_DATE.test(occurredOn)) return { error: "Invalid date." };
+      const start = new Date(`${streak.start_date}T00:00:00Z`);
+      const chosen = new Date(`${occurredOn}T00:00:00Z`);
+      const slipDay = Math.round((chosen.getTime() - start.getTime()) / 86_400_000) + 1;
+      const timeZone = await getUserTimeZone();
+      if (slipDay < 1 || slipDay > streakDayNumber(streak.start_date, timeZone)) {
+        return { error: "That day isn't part of this streak yet." };
+      }
     }
-  }
 
-  const { ciphertext, iv } = encryptOptionalField(note);
+    const { ciphertext, iv } = encryptOptionalField(note);
 
-  const { error } = await supabase.from("slip_events").insert({
-    streak_id: streak.id,
-    user_id: userId,
-    note_encrypted: ciphertext,
-    note_iv: iv,
-    ...(occurredOn !== undefined && { occurred_at: `${occurredOn}T12:00:00.000Z` }),
+    const { error } = await supabase.from("slip_events").insert({
+      streak_id: streak.id,
+      user_id: userId,
+      note_encrypted: ciphertext,
+      note_iv: iv,
+      ...(occurredOn !== undefined && { occurred_at: `${occurredOn}T12:00:00.000Z` }),
+    });
+    if (error) return { error: error.message };
+    return { success: true };
   });
-  if (error) return { error: error.message };
-  return { success: true };
 }
 
 /**
@@ -98,29 +103,33 @@ export async function logSlip(note: string, occurredOn?: string) {
  * place instead of being stuck the moment it's saved.
  */
 export async function updateSlip(slipId: string, note: string) {
-  const { supabase, userId } = await requireUserId();
-  const { ciphertext, iv } = encryptOptionalField(note);
+  return profileAction("updateSlip", async () => {
+    const { supabase, userId } = await requireUserId();
+    const { ciphertext, iv } = encryptOptionalField(note);
 
-  const { error } = await supabase
-    .from("slip_events")
-    .update({ note_encrypted: ciphertext, note_iv: iv })
-    .eq("id", slipId)
-    .eq("user_id", userId);
-  if (error) return { error: error.message };
-  return { success: true };
+    const { error } = await supabase
+      .from("slip_events")
+      .update({ note_encrypted: ciphertext, note_iv: iv })
+      .eq("id", slipId)
+      .eq("user_id", userId);
+    if (error) return { error: error.message };
+    return { success: true };
+  });
 }
 
 /** Un-logs a slip - removes it from the timeline entirely, e.g. a misfire
  * or a day logged by mistake. The streak's day count is unaffected either
  * way, so there's no arithmetic to undo, just the record. */
 export async function deleteSlip(slipId: string) {
-  const { supabase, userId } = await requireUserId();
+  return profileAction("deleteSlip", async () => {
+    const { supabase, userId } = await requireUserId();
 
-  const { error } = await supabase
-    .from("slip_events")
-    .delete()
-    .eq("id", slipId)
-    .eq("user_id", userId);
-  if (error) return { error: error.message };
-  return { success: true };
+    const { error } = await supabase
+      .from("slip_events")
+      .delete()
+      .eq("id", slipId)
+      .eq("user_id", userId);
+    if (error) return { error: error.message };
+    return { success: true };
+  });
 }

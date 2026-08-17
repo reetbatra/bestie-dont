@@ -2,8 +2,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { requireSession } from "@/lib/supabase/server";
 import { SaveAccessForm } from "@/components/shared/save-access-form";
+import { profilePage } from "@/lib/perf/wrap";
 
-export default async function CheckoutSuccessPage() {
+async function CheckoutSuccessPage() {
   const { email } = await requireSession();
   const hasEmail = Boolean(email);
 
@@ -45,3 +46,5 @@ export default async function CheckoutSuccessPage() {
     </div>
   );
 }
+
+export default profilePage("/checkout/success", CheckoutSuccessPage);

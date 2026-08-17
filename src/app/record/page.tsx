@@ -1,8 +1,9 @@
 import { requireSession } from "@/lib/supabase/server";
 import { listRecordEntries } from "@/lib/actions/record";
 import { RecordView } from "@/components/record/record-view";
+import { profilePage } from "@/lib/perf/wrap";
 
-export default async function RecordPage() {
+async function RecordPage() {
   const { email } = await requireSession();
 
   const { entries, atFreeLimit, hasPurchased, inTrial } = await listRecordEntries();
@@ -17,3 +18,5 @@ export default async function RecordPage() {
     />
   );
 }
+
+export default profilePage("/record", RecordPage);

@@ -6,7 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "profile:build": "NEXT_PUBLIC_PROFILE=1 next build",
+    "profile": "PROFILE=1 NEXT_PUBLIC_PROFILE=1 PERF_LOG=.perf/profile.jsonl next start",
+    "profile:dev": "PROFILE=1 NEXT_PUBLIC_PROFILE=1 PERF_LOG=.perf/profile.jsonl next dev",
+    "profile:drive": "node scripts/perf-drive.mjs",
+    "profile:report": "node scripts/perf-report.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

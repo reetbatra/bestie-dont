@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { requestOrigin } from "@/lib/origin";
+import { profileAction } from "@/lib/perf/wrap";
 
 /**
  * Screen 01, "I'm in" - starts an anonymous session with zero friction.
@@ -9,18 +10,20 @@ import { requestOrigin } from "@/lib/origin";
  * on_auth_user_created trigger (0001_init.sql).
  */
 export async function startAnonymousSession() {
-  const supabase = await createClient();
+  return profileAction("startAnonymousSession", async () => {
+    const supabase = await createClient();
 
-  const {
-    data: { session: existing },
-  } = await supabase.auth.getSession();
-  if (existing) return { userId: existing.user.id };
+    const {
+      data: { session: existing },
+    } = await supabase.auth.getSession();
+    if (existing) return { userId: existing.user.id };
 
-  const { data, error } = await supabase.auth.signInAnonymously();
-  if (error || !data.user) {
-    return { error: error?.message ?? "Could not start a session." };
-  }
-  return { userId: data.user.id };
+    const { data, error } = await supabase.auth.signInAnonymously();
+    if (error || !data.user) {
+      return { error: error?.message ?? "Could not start a session." };
+    }
+    return { userId: data.user.id };
+  });
 }
 
 /**
@@ -30,23 +33,27 @@ export async function startAnonymousSession() {
  * already written stays attached to her account.
  */
 export async function linkEmail(email: string) {
-  const supabase = await createClient();
+  return profileAction("linkEmail", async () => {
+    const supabase = await createClient();
 
-  // Without an explicit emailRedirectTo, the confirmation link falls back
-  // to the Supabase project's Site URL - which shipped as the default
-  // localhost:3000 and stranded her on "Safari can't open the page" after
-  // clicking the email. Land her on Settings, where the saved email state
-  // is visible. The URL must also be in the project's redirect allowlist.
-  const origin = await requestOrigin();
-  const { error } = await supabase.auth.updateUser(
-    { email },
-    { emailRedirectTo: `${origin}/settings` },
-  );
-  if (error) return { error: error.message };
-  return { success: true };
+    // Without an explicit emailRedirectTo, the confirmation link falls back
+    // to the Supabase project's Site URL - which shipped as the default
+    // localhost:3000 and stranded her on "Safari can't open the page" after
+    // clicking the email. Land her on Settings, where the saved email state
+    // is visible. The URL must also be in the project's redirect allowlist.
+    const origin = await requestOrigin();
+    const { error } = await supabase.auth.updateUser(
+      { email },
+      { emailRedirectTo: `${origin}/settings` },
+    );
+    if (error) return { error: error.message };
+    return { success: true };
+  });
 }
 
 export async function signOut() {
-  const supabase = await createClient();
-  await supabase.auth.signOut();
+  return profileAction("signOut", async () => {
+    const supabase = await createClient();
+    await supabase.auth.signOut();
+  });
 }

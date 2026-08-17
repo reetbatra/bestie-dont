@@ -2,8 +2,9 @@ import { notFound } from "next/navigation";
 import { requireSession } from "@/lib/supabase/server";
 import { getRecoveryData } from "@/lib/actions/recovery";
 import { RecoveryView } from "@/components/recovery/recovery-view";
+import { profilePage } from "@/lib/perf/wrap";
 
-export default async function RecoveryPage({
+async function RecoveryPage({
   params,
 }: {
   params: Promise<{ slipId: string }>;
@@ -17,3 +18,5 @@ export default async function RecoveryPage({
 
   return <RecoveryView data={data} />;
 }
+
+export default profilePage("/recovery/[slipId]", RecoveryPage);

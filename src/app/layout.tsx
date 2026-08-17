@@ -3,6 +3,7 @@ import { SerwistProvider } from "@serwist/turbopack/react";
 import { fraunces, dmSans } from "@/lib/fonts";
 import { Toaster } from "@/components/ui/sonner";
 import { InstallProvider } from "@/components/pwa/install-provider";
+import { PerfProbe } from "@/components/perf/perf-probe";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -41,6 +42,8 @@ export default function RootLayout({
           <InstallProvider>
             {children}
             <Toaster />
+            {/* Renders nothing unless NEXT_PUBLIC_PROFILE=1. */}
+            <PerfProbe />
           </InstallProvider>
         </SerwistProvider>
       </body>

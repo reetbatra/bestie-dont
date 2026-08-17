@@ -2,8 +2,9 @@ import { notFound } from "next/navigation";
 import { requireSession } from "@/lib/supabase/server";
 import { getMilestoneData } from "@/lib/actions/milestones";
 import { MilestoneView } from "@/components/milestones/milestone-view";
+import { profilePage } from "@/lib/perf/wrap";
 
-export default async function MilestonePage({
+async function MilestonePage({
   params,
 }: {
   params: Promise<{ day: string }>;
@@ -18,3 +19,5 @@ export default async function MilestonePage({
 
   return <MilestoneView data={data} />;
 }
+
+export default profilePage("/milestones/[day]", MilestonePage);

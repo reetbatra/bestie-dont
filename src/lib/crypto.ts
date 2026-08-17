@@ -1,5 +1,6 @@
 import "server-only";
 import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
+import { countCrypto, PROFILING } from "@/lib/perf/profiler";
 
 /**
  * Field-level encryption for anything that could name or describe a third
@@ -37,10 +38,12 @@ export interface EncryptedField {
 }
 
 export function encryptField(plaintext: string): EncryptedField {
+  const started = PROFILING ? performance.now() : 0;
   const iv = randomBytes(IV_LENGTH);
   const cipher = createCipheriv(ALGORITHM, getKey(), iv);
   const encrypted = Buffer.concat([cipher.update(plaintext, "utf8"), cipher.final()]);
   const authTag = cipher.getAuthTag();
+  if (PROFILING) countCrypto("encrypt", performance.now() - started);
   return {
     ciphertext: Buffer.concat([encrypted, authTag]).toString("base64"),
     iv: iv.toString("base64"),
@@ -48,12 +51,14 @@ export function encryptField(plaintext: string): EncryptedField {
 }
 
 export function decryptField(ciphertext: string, iv: string): string {
+  const started = PROFILING ? performance.now() : 0;
   const combined = Buffer.from(ciphertext, "base64");
   const authTag = combined.subarray(combined.length - AUTH_TAG_LENGTH);
   const encrypted = combined.subarray(0, combined.length - AUTH_TAG_LENGTH);
   const decipher = createDecipheriv(ALGORITHM, getKey(), Buffer.from(iv, "base64"));
   decipher.setAuthTag(authTag);
   const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
+  if (PROFILING) countCrypto("decrypt", performance.now() - started);
   return decrypted.toString("utf8");
 }
 

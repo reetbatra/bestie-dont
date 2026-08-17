@@ -3,10 +3,11 @@ import { createClient as createSupabaseJsClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { Database } from "@/lib/supabase/types";
+import { span } from "@/lib/perf/profiler";
 
 /** Server Component / Server Action client - reads and refreshes the session cookie. */
 export async function createClient() {
-  const cookieStore = await cookies();
+  const cookieStore = await span("cookies()", "compute", () => cookies());
 
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -51,12 +52,14 @@ export function createServiceRoleClient() {
  * this doesn't trade away security, just redundant network calls.
  */
 export async function requireUserId() {
-  const supabase = await createClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  if (!session) throw new Error("No session.");
-  return { supabase, userId: session.user.id, email: session.user.email ?? null };
+  return span("requireUserId", "auth", async () => {
+    const supabase = await createClient();
+    const {
+      data: { session },
+    } = await span("auth.getSession", "auth", () => supabase.auth.getSession());
+    if (!session) throw new Error("No session.");
+    return { supabase, userId: session.user.id, email: session.user.email ?? null };
+  });
 }
 
 /**
@@ -66,19 +69,26 @@ export async function requireUserId() {
  * network call - same redundant-latency problem, different call site.
  */
 export async function requireSession(redirectTo = "/onboarding") {
-  const supabase = await createClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  const { supabase, session } = await span("requireSession", "auth", async () => {
+    const client = await createClient();
+    const {
+      data: { session: current },
+    } = await span("auth.getSession", "auth", () => client.auth.getSession());
+    return { supabase: client, session: current };
+  });
+  // redirect() throws a control-flow signal; keep it outside the span so the
+  // profile records the auth check as completed rather than as an error.
   if (!session) redirect(redirectTo);
   return { supabase, userId: session.user.id, email: session.user.email ?? null };
 }
 
 /** For the one spot (root page) that branches instead of hard-requiring a session. */
 export async function getSessionUserId() {
-  const supabase = await createClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  return session?.user.id ?? null;
+  return span("getSessionUserId", "auth", async () => {
+    const supabase = await createClient();
+    const {
+      data: { session },
+    } = await span("auth.getSession", "auth", () => supabase.auth.getSession());
+    return session?.user.id ?? null;
+  });
 }

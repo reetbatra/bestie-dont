@@ -10,8 +10,9 @@ import {
 import { getUserTimeZone } from "@/lib/server/user-timezone";
 import { getPendingRecovery } from "@/lib/actions/recovery";
 import { HomeShell } from "@/components/home/home-shell";
+import { profilePage } from "@/lib/perf/wrap";
 
-export default async function HomePage() {
+async function HomePage() {
   const { supabase, userId } = await requireSession();
 
   const [{ data: streak }, timeZone] = await Promise.all([
@@ -65,3 +66,5 @@ export default async function HomePage() {
     />
   );
 }
+
+export default profilePage("/home", HomePage);

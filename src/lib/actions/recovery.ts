@@ -3,6 +3,7 @@
 import { requireUserId } from "@/lib/supabase/server";
 import { RECOVERY_CHECKIN_DAYS, daysSince } from "@/lib/streak";
 import { getUserTimeZone } from "@/lib/server/user-timezone";
+import { profileAction } from "@/lib/perf/wrap";
 
 export interface PendingRecovery {
   slipId: string;
@@ -10,25 +11,27 @@ export interface PendingRecovery {
 }
 
 export async function getPendingRecovery(): Promise<PendingRecovery | null> {
-  const { supabase, userId } = await requireUserId();
+  return profileAction("getPendingRecovery", async () => {
+    const { supabase, userId } = await requireUserId();
 
-  const [{ data: slip }, timeZone] = await Promise.all([
-    supabase
-      .from("slip_events")
-      .select("id, occurred_at")
-      .eq("user_id", userId)
-      .is("recovery_seen_at", null)
-      .order("occurred_at", { ascending: false })
-      .limit(1)
-      .single(),
-    getUserTimeZone(),
-  ]);
-  if (!slip) return null;
+    const [{ data: slip }, timeZone] = await Promise.all([
+      supabase
+        .from("slip_events")
+        .select("id, occurred_at")
+        .eq("user_id", userId)
+        .is("recovery_seen_at", null)
+        .order("occurred_at", { ascending: false })
+        .limit(1)
+        .single(),
+      getUserTimeZone(),
+    ]);
+    if (!slip) return null;
 
-  const elapsed = daysSince(slip.occurred_at, timeZone);
-  if (elapsed < RECOVERY_CHECKIN_DAYS) return null;
+    const elapsed = daysSince(slip.occurred_at, timeZone);
+    if (elapsed < RECOVERY_CHECKIN_DAYS) return null;
 
-  return { slipId: slip.id, daysSince: elapsed };
+    return { slipId: slip.id, daysSince: elapsed };
+  });
 }
 
 export interface RecoveryData {
@@ -41,27 +44,29 @@ export interface RecoveryData {
  * shape as getMilestoneData in milestones.ts.
  */
 export async function getRecoveryData(slipId: string): Promise<RecoveryData | null> {
-  const { supabase, userId } = await requireUserId();
+  return profileAction("getRecoveryData", async () => {
+    const { supabase, userId } = await requireUserId();
 
-  const [{ data: slip }, timeZone] = await Promise.all([
-    supabase
+    const [{ data: slip }, timeZone] = await Promise.all([
+      supabase
+        .from("slip_events")
+        .select("id, occurred_at")
+        .eq("id", slipId)
+        .eq("user_id", userId)
+        .single(),
+      getUserTimeZone(),
+    ]);
+    if (!slip) return null;
+
+    const elapsed = daysSince(slip.occurred_at, timeZone);
+
+    await supabase
       .from("slip_events")
-      .select("id, occurred_at")
-      .eq("id", slipId)
+      .update({ recovery_seen_at: new Date().toISOString() })
       .eq("user_id", userId)
-      .single(),
-    getUserTimeZone(),
-  ]);
-  if (!slip) return null;
+      .is("recovery_seen_at", null)
+      .lte("occurred_at", slip.occurred_at);
 
-  const elapsed = daysSince(slip.occurred_at, timeZone);
-
-  await supabase
-    .from("slip_events")
-    .update({ recovery_seen_at: new Date().toISOString() })
-    .eq("user_id", userId)
-    .is("recovery_seen_at", null)
-    .lte("occurred_at", slip.occurred_at);
-
-  return { daysSince: elapsed };
+    return { daysSince: elapsed };
+  });
 }

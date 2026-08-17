@@ -11,6 +11,7 @@ function resolveTimeZone(request: NextRequest): string {
 }
 
 export async function proxy(request: NextRequest) {
+  const startedAt = performance.now();
   const forwardedHeaders = new Headers(request.headers);
   forwardedHeaders.set("x-user-timezone", resolveTimeZone(request));
 
@@ -38,7 +39,27 @@ export async function proxy(request: NextRequest) {
   );
 
   // touches the session so expiring tokens get refreshed before they hit a Server Component
+  const authStartedAt = performance.now();
   await supabase.auth.getUser();
+  const authMs = performance.now() - authStartedAt;
+
+  // The middleware runs before - and outside - the request profile that
+  // src/lib/perf covers, on every single request including static assets and
+  // pages that need no session at all. Timing it here and shipping the
+  // numbers as Server-Timing is the only way to see it: the profiler's
+  // AsyncLocalStorage context does not reach across the middleware boundary.
+  if (process.env.PROFILE === "1") {
+    const totalMs = performance.now() - startedAt;
+    response.headers.set(
+      "Server-Timing",
+      `proxy;dur=${totalMs.toFixed(1)};desc="middleware", ` +
+        `proxyAuth;dur=${authMs.toFixed(1)};desc="auth.getUser"`,
+    );
+    console.log(
+      `⏱ PROXY   ${request.nextUrl.pathname}  ${totalMs.toFixed(1)}ms ` +
+        `(auth.getUser ${authMs.toFixed(1)}ms)`,
+    );
+  }
 
   return response;
 }
