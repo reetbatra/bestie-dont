@@ -26,15 +26,29 @@ import type { ClientMetric, ClientPerfRecord } from "@/lib/perf/types";
 const ENABLED = process.env.NEXT_PUBLIC_PROFILE === "1";
 const ENDPOINT = "/api/perf";
 
+interface PendingRsc {
+  path: string;
+  record: ClientPerfRecord;
+  wasNavigation: boolean;
+}
+
 export function PerfProbe() {
   const pathname = usePathname();
   const pathnameRef = useRef(pathname);
-  const navigatedAtRef = useRef(0);
   const bootstrapped = useRef(false);
+  /**
+   * RSC fetches are held here briefly before being reported. The fetch
+   * completes before the router commits the new URL, so at observation time
+   * there is no way to know whether anyone was waiting on it. Waiting for
+   * the pathname to change - or not - is what settles it.
+   */
+  const pendingRef = useRef<PendingRsc[]>([]);
 
   useEffect(() => {
     pathnameRef.current = pathname;
-    navigatedAtRef.current = performance.now();
+    for (const pending of pendingRef.current) {
+      if (pending.path === pathname) pending.wasNavigation = true;
+    }
   }, [pathname]);
 
   useEffect(() => {
@@ -117,27 +131,37 @@ export function PerfProbe() {
 
     /* ---- soft navigation: every App Router RSC fetch, reported live ---- */
 
+    // Next.js prefetches links that come into view, so most RSC requests are
+    // speculative and nobody is waiting on them. Mixing those into the tab
+    // switch numbers would flatter them: a prefetch that finished while the
+    // user was still reading costs nobody anything.
+    const settleRsc = (pending: PendingRsc) => {
+      pendingRef.current = pendingRef.current.filter((item) => item !== pending);
+      pending.record.metrics[0].detail = pending.wasNavigation ? "navigation" : "prefetch";
+      send(pending.record);
+    };
+
     observe("resource", (list) => {
       for (const entry of list.getEntries() as PerformanceResourceTiming[]) {
         if (!entry.name.includes("_rsc=")) continue;
         const url = new URL(entry.name);
-        // Next.js prefetches links that come into view, so most RSC requests
-        // are speculative and nobody is waiting on them. Only the one whose
-        // path matches a navigation that just happened is a tab switch the
-        // user actually sat through - the rest would flatter the numbers.
-        const isNavigation =
-          url.pathname === pathnameRef.current &&
-          Math.abs(entry.startTime - navigatedAtRef.current) < 3000;
 
         const record = base("soft");
         record.label = url.pathname;
         record.metrics = [
-          { name: "rsc", value: entry.duration, detail: isNavigation ? "navigation" : "prefetch" },
+          { name: "rsc", value: entry.duration },
           { name: "rsc.ttfb", value: entry.responseStart - entry.startTime },
           { name: "rsc.download", value: entry.responseEnd - entry.responseStart },
           { name: "rsc.bytes", value: entry.transferSize },
         ];
-        send(record);
+
+        const pending: PendingRsc = {
+          path: url.pathname,
+          record,
+          wasNavigation: url.pathname === pathnameRef.current,
+        };
+        pendingRef.current.push(pending);
+        window.setTimeout(() => settleRsc(pending), 1500);
       }
     });
 

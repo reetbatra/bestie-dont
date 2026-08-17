@@ -8,10 +8,17 @@
  * Usage:
  *   node scripts/perf-drive.mjs [--base http://localhost:3000] [--runs 8]
  *                               [--day 45] [--keep] [--json out.json]
+ *                               [--cookie "sb-...=..."]
  *
  * Every run creates its own seeded anonymous account and deletes it at the
  * end (unless --keep), so numbers are comparable across runs instead of
  * drifting with whatever data happened to be in the account.
+ *
+ * `--cookie` skips seeding and drives an existing session instead. That is
+ * the only way to measure a deployment that does not have PROFILE=1 (a real
+ * production build, where the seeding endpoint deliberately 404s): sign in
+ * through the actual UI, hand the session cookie over, and the timings are
+ * still comparable because the request path is identical.
  */
 
 import { writeFileSync } from "node:fs";
@@ -38,8 +45,10 @@ const ROUTES = [
 async function main() {
   console.log(`▶ profiling ${BASE} · ${RUNS} runs per route · seeded at day ${DAY}\n`);
 
-  const { cookie, userId } = await seedSession();
-  console.log(`  seeded user ${userId}\n`);
+  const { cookie, userId } = args.cookie
+    ? { cookie: args.cookie, userId: null }
+    : await seedSession();
+  console.log(userId ? `  seeded user ${userId}\n` : `  driving a supplied session\n`);
 
   const results = [];
   try {
@@ -64,7 +73,7 @@ async function main() {
       printRow(row);
     }
   } finally {
-    if (!args.keep) await cleanup(userId);
+    if (userId && !args.keep) await cleanup(userId);
   }
 
   console.log(`\n${"─".repeat(96)}`);
