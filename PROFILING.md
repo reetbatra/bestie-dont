@@ -67,43 +67,93 @@ round trip; two queries at depth 2 cost two. `network` is wall clock with at
 least one request in flight; `cpu` is everything else - render, decrypt,
 framework.
 
-## What it found (August 2026)
+## What it found, and what changed (August 2026)
 
-Measured against production, seeded day-45 account, client in India, functions
-in `bom1`, Supabase in the same neighbourhood:
+The app was never slow because of the work it does. It was slow because of how
+many times it waited. Production, warm, seeded day-45 account, client in India,
+functions in `bom1`:
 
-| page | server p50 (local) | DB calls | depth | production total |
+| page | before | after | |
+| --- | --- | --- | --- |
+| `/why` (static) | 77ms | 59ms | -23% |
+| `/` (redirect) | 112ms | 89ms | -21% |
+| `/settings` | 112ms | 99ms | -12% |
+| `/vault` | 113ms | 96ms | -15% |
+| `/record` | 123ms | 101ms | -18% |
+| `/home` | 136ms | 102ms | -25% |
+| `/calendar` | 143ms | 101ms | -29% |
+| `/milestones/30` | 147ms | 100ms | -32% |
+| `/journal` | 156ms | 103ms | -34% |
+
+Every data page now lands within 7ms of every other one, because every page is
+now the same shape: one round trip, then render. About 59ms of what remains is
+network to the edge from this client's location, which leaves roughly 40ms of
+actual server time per page.
+
+Server-side, local (inflated by ~30ms per round trip, since this machine is
+further from Supabase than a Vercel function is - read the shape, not the size):
+
+| page | before | after | DB calls | depth |
 | --- | --- | --- | --- | --- |
-| `/` | 1ms | 0 | 0 | 112ms |
-| `/settings` | 49ms | 1 | 1 | 112ms |
-| `/vault` | 50ms | 1 | 1 | 113ms |
-| `/record` | 55ms | 3 | 1 | 123ms |
-| `/calendar` | 100ms | 2 | 2 | 143ms |
-| `/home` | 100ms | 5 | 2 | 136ms |
-| `/journal` | 103ms | 6 | 2 | 156ms |
-| `/milestones/[day]` | 139ms | 4 | 2 | 147ms |
+| `/settings` | 49ms | 48ms | 1 | 1 |
+| `/vault` | 50ms | 52ms | 1 | 1 |
+| `/record` | 55ms | 52ms | 3 | 1 |
+| `/calendar` | 100ms | 49ms | 2 | 1 |
+| `/home` | 100ms | 53ms | 5 | 1 |
+| `/journal` | 103ms | 53ms | 4 | 1 |
+| `/milestones/[day]` | 139ms | 50ms | 4 | 1 |
 
-Local server times are inflated: this machine is ~45ms from Supabase, a
-`bom1` function is ~15ms. Use local numbers for *shape* (how many round trips,
-which function owns them) and production numbers for *size*.
+### What was changed
 
-Ranked costs:
+1. **The proxy stopped re-authenticating every request.** `proxy.ts` called
+   `supabase.auth.getUser()`, a round trip to Supabase Auth on every request
+   the matcher covers - static pages included. `getSession()` refreshes the
+   same tokens (both act inside auth-js's 90s `EXPIRY_MARGIN_MS`) but only
+   touches the network when there is something to refresh. Measured: 0.2ms on
+   an ordinary request, 115ms on one carrying a deliberately expired token,
+   which then wrote fresh cookies and rendered normally.
+2. **The streak-row dependency is gone.** `/home`, `/journal`, `/calendar` and
+   `/milestones/[day]` each read one row and then waited for it. `journal_prompts`
+   is 56 fixed rows and a user's journal entries are at most 56 day numbers, so
+   both load whole in the first wave and the day arithmetic picks from them in
+   memory. `/calendar` fetches slips by `user_id` and narrows to the active
+   streak in memory instead of waiting to filter by `streak_id`.
+3. **`getTodayJournal` + `listJournalHistory` became `getJournalScreen`.** They
+   were reading `journal_prompts` and `journal_entries` twice between them: six
+   queries for one screen, now four in a single wave.
+4. **Exact counts replaced with bounded reads.** `count: "exact", head: true`
+   measured ~86ms against ~48ms for reading the same rows - an exact count
+   scans. Both sets are bounded by what one person can write.
+5. **The milestone upsert stopped repeating.** Re-opening a milestone card used
+   to write a row that could not change anything; the first wave now reads
+   whether it is already recorded.
 
-1. **`proxy.ts` calls `supabase.auth.getUser()` on every request** - one
-   Supabase Auth round trip, ~28ms in production, paid by static pages and by
-   pages that need no session at all. It is the largest fixed cost in the app.
-2. **Second round trips.** `/home`, `/journal`, `/calendar`, and
-   `/milestones/[day]` all read the streak row first and then fetch everything
-   else, so they pay two round trips instead of one.
-3. **`count: "exact", head: true`** on `/milestones/[day]` costs ~86ms locally
-   against ~48ms for an ordinary select - an exact count scans.
-4. **`/journal` queries `journal_prompts` and `journal_entries` twice each**,
-   once in `getTodayJournal` and once in `listJournalHistory`.
-5. **Field decryption is free**: 72 decrypts on `/record` total ~1ms.
+### What was left alone
 
-On the browser side: CLS 0, INP 0, no long tasks, FCP ~450ms in production
-(fonts and the client bundle, not data). Tab switches show the skeleton in
-~15ms, the RSC payload lands at 120-230ms, and the content is revealed at a
-near-constant ~315ms - consistent with React's 300ms Suspense fallback
-throttle. Server work faster than ~285ms is therefore invisible on an in-app
-tab switch; it only shows up on a cold load.
+- **Consolidating each page into one Postgres function.** It would take the
+  remaining round trip to zero, but it needs a migration applied to the hosted
+  database, which is a deploy step this codebase does not have automated.
+- **Indexes.** Same reason. Worth checking `receipts(user_id)` and
+  `journal_entries(user_id)` are indexed, since the exact-count scans hinted
+  they may not be.
+- **The ~300ms floor on in-app tab switches.** The skeleton appears in ~15ms
+  and the RSC payload now lands at 71-90ms (it was 118-227ms), but content is
+  still revealed at a near-constant ~315ms: React throttles a Suspense reveal
+  for 300ms once a fallback has been shown, so the flash is avoided. Deleting
+  `loading.tsx` would collapse a tab switch to ~100ms, but it trades a
+  guaranteed instant acknowledgement for a page that looks frozen whenever the
+  network is slow - a bad trade for the phone-on-4G audience this is for. The
+  win from the server work shows up on cold loads and first paint instead.
+- **Fonts and bundle size.** FCP is ~450ms in production and it is fonts and
+  the client bundle, not data. CLS is 0, INP is 0, and no long task blocks the
+  main thread, so there was nothing broken to fix here - only a different piece
+  of work.
+
+### One consequence worth knowing
+
+With `getSession()` in the proxy, a user whose account is deleted server-side
+keeps a syntactically valid JWT until it expires (up to an hour). Every query
+they make returns nothing, because RLS finds no rows - they land in onboarding.
+Self-service account deletion signs the session out immediately, so this only
+applies to a deletion made behind the user's back, and it costs them access to
+nothing but their own already-deleted data.
