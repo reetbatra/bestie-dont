@@ -1,17 +1,17 @@
 import { redirect } from "next/navigation";
 import { requireSession } from "@/lib/supabase/server";
-import { getTodayJournal, listJournalHistory } from "@/lib/actions/journal";
+import { getJournalScreen } from "@/lib/actions/journal";
 import { JournalView } from "@/components/journal/journal-view";
 import { profilePage } from "@/lib/perf/wrap";
 
 async function JournalPage() {
   await requireSession();
 
-  const [today, history] = await Promise.all([getTodayJournal(), listJournalHistory()]);
+  const screen = await getJournalScreen();
 
-  if (!today) redirect("/onboarding/date");
+  if (!screen) redirect("/onboarding/date");
 
-  return <JournalView today={today} history={history} />;
+  return <JournalView today={screen.today} history={screen.history} />;
 }
 
 export default profilePage("/journal", JournalPage);

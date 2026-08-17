@@ -48,7 +48,12 @@ function slipInsight(occurredAts: string[]): string | null {
 async function CalendarPage() {
   const { supabase, userId } = await requireSession();
 
-  const [{ data: streak }, timeZone] = await Promise.all([
+  // The slips query used to wait for the streak row so it could filter by
+  // streak_id, which cost a second round trip for a filter. slip_events also
+  // carries user_id, so the rows can be fetched in the same wave and narrowed
+  // to this streak in memory once the streak arrives - same result, one trip.
+  // A user has at most a handful of slips, so nothing is being over-fetched.
+  const [{ data: streak }, timeZone, { data: allSlips }] = await Promise.all([
     supabase
       .from("streaks")
       .select("id, start_date")
@@ -58,24 +63,24 @@ async function CalendarPage() {
       .limit(1)
       .single(),
     getUserTimeZone(),
+    supabase
+      .from("slip_events")
+      .select("id, streak_id, occurred_at, note_encrypted, note_iv")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: true }),
   ]);
 
   if (!streak) redirect("/onboarding/date");
 
   const day = streakDayNumber(streak.start_date, timeZone);
-
-  const { data: slips } = await supabase
-    .from("slip_events")
-    .select("id, occurred_at, note_encrypted, note_iv")
-    .eq("streak_id", streak.id)
-    .order("created_at", { ascending: true });
+  const slips = (allSlips ?? []).filter((s) => s.streak_id === streak.id);
 
   const startEpoch = calendarDateEpoch(streak.start_date);
   // Last write wins if a day somehow ends up with more than one slip (no
   // unique constraint enforces one-per-day) - rows are ascending by
   // created_at, so the most recent slip for a day is what surfaces.
   const slipDetails = new Map<number, SlipDetail>();
-  for (const s of slips ?? []) {
+  for (const s of slips) {
     const occurredEpoch = localDayEpoch(new Date(s.occurred_at), timeZone);
     const dayNumber = Math.round((occurredEpoch - startEpoch) / 86_400_000) + 1;
     slipDetails.set(dayNumber, {
@@ -91,7 +96,7 @@ async function CalendarPage() {
       daysLeft={daysRemaining(day)}
       startDate={streak.start_date}
       slipDetails={[...slipDetails.entries()]}
-      slipInsight={slipInsight((slips ?? []).map((s) => s.occurred_at))}
+      slipInsight={slipInsight(slips.map((s) => s.occurred_at))}
       milestoneDays={MILESTONE_DAYS}
       graduated={day > PROGRAM_LENGTH_DAYS}
     />

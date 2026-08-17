@@ -25,60 +25,92 @@ export interface TodayJournal {
   inTrial: boolean;
 }
 
-export async function getTodayJournal(): Promise<TodayJournal | null> {
-  return profileAction("getTodayJournal", async () => {
+export interface JournalHistoryItem {
+  dayIndex: number;
+  promptText: string;
+  response: string | null;
+  skipped: boolean;
+}
+
+export interface JournalScreen {
+  today: TodayJournal;
+  history: JournalHistoryItem[];
+}
+
+/**
+ * Everything the journal screen needs, in one round trip.
+ *
+ * This used to be two actions - today's prompt and the history - and each of
+ * them was two round trips deep: read the streak, then read the prompt for
+ * that day; read the entries, then read the prompts for those days. Six
+ * queries, two of the four tables read twice, and the whole screen waiting on
+ * the deepest chain.
+ *
+ * None of those queries actually depend on each other. The streak start date
+ * is only needed to pick *which* prompt to show, and the prompt table is 56
+ * fixed rows - small enough to fetch whole and index in memory, which is what
+ * removes the dependency. So: four independent queries, fired together, and
+ * the day arithmetic happens after they land.
+ */
+export async function getJournalScreen(): Promise<JournalScreen | null> {
+  return profileAction("getJournalScreen", async () => {
     const { supabase, userId } = await requireUserId();
 
-    const { data: streak } = await supabase
-      .from("streaks")
-      .select("start_date")
-      .eq("user_id", userId)
-      .eq("is_active", true)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .single();
+    const [{ data: streak }, { data: profile }, { data: prompts }, { data: entries }, timeZone] =
+      await Promise.all([
+        supabase
+          .from("streaks")
+          .select("start_date")
+          .eq("user_id", userId)
+          .eq("is_active", true)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .single(),
+        supabase.from("profiles").select("has_purchased").eq("id", userId).single(),
+        supabase.from("journal_prompts").select("id, arc, day_index, prompt_text"),
+        supabase
+          .from("journal_entries")
+          .select("day_index, response_encrypted, response_iv, skipped")
+          .eq("user_id", userId)
+          .order("day_index", { ascending: false }),
+        getUserTimeZone(),
+      ]);
 
     if (!streak) return null;
 
-    const timeZone = await getUserTimeZone();
     const dayIndex = Math.min(streakDayNumber(streak.start_date, timeZone), 56);
-
-    // prompt, profile, and this day's entry are all independent of each other
-    // once dayIndex is known - fire them together instead of one round-trip
-    // at a time (this was a big chunk of the "laggy" navigation feel).
-    const [{ data: prompt }, { data: profile }, { data: entry }] = await Promise.all([
-      supabase
-        .from("journal_prompts")
-        .select("id, arc, prompt_text")
-        .eq("day_index", dayIndex)
-        .single(),
-      supabase.from("profiles").select("has_purchased").eq("id", userId).single(),
-      supabase
-        .from("journal_entries")
-        .select("response_encrypted, response_iv, skipped")
-        .eq("user_id", userId)
-        .eq("day_index", dayIndex)
-        .maybeSingle(),
-    ]);
-
+    const promptByDay = new Map((prompts ?? []).map((p) => [p.day_index, p]));
+    const prompt = promptByDay.get(dayIndex);
     if (!prompt) return null;
+
+    const entry = (entries ?? []).find((e) => e.day_index === dayIndex);
 
     const hasPurchased = profile?.has_purchased ?? false;
     const hasFullAccess = hasPurchased || isInTrial(dayIndex);
     const locked = !hasFullAccess && dayIndex > JOURNAL_FREE_DAYS;
 
     return {
-      dayIndex,
-      weekNumber: Math.ceil(dayIndex / 7),
-      arcLabel: ARC_LABEL[prompt.arc] ?? prompt.arc,
-      promptId: prompt.id,
-      promptText: locked ? "" : prompt.prompt_text,
-      existingResponse:
-        !locked && entry ? decryptOptionalField(entry.response_encrypted, entry.response_iv) : null,
-      skipped: entry?.skipped ?? false,
-      locked,
-      hasPurchased,
-      inTrial: isInTrial(dayIndex) && !hasPurchased,
+      today: {
+        dayIndex,
+        weekNumber: Math.ceil(dayIndex / 7),
+        arcLabel: ARC_LABEL[prompt.arc] ?? prompt.arc,
+        promptId: prompt.id,
+        promptText: locked ? "" : prompt.prompt_text,
+        existingResponse:
+          !locked && entry
+            ? decryptOptionalField(entry.response_encrypted, entry.response_iv)
+            : null,
+        skipped: entry?.skipped ?? false,
+        locked,
+        hasPurchased,
+        inTrial: isInTrial(dayIndex) && !hasPurchased,
+      },
+      history: (entries ?? []).map((e) => ({
+        dayIndex: e.day_index,
+        promptText: promptByDay.get(e.day_index)?.prompt_text ?? "",
+        response: e.skipped ? null : decryptOptionalField(e.response_encrypted, e.response_iv),
+        skipped: e.skipped,
+      })),
     };
   });
 }
@@ -149,41 +181,5 @@ export async function skipJournalEntry(dayIndex: number, promptId: string) {
     );
     if (error) return { error: error.message };
     return { success: true };
-  });
-}
-
-export interface JournalHistoryItem {
-  dayIndex: number;
-  promptText: string;
-  response: string | null;
-  skipped: boolean;
-}
-
-export async function listJournalHistory(): Promise<JournalHistoryItem[]> {
-  return profileAction("listJournalHistory", async () => {
-    const { supabase, userId } = await requireUserId();
-
-    const { data: entries } = await supabase
-      .from("journal_entries")
-      .select("day_index, response_encrypted, response_iv, skipped")
-      .eq("user_id", userId)
-      .order("day_index", { ascending: false });
-
-    if (!entries || entries.length === 0) return [];
-
-    const dayIndexes = entries.map((e) => e.day_index);
-    const { data: prompts } = await supabase
-      .from("journal_prompts")
-      .select("day_index, prompt_text")
-      .in("day_index", dayIndexes);
-
-    const promptMap = new Map((prompts ?? []).map((p) => [p.day_index, p.prompt_text]));
-
-    return entries.map((e) => ({
-      dayIndex: e.day_index,
-      promptText: promptMap.get(e.day_index) ?? "",
-      response: e.skipped ? null : decryptOptionalField(e.response_encrypted, e.response_iv),
-      skipped: e.skipped,
-    }));
   });
 }

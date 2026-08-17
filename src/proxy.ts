@@ -38,9 +38,22 @@ export async function proxy(request: NextRequest) {
     },
   );
 
-  // touches the session so expiring tokens get refreshed before they hit a Server Component
+  // Touches the session so expiring tokens get refreshed before they hit a
+  // Server Component. getSession(), not getUser(): both refresh a token that
+  // is within 90s of expiry (EXPIRY_MARGIN_MS in auth-js), but getUser()
+  // *always* makes a network round trip to Supabase Auth to re-verify, while
+  // getSession() only goes to the network when there is actually something to
+  // refresh. Profiling put that round trip at ~28ms on every single request in
+  // production - static pages, RSC fetches behind tab switches, and pages that
+  // need no session at all. Refreshes still happen, they just happen on the
+  // ~1-in-many request where the token is genuinely near expiry.
+  //
+  // This is the same trade already made deliberately in lib/supabase/server.ts:
+  // RLS is the security boundary (every table enforces user_id = auth.uid()),
+  // so a forged cookie buys nothing, and re-verifying the JWT on every request
+  // was paying a network call for a guarantee the database already gives.
   const authStartedAt = performance.now();
-  await supabase.auth.getUser();
+  await supabase.auth.getSession();
   const authMs = performance.now() - authStartedAt;
 
   // The middleware runs before - and outside - the request profile that
@@ -53,11 +66,11 @@ export async function proxy(request: NextRequest) {
     response.headers.set(
       "Server-Timing",
       `proxy;dur=${totalMs.toFixed(1)};desc="middleware", ` +
-        `proxyAuth;dur=${authMs.toFixed(1)};desc="auth.getUser"`,
+        `proxyAuth;dur=${authMs.toFixed(1)};desc="auth.getSession"`,
     );
     console.log(
       `⏱ PROXY   ${request.nextUrl.pathname}  ${totalMs.toFixed(1)}ms ` +
-        `(auth.getUser ${authMs.toFixed(1)}ms)`,
+        `(auth.getSession ${authMs.toFixed(1)}ms)`,
     );
   }
 

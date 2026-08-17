@@ -89,12 +89,16 @@ export async function createRecordEntry(input: {
   return profileAction("createRecordEntry", async () => {
     const { supabase, userId } = await requireUserId();
 
-    const [{ count }, access] = await Promise.all([
-      supabase.from("receipts").select("id", { count: "exact", head: true }).eq("user_id", userId),
+    // Same reason as milestones.ts: an exact count scans, and reading her own
+    // (bounded) list of ids back is measurably cheaper. RLS restricts the rows
+    // to hers either way, so the free-tier gate is exactly as enforced.
+    const [{ data: existingIds }, access] = await Promise.all([
+      supabase.from("receipts").select("id").eq("user_id", userId),
       getAccessState(supabase, userId),
     ]);
+    const count = existingIds?.length ?? 0;
 
-    if (!access.hasFullAccess && (count ?? 0) >= FREE_TIER_LIMIT) {
+    if (!access.hasFullAccess && count >= FREE_TIER_LIMIT) {
       return { error: "paywall" as const };
     }
 
