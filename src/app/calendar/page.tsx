@@ -1,13 +1,13 @@
 import { redirect } from "next/navigation";
 import { requireSession } from "@/lib/supabase/server";
-import { streakDayNumber, daysRemaining, MILESTONE_DAYS, PROGRAM_LENGTH_DAYS } from "@/lib/streak";
+import { streakDayNumber, daysRemaining, milestoneDaysFor, programLengthDays } from "@/lib/streak";
 import { calendarDateEpoch, localDayEpoch } from "@/lib/timezone";
 import { getUserTimeZone } from "@/lib/server/user-timezone";
 import { decryptOptionalField } from "@/lib/crypto";
 import { CalendarGrid, type SlipDetail } from "@/components/calendar/calendar-grid";
 import { profilePage } from "@/lib/perf/wrap";
 
-export const metadata = { title: "The 60 days" };
+export const metadata = { title: "Calendar" };
 
 const WEEKDAYS = [
   "Sunday",
@@ -58,7 +58,7 @@ async function CalendarPage() {
   const [{ data: streak }, timeZone, { data: allSlips }] = await Promise.all([
     supabase
       .from("streaks")
-      .select("id, start_date")
+      .select("id, start_date, is_extended")
       .eq("user_id", userId)
       .eq("is_active", true)
       .order("created_at", { ascending: false })
@@ -75,6 +75,8 @@ async function CalendarPage() {
   if (!streak) redirect("/onboarding/date");
 
   const day = streakDayNumber(streak.start_date, timeZone);
+  // 90 once she's opted into the detox extension at day 60, otherwise 60.
+  const totalDays = programLengthDays(streak.is_extended);
   const slips = (allSlips ?? []).filter((s) => s.streak_id === streak.id);
 
   const startEpoch = calendarDateEpoch(streak.start_date);
@@ -93,14 +95,15 @@ async function CalendarPage() {
 
   return (
     <CalendarGrid
-      currentDay={Math.min(day, PROGRAM_LENGTH_DAYS)}
-      totalDays={PROGRAM_LENGTH_DAYS}
-      daysLeft={daysRemaining(day)}
+      currentDay={Math.min(day, totalDays)}
+      totalDays={totalDays}
+      daysLeft={daysRemaining(day, streak.is_extended)}
       startDate={streak.start_date}
       slipDetails={[...slipDetails.entries()]}
       slipInsight={slipInsight(slips.map((s) => s.occurred_at))}
-      milestoneDays={MILESTONE_DAYS}
-      graduated={day > PROGRAM_LENGTH_DAYS}
+      milestoneDays={milestoneDaysFor(streak.is_extended)}
+      graduated={day > totalDays}
+      isExtended={streak.is_extended}
     />
   );
 }

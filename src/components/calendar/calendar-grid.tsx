@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { DETOX_RULES, PROGRAM_LENGTH_DAYS } from "@/lib/streak";
 import { LogSlipDialog } from "@/components/panic/log-slip-dialog";
 
 /** The calendar date a streak day falls on, in the viewer's timezone. */
@@ -29,6 +30,12 @@ export interface SlipDetail {
   note: string | null;
 }
 
+/** Base days glow apricot; detox days (61-90) are sage, so the extension reads as its own chapter. */
+function dayFill(filled: boolean, isDetox: boolean): string {
+  if (isDetox) return filled ? "bg-sage/60 text-ink" : "bg-sage/10 text-sage";
+  return filled ? "bg-sun text-primary-foreground" : "bg-muted text-muted-foreground";
+}
+
 export function CalendarGrid({
   currentDay,
   totalDays,
@@ -38,6 +45,7 @@ export function CalendarGrid({
   slipInsight,
   milestoneDays,
   graduated,
+  isExtended,
 }: {
   currentDay: number;
   totalDays: number;
@@ -47,8 +55,18 @@ export function CalendarGrid({
   slipInsight: string | null;
   milestoneDays: readonly number[];
   graduated: boolean;
+  /** Opted into the 30-day detox at day 60: days 61-90 render as their own section. */
+  isExtended: boolean;
 }) {
-  const days = Array.from({ length: totalDays }, (_, i) => i + 1);
+  // The base program always fills the first grid; the detox extension (if
+  // she opted in) gets a second grid of its own, so the extra 30 days read
+  // as a distinct chapter rather than the 60 quietly turning into 90.
+  const baseDays = Array.from({ length: Math.min(totalDays, PROGRAM_LENGTH_DAYS) }, (_, i) => i + 1);
+  const detoxDays = Array.from(
+    { length: Math.max(0, totalDays - PROGRAM_LENGTH_DAYS) },
+    (_, i) => PROGRAM_LENGTH_DAYS + i + 1,
+  );
+  const totalWord = totalDays === 90 ? "ninety" : "sixty";
   const slipMap = new Map(slipDetails);
   const slipped = new Set(slipMap.keys());
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
@@ -59,6 +77,45 @@ export function CalendarGrid({
   const selSlip = sel !== null ? slipMap.get(sel) : undefined;
   const currentDaySlip = slipMap.get(currentDay);
 
+  function renderDay(d: number) {
+    const isPast = d < currentDay;
+    const isToday = d === currentDay && !graduated;
+    const isSlipped = slipped.has(d);
+    const isMilestone = milestoneDays.includes(d as (typeof milestoneDays)[number]);
+    const filled = isPast || isToday || graduated;
+    const isSelected = d === selectedDay;
+    const isDetox = d > PROGRAM_LENGTH_DAYS;
+
+    return (
+      <button
+        key={d}
+        type="button"
+        onClick={() => setSelectedDay(isSelected ? null : d)}
+        aria-label={
+          isSlipped
+            ? `Day ${d}, logged a slip, streak continued`
+            : isMilestone
+              ? `Day ${d}, milestone`
+              : `Day ${d}`
+        }
+        aria-pressed={isSelected}
+        className={cn(
+          "relative flex aspect-square cursor-pointer items-center justify-center rounded-lg text-[11px] font-semibold tabular-nums transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          dayFill(filled, isDetox),
+          isToday && "ring-2 ring-apricot ring-offset-2 ring-offset-background",
+          isSlipped && "bg-butter text-ink",
+          isMilestone && !filled && (isDetox ? "border border-dashed border-sage/60" : "border border-dashed border-apricot/50"),
+          isSelected && !isToday && "ring-2 ring-ring ring-offset-2 ring-offset-background",
+        )}
+      >
+        {d}
+        {isSlipped && (
+          <span className="absolute -right-0.5 -top-0.5 text-[8px] text-ink">*</span>
+        )}
+      </button>
+    );
+  }
+
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col px-6 pb-16 pt-[max(1.75rem,env(safe-area-inset-top))]">
       <Link
@@ -68,52 +125,39 @@ export function CalendarGrid({
         <ChevronLeft className="h-4 w-4" /> Home
       </Link>
 
-      <h1 className="font-display text-2xl font-extrabold text-balance">The 60 days.</h1>
+      <h1 className="font-display text-2xl font-extrabold text-balance">The {totalDays} days.</h1>
       <p className="mt-2 text-sm text-muted-foreground">
         {graduated
-          ? "You made it through all sixty. This page is a record of that, not a countdown anymore."
-          : `${daysLeft} ${daysLeft === 1 ? "day" : "days"} left. Not a folk rule, sixty days is where the research on no-contact recovery actually lands.`}
+          ? `You made it through all ${totalWord}. This page is a record of that, not a countdown anymore.`
+          : `${daysLeft} ${daysLeft === 1 ? "day" : "days"} left. ${
+              isExtended
+                ? "Sixty for the program, thirty more because you chose to."
+                : "Not a folk rule, sixty days is where the research on no-contact recovery actually lands."
+            }`}
       </p>
 
-      <div className="mt-6 grid grid-cols-10 gap-1.5">
-        {days.map((d) => {
-          const isPast = d < currentDay;
-          const isToday = d === currentDay && !graduated;
-          const isSlipped = slipped.has(d);
-          const isMilestone = milestoneDays.includes(d as (typeof milestoneDays)[number]);
-          const filled = isPast || isToday || graduated;
-          const isSelected = d === selectedDay;
+      <div className="mt-6 grid grid-cols-10 gap-1.5">{baseDays.map(renderDay)}</div>
 
-          return (
-            <button
-              key={d}
-              type="button"
-              onClick={() => setSelectedDay(isSelected ? null : d)}
-              aria-label={
-                isSlipped
-                  ? `Day ${d}, logged a slip, streak continued`
-                  : isMilestone
-                    ? `Day ${d}, milestone`
-                    : `Day ${d}`
-              }
-              aria-pressed={isSelected}
-              className={cn(
-                "relative flex aspect-square cursor-pointer items-center justify-center rounded-lg text-[11px] font-semibold tabular-nums transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                filled ? "bg-sun text-primary-foreground" : "bg-muted text-muted-foreground",
-                isToday && "ring-2 ring-apricot ring-offset-2 ring-offset-background",
-                isSlipped && "bg-butter text-ink",
-                isMilestone && !filled && "border border-dashed border-apricot/50",
-                isSelected && !isToday && "ring-2 ring-ring ring-offset-2 ring-offset-background",
-              )}
-            >
-              {d}
-              {isSlipped && (
-                <span className="absolute -right-0.5 -top-0.5 text-[8px] text-ink">*</span>
-              )}
-            </button>
-          );
-        })}
-      </div>
+      {detoxDays.length > 0 && (
+        <section className="mt-8" aria-labelledby="detox-heading">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 id="detox-heading" className="font-display text-lg font-extrabold">
+              Detox. 30 more.
+            </h2>
+            <p className="text-xs font-semibold text-sage">Days 61 to 90</p>
+          </div>
+          <p className="mt-1 text-sm text-muted-foreground">Same streak, stricter rules.</p>
+          <div className="mt-4 grid grid-cols-10 gap-1.5">{detoxDays.map(renderDay)}</div>
+          <ul className="mt-4 flex flex-col gap-1.5 rounded-2xl bg-sage/10 p-4 text-sm text-foreground">
+            {DETOX_RULES.map((rule) => (
+              <li key={rule} className="flex gap-2">
+                <span className="text-sage" aria-hidden="true">•</span>
+                {rule}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {!graduated && (
         <LogSlipDialog
@@ -175,6 +219,11 @@ export function CalendarGrid({
         <span className="inline-flex items-center gap-1.5">
           <span className="h-2.5 w-2.5 rounded-full bg-butter" /> Logged a slip, kept going
         </span>
+        {isExtended && (
+          <span className="inline-flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-full bg-sage/60" /> Detox day
+          </span>
+        )}
         <span className="inline-flex items-center gap-1.5">
           <span className="h-2.5 w-2.5 rounded-full border border-dashed border-apricot/50 bg-transparent" />{" "}
           Milestone
