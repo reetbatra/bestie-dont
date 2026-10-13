@@ -89,9 +89,9 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
       <div className="flex flex-col gap-6 px-6">
         <Link
           href="/why"
-          className="rounded-sketch border border-pink/30 bg-pink/5 p-5 transition-colors hover:border-pink/50"
+          className="rounded-3xl border border-apricot/30 bg-peach/40 p-5 transition-colors hover:border-apricot/50"
         >
-          <p className="font-display text-xl font-bold leading-tight text-pink">
+          <p className="text-sm font-semibold text-apricot-deep">
             Not just vibes
           </p>
           <p className="mt-1 text-sm font-medium text-foreground">
@@ -99,8 +99,8 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
           </p>
         </Link>
 
-        <section className="rounded-sketch border border-border bg-card p-5">
-          <p className="font-display text-xl font-bold leading-tight text-blue">
+        <section className="rounded-3xl border border-border bg-card shadow-soft p-5">
+          <p className="text-sm font-semibold text-muted-foreground">
             Notifications
           </p>
           <p className="mt-2 text-sm font-medium">Zero. On purpose.</p>
@@ -110,8 +110,8 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
           </p>
         </section>
 
-        <section className="rounded-sketch border border-border bg-card p-5">
-          <p className="font-display text-xl font-bold leading-tight text-blue">
+        <section className="rounded-3xl border border-border bg-card shadow-soft p-5">
+          <p className="text-sm font-semibold text-muted-foreground">
             Account access
           </p>
           {settings.email ? (
@@ -131,13 +131,13 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
         </section>
 
         {!isInstalled && (
-          <section className="rounded-sketch border border-border bg-card p-5">
-            <p className="font-display text-xl font-bold leading-tight text-blue">
+          <section className="rounded-3xl border border-border bg-card shadow-soft p-5">
+            <p className="text-sm font-semibold text-muted-foreground">
               Put your bestie one tap away
             </p>
             {isIOS ? (
               <div className="mt-3 flex items-center gap-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sketch-sm bg-butter/40 text-ink">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-butter/40 text-ink">
                   <Share className="h-5 w-5" />
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -146,7 +146,7 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
               </div>
             ) : (
               <div className="mt-3 flex items-center gap-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sketch-sm bg-butter/40 text-ink">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-butter/40 text-ink">
                   {canInstall ? (
                     <Smartphone className="h-5 w-5" />
                   ) : (
@@ -166,8 +166,8 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
           </section>
         )}
 
-        <section className="rounded-sketch border border-border bg-card p-5">
-          <p className="font-display text-xl font-bold leading-tight text-blue">
+        <section className="rounded-3xl border border-border bg-card shadow-soft p-5">
+          <p className="text-sm font-semibold text-muted-foreground">
             His name
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
@@ -186,8 +186,8 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
           </div>
         </section>
 
-        <section className="rounded-sketch border border-border bg-card p-5">
-          <p className="font-display text-xl font-bold leading-tight text-blue">
+        <section className="rounded-3xl border border-border bg-card shadow-soft p-5">
+          <p className="text-sm font-semibold text-muted-foreground">
             Your data
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
@@ -199,8 +199,8 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
           </Button>
         </section>
 
-        <section className="rounded-sketch border border-destructive/30 bg-destructive/5 p-5">
-          <p className="font-display text-xl font-bold leading-tight text-red">
+        <section className="rounded-3xl border border-destructive/30 bg-destructive/5 p-5">
+          <p className="text-sm font-semibold text-red">
             Delete account
           </p>
           <p className="mt-1 text-xs text-muted-foreground">

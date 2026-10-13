@@ -27,8 +27,8 @@ function ResurfaceCard({ entry }: { entry: DecryptedVaultEntry }) {
   }
 
   return (
-    <div className="rounded-sketch border border-butter/60 bg-butter/10 p-5">
-      <p className="font-display text-xl font-bold leading-tight text-blue">
+    <div className="rounded-3xl border border-butter/60 bg-butter/10 p-5">
+      <p className="text-sm font-semibold text-muted-foreground">
         Written {formatDate(entry.createdAt)}
       </p>
       <p className="mt-2 text-sm leading-snug text-foreground">{entry.content}</p>
@@ -101,7 +101,7 @@ export function VaultView({ initialEntries }: { initialEntries: DecryptedVaultEn
 
       {readyToResurface.length > 0 && (
         <div className="mt-8 flex flex-col gap-3 px-6">
-          <p className="font-display text-xl font-bold leading-tight text-blue">
+          <p className="text-sm font-semibold text-muted-foreground">
             Resurfaced
           </p>
           {readyToResurface.map((entry) => (
@@ -112,14 +112,14 @@ export function VaultView({ initialEntries }: { initialEntries: DecryptedVaultEn
 
       <div className="mt-8 flex flex-col gap-3 px-6">
         {rest.length === 0 && readyToResurface.length === 0 && (
-          <div className="rounded-sketch border border-dashed border-border p-8 text-center">
+          <div className="rounded-3xl border border-dashed border-border p-8 text-center">
             <p className="text-sm text-muted-foreground">
               Nothing here yet. Write the thing you&apos;d never send.
             </p>
           </div>
         )}
         {rest.map((entry) => (
-          <div key={entry.id} className="rounded-sketch border border-border bg-card p-5">
+          <div key={entry.id} className="rounded-3xl border border-border bg-card shadow-soft p-5">
             <p className="text-xs font-medium text-muted-foreground">
               {formatDate(entry.createdAt)}
             </p>

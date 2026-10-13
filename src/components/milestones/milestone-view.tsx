@@ -16,53 +16,60 @@ async function drawCard(canvas: HTMLCanvasElement, data: MilestoneData) {
 
   await document.fonts.ready;
   const root = getComputedStyle(document.documentElement);
-  const hand = root.getPropertyValue("--font-caveat").trim() || "cursive";
-  const body = root.getPropertyValue("--font-quicksand").trim() || "sans-serif";
+  const font = root.getPropertyValue("--font-nunito").trim() || "sans-serif";
 
   canvas.width = CARD_WIDTH;
   canvas.height = CARD_HEIGHT;
 
-  // Same doodle-on-paper look as the app. The final milestone of the program
-  // (day 60, or day 90 if extended) swaps the pink number for ink with a
-  // pink highlighter swipe behind it.
+  // Same "Sunrise" look as the app: cream paper with morning light falling
+  // from the top and a soft sun glowing behind the number. The final
+  // milestone of the program (day 60, or day 90 if extended) gets a fuller,
+  // warmer sun.
   const graduated = data.isFinalMilestone;
-  const ink = "#1D1B1A";
-  const muted = "#5F5A57";
-  const pink = "#D6336C";
-  const accent = graduated ? ink : pink;
-  const statColor = graduated ? pink : ink;
+  const ink = "#3B2E2A";
+  const muted = "#7A685F";
+  const deep = "#B8622C";
+  const statColor = deep;
 
-  ctx.fillStyle = "#FFFFFF";
+  ctx.fillStyle = "#FBF4EA";
   ctx.fillRect(0, 0, CARD_WIDTH, CARD_HEIGHT);
 
-  if (graduated) {
-    ctx.fillStyle = "#FFE3EE";
-    ctx.fillRect(CARD_WIDTH / 2 - 330, 700, 660, 210);
-  }
+  const sky = ctx.createRadialGradient(CARD_WIDTH / 2, -200, 100, CARD_WIDTH / 2, -200, 1500);
+  sky.addColorStop(0, "rgba(253, 227, 201, 1)");
+  sky.addColorStop(1, "rgba(253, 227, 201, 0)");
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, CARD_WIDTH, CARD_HEIGHT);
+
+  const sunRadius = graduated ? 400 : 330;
+  const sun = ctx.createRadialGradient(CARD_WIDTH / 2, 760, 40, CARD_WIDTH / 2, 760, sunRadius);
+  sun.addColorStop(0, graduated ? "rgba(247, 184, 133, 0.9)" : "rgba(249, 196, 151, 0.75)");
+  sun.addColorStop(1, "rgba(253, 230, 208, 0)");
+  ctx.fillStyle = sun;
+  ctx.fillRect(0, 0, CARD_WIDTH, CARD_HEIGHT);
 
   ctx.textAlign = "center";
 
   // wordmark
   ctx.fillStyle = muted;
-  ctx.font = `700 32px ${body}`;
+  ctx.font = `700 32px ${font}`;
   ctx.letterSpacing = "4px";
   ctx.fillText("BESTIE, DON'T.", CARD_WIDTH / 2, 220);
   ctx.letterSpacing = "0px";
 
   // big day number
-  ctx.fillStyle = accent;
-  ctx.font = `700 460px ${hand}`;
+  ctx.fillStyle = ink;
+  ctx.font = `800 400px ${font}`;
   ctx.fillText(String(data.day), CARD_WIDTH / 2, 900);
 
   ctx.fillStyle = ink;
-  ctx.font = `700 48px ${body}`;
+  ctx.font = `700 48px ${font}`;
   ctx.letterSpacing = graduated ? "6px" : "0px";
   ctx.fillText(graduated ? "DAYS. GRADUATED." : "DAYS", CARD_WIDTH / 2, 990);
   ctx.letterSpacing = "0px";
 
   // subtext
   ctx.fillStyle = ink;
-  ctx.font = `700 60px ${hand}`;
+  ctx.font = `600 54px ${font}`;
   wrapText(ctx, streakSubtext(data.day), CARD_WIDTH / 2, 1130, 780, 56);
 
   // stats row; a zero on a celebration card reads as failure, so only
@@ -77,10 +84,10 @@ async function drawCard(canvas: HTMLCanvasElement, data: MilestoneData) {
   stats.forEach((stat, i) => {
     const x = colWidth * i + colWidth / 2;
     ctx.fillStyle = statColor;
-    ctx.font = `700 96px ${hand}`;
+    ctx.font = `800 88px ${font}`;
     ctx.fillText(String(stat.value), x, statY);
     ctx.fillStyle = muted;
-    ctx.font = `500 28px ${body}`;
+    ctx.font = `600 28px ${font}`;
     wrapText(ctx, stat.label, x, statY + 50, colWidth - 40, 32);
   });
 }
@@ -144,8 +151,8 @@ export function MilestoneView({ data }: { data: MilestoneData }) {
 
   return (
     <div className="mx-auto flex h-dvh w-full max-w-[480px] flex-col items-center px-6 pb-6 pt-8 text-center">
-      <p className="font-display text-2xl font-bold text-pink">{data.day} days.</p>
-      <h1 className="mt-2 font-display text-3xl font-semibold text-balance [@media(max-height:700px)]:text-2xl">
+      <p className="font-display text-2xl font-extrabold text-apricot-deep">{data.day} days.</p>
+      <h1 className="mt-2 font-display text-3xl font-extrabold text-balance [@media(max-height:700px)]:text-2xl">
         {streakSubtext(data.day)}
       </h1>
 
@@ -156,7 +163,7 @@ export function MilestoneView({ data }: { data: MilestoneData }) {
           ref={canvasRef}
           width={CARD_WIDTH}
           height={CARD_HEIGHT}
-          className="max-h-full max-w-full rounded-sketch border border-border bg-paper"
+          className="max-h-full max-w-full rounded-3xl border border-border bg-card shadow-soft"
         />
       </div>
 

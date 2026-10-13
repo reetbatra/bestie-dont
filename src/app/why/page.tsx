@@ -7,7 +7,7 @@ interface Section {
   eyebrow: string;
   title: string;
   body: string;
-  accent: "pink" | "blue" | "butter";
+  accent: "apricot" | "sage" | "butter";
 }
 
 const SECTIONS: Section[] = [
@@ -21,13 +21,13 @@ const SECTIONS: Section[] = [
     eyebrow: "The panic button's 20-minute timer",
     title: "Urges have a shelf life.",
     body: "This isn't a willpower test. Psychologist Alan Marlatt studied cravings and found they behave like waves: they build, peak, and fall, usually within 15 to 30 minutes, whether you act on them or not. You don't have to beat the urge. You just have to outlast it. That's the whole timer.",
-    accent: "pink",
+    accent: "apricot",
   },
   {
     eyebrow: "The breathing reset",
     title: "Your body doesn't know the difference between him and a threat.",
     body: "A flooded nervous system can't think its way calm, it has to be told by the body first. A longer exhale than inhale (the 4-in, 8-out you just did) stimulates the vagus nerve and shifts you out of fight-or-flight, measurably, in under a minute. That's why we make you breathe before we make you think.",
-    accent: "blue",
+    accent: "sage",
   },
   {
     eyebrow: "Why a slip doesn't reset your streak",
@@ -39,19 +39,19 @@ const SECTIONS: Section[] = [
     eyebrow: "Why the Record exists",
     title: "Memory edits itself to protect you. Don't let it.",
     body: "It's called rosy retrospection: your brain fades the sting of bad memories faster than the good ones, so exes get idealized over time. Writing things down before your memory revises them is one of the few things shown to counter that. But research is just as clear that cataloguing his behavior on a loop, with no reflection, can tip into rumination, which slows healing instead of helping it. That's why every entry has a second half: not just what he did, but what you told yourself to make it okay. That second part is what actually changes for the next relationship.",
-    accent: "pink",
+    accent: "apricot",
   },
   {
     eyebrow: "Why we ask what's yours",
     title: "You didn't just lose him. You lost the parts of you that grew around him.",
     body: "Psychologists call it self-expansion: relationships grow your sense of self, new interests, new versions of you. Losing the relationship can feel like losing pieces of your identity, not just the person. Research on post-breakup recovery found people who actively rebuild their own interests and identity report better long-term wellbeing than people who rush into someone new. That's the whole point of the hobbies, friends, and goals you added on day one.",
-    accent: "blue",
+    accent: "sage",
   },
 ];
 
 const ACCENT_CLASSES: Record<Section["accent"], string> = {
-  pink: "border-pink/30 bg-pink/5",
-  blue: "border-blue/30 bg-blue/5",
+  apricot: "border-apricot/30 bg-peach/40",
+  sage: "border-sage/30 bg-sage/5",
   butter: "border-butter/40 bg-butter/10",
 };
 
@@ -68,8 +68,8 @@ export default function WhyPage() {
         <ChevronLeft className="h-3.5 w-3.5" /> Back
       </button>
 
-      <p className="font-display text-2xl font-bold text-pink">Not just vibes.</p>
-      <h1 className="mt-2 font-display text-3xl font-semibold text-balance">Why this works.</h1>
+      <p className="font-display text-2xl font-extrabold text-apricot-deep">Not just vibes.</p>
+      <h1 className="mt-2 font-display text-3xl font-extrabold text-balance">Why this works.</h1>
       <p className="mt-3 max-w-[40ch] text-sm text-muted-foreground">
         Every mechanic in this app is built on something real, not a hunch about what might help.
         Here&apos;s the research behind it.
@@ -79,12 +79,12 @@ export default function WhyPage() {
         {SECTIONS.map((section) => (
           <div
             key={section.title}
-            className={`rounded-sketch border p-5 ${ACCENT_CLASSES[section.accent]}`}
+            className={`rounded-3xl border p-5 ${ACCENT_CLASSES[section.accent]}`}
           >
-            <p className="font-display text-xl font-bold leading-tight text-blue">
+            <p className="text-sm font-semibold text-muted-foreground">
               {section.eyebrow}
             </p>
-            <p className="mt-2 font-display text-lg font-semibold leading-snug text-foreground">
+            <p className="mt-2 font-display text-lg font-extrabold leading-snug text-foreground">
               {section.title}
             </p>
             <p className="mt-2 text-sm leading-relaxed text-foreground/90">{section.body}</p>
@@ -92,8 +92,8 @@ export default function WhyPage() {
         ))}
       </div>
 
-      <div className="mt-8 rounded-sketch border border-border bg-card p-5">
-        <p className="font-display text-xl font-bold leading-tight text-blue">
+      <div className="mt-8 rounded-3xl border border-border bg-card shadow-soft p-5">
+        <p className="text-sm font-semibold text-muted-foreground">
           Where this comes from
         </p>
         <ul className="mt-3 flex flex-col gap-2 text-xs text-muted-foreground">

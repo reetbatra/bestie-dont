@@ -6,11 +6,11 @@ export default function VaultLoading() {
       <Skeleton className="h-3 w-12" />
       <Skeleton className="mt-3 h-7 w-32" />
       <Skeleton className="mt-2 h-3 w-48" />
-      <Skeleton className="mt-6 h-32 w-full rounded-sketch" />
-      <Skeleton className="mt-3 h-10 w-full rounded-sketch-sm" />
+      <Skeleton className="mt-6 h-32 w-full rounded-3xl" />
+      <Skeleton className="mt-3 h-10 w-full rounded-2xl" />
       <div className="mt-8 flex flex-col gap-3">
         {[0, 1].map((i) => (
-          <Skeleton key={i} className="h-20 w-full rounded-sketch" />
+          <Skeleton key={i} className="h-20 w-full rounded-3xl" />
         ))}
       </div>
     </div>

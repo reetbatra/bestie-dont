@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Home, NotebookText, BookOpen, PenLine, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DETOX_RULES } from "@/lib/streak";
-import { FlagBean } from "@/components/doodles/scenes";
+import { HomeBadge } from "@/components/doodles/scenes";
 
 const NAV_ITEMS = [
   { href: "/home", label: "Home", icon: Home },
@@ -38,33 +38,35 @@ export function HomeShell({
     <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col">
       <div className="flex-1 overflow-y-auto px-6 pb-40 pt-10">
         <div className="flex items-center justify-between">
-          <p className="font-display text-2xl font-bold leading-none text-pink">
+          <p className="font-display text-lg font-extrabold leading-none text-foreground">
             bestie, don&apos;t.
           </p>
           <Link href="/settings" className="text-muted-foreground" aria-label="Settings">
-            <Settings className="h-4 w-4" />
+            <Settings className="h-5 w-5" />
           </Link>
         </div>
 
         <div className="mt-8">
-          <div className="flex items-end gap-2">
-            <span className="font-display text-8xl font-bold tabular-nums leading-none text-pink">
-              {day}
-            </span>
-            <FlagBean day={day} className="-mb-1 h-28 w-auto" />
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="font-display text-8xl font-extrabold tabular-nums leading-none text-foreground">
+                {day}
+              </span>
+              <p className="mt-1 text-base text-muted-foreground">
+                {day === 1 ? "day" : "days"}
+              </p>
+            </div>
+            <HomeBadge day={day} className="h-28 w-28" />
           </div>
-          <p className="mt-1 font-display text-2xl font-bold text-muted-foreground">
-            {day === 1 ? "day" : "days"}
-          </p>
           <p className="mt-4 max-w-[36ch] text-base text-foreground">{subtext}</p>
         </div>
 
         <Link
           href="/calendar"
-          className="mt-6 flex items-center justify-between rounded-sketch border border-border bg-card p-5 transition-colors hover:border-pink/40"
+          className="mt-6 flex items-center justify-between rounded-3xl border border-border bg-card shadow-soft p-5 transition-colors hover:border-apricot/40"
         >
           <div>
-            <p className="font-display text-xl font-bold leading-tight text-blue">
+            <p className="text-sm font-semibold text-muted-foreground">
               The {programLengthDays} days
             </p>
             <p className="mt-1 text-sm text-foreground">
@@ -73,18 +75,18 @@ export function HomeShell({
                 : `You made it through all ${programLengthDays === 90 ? "ninety" : "sixty"}.`}
             </p>
           </div>
-          <span className="text-sm font-medium text-pink">View →</span>
+          <span className="text-sm font-medium text-apricot-deep">View →</span>
         </Link>
 
         {isExtended && daysLeft > 0 && (
-          <div className="mt-6 rounded-sketch border border-pink/30 bg-pink/5 p-5">
-            <p className="font-display text-xl font-bold leading-tight text-blue">
+          <div className="mt-6 rounded-3xl border border-apricot/30 bg-peach/40 p-5">
+            <p className="text-sm font-semibold text-muted-foreground">
               Detox mode
             </p>
             <ul className="mt-2 flex flex-col gap-1.5 text-sm text-foreground">
               {DETOX_RULES.map((rule) => (
                 <li key={rule} className="flex gap-2">
-                  <span className="text-pink">•</span>
+                  <span className="text-apricot-deep">•</span>
                   {rule}
                 </li>
               ))}
@@ -95,12 +97,12 @@ export function HomeShell({
         {pendingRecovery && (
           <Link
             href={`/recovery/${pendingRecovery.slipId}`}
-            className="mt-8 block rounded-sketch border border-blue/40 bg-blue/10 p-5 transition-colors hover:border-blue/60"
+            className="mt-8 block rounded-3xl border border-sage/40 bg-sage/10 p-5 transition-colors hover:border-sage/60"
           >
-            <p className="font-display text-xl font-bold leading-tight text-blue">
+            <p className="text-sm font-semibold text-muted-foreground">
               Checking in
             </p>
-            <p className="mt-1 font-display text-lg font-semibold text-foreground">
+            <p className="mt-1 font-display text-lg font-extrabold text-foreground">
               Still here.
             </p>
           </Link>
@@ -109,12 +111,12 @@ export function HomeShell({
         {pendingMilestone && (
           <Link
             href={`/milestones/${pendingMilestone}`}
-            className="mt-8 block rounded-sketch border border-butter/60 bg-butter/15 p-5 transition-colors hover:border-butter"
+            className="mt-8 block rounded-3xl border border-butter/60 bg-butter/15 p-5 transition-colors hover:border-butter"
           >
-            <p className="font-display text-xl font-bold leading-tight text-blue">
+            <p className="text-sm font-semibold text-muted-foreground">
               Milestone
             </p>
-            <p className="mt-1 font-display text-lg font-semibold text-foreground">
+            <p className="mt-1 font-display text-lg font-extrabold text-foreground">
               Day {pendingMilestone}. Come see.
             </p>
           </Link>
@@ -123,13 +125,13 @@ export function HomeShell({
         {promptText && (
           <Link
             href="/journal"
-            className="mt-10 block rounded-sketch border border-border bg-card p-5 transition-colors hover:border-pink/40"
+            className="mt-10 block rounded-3xl border border-border bg-card shadow-soft p-5 transition-colors hover:border-apricot/40"
           >
-            <p className="font-display text-xl font-bold leading-tight text-blue">
+            <p className="text-sm font-semibold text-muted-foreground">
               Today&apos;s prompt
             </p>
             <p className="mt-2 text-base leading-snug text-foreground">{promptText}</p>
-            <p className="mt-3 text-sm font-medium text-pink">
+            <p className="mt-3 text-sm font-medium text-apricot-deep">
               {promptAnswered ? "Read what you wrote →" : "Start writing →"}
             </p>
           </Link>
@@ -137,10 +139,10 @@ export function HomeShell({
       </div>
 
       <div className="fixed inset-x-0 bottom-0 mx-auto w-full max-w-[480px]">
-        <div className="border-t border-border bg-background/95 px-6 pb-3 pt-4 backdrop-blur">
+        <div className="bg-gradient-to-t from-background via-background/95 to-background/0 px-6 pb-3 pt-6">
           <Link
             href="/panic/reset"
-            className="block w-full rounded-sketch-sm border-[1.5px] border-ink bg-pink px-6 py-4 text-center font-display text-xl font-bold text-primary-foreground transition-transform active:scale-[0.98]"
+            className="block w-full rounded-full bg-sun px-6 py-4 text-center font-display text-lg font-extrabold text-primary-foreground shadow-soft transition-transform active:scale-[0.98]"
           >
             don&apos;t text him. come here.
           </Link>
@@ -151,7 +153,7 @@ export function HomeShell({
                 href={href}
                 className={cn(
                   "flex flex-col items-center gap-1 rounded-xl px-4 py-1.5 text-xs text-muted-foreground transition-colors",
-                  href === "/home" && "text-pink",
+                  href === "/home" && "font-bold text-foreground",
                 )}
               >
                 <Icon className="h-5 w-5" />

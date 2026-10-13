@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { OnboardingScreen } from "@/components/onboarding/onboarding-screen";
 import { Button } from "@/components/ui/button";
 import { startAnonymousSession } from "@/lib/actions/auth";
-import { PushPhoneScene } from "@/components/doodles/scenes";
+import { SunriseScene } from "@/components/doodles/scenes";
 
 /**
  * Maps technical auth errors to copy she'd actually understand. Anything
@@ -56,7 +56,7 @@ export default function WelcomePage() {
           </p>
           <Link
             href="/why"
-            className="text-center text-sm font-semibold text-pink underline decoration-wavy underline-offset-4"
+            className="text-center text-sm font-semibold text-apricot-deep underline underline-offset-4"
           >
             Skeptical? Here&apos;s why this works.
           </Link>
@@ -65,10 +65,10 @@ export default function WelcomePage() {
       }
     >
       <div className="flex flex-1 flex-col justify-center">
-        <PushPhoneScene className="mb-6 w-full" />
-        <p className="font-display text-3xl font-bold text-pink">Hey.</p>
-        <h1 className="mt-1 font-display text-4xl font-bold leading-tight text-balance">
-          You&apos;re not going to <span className="highlight">text him.</span>
+        <SunriseScene className="mb-6 w-full" />
+        <p className="text-xl font-bold text-muted-foreground">Hey.</p>
+        <h1 className="mt-1 font-display text-4xl font-extrabold leading-tight text-balance">
+          You&apos;re not going to text him.
         </h1>
         <p className="mt-4 max-w-[38ch] text-lg text-muted-foreground">
           We&apos;re going to make sure of it.

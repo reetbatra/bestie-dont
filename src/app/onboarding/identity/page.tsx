@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { addIdentityItems, type IdentityItemInput } from "@/lib/actions/onboarding";
-import { MineBoxScene } from "@/components/doodles/scenes";
+import { KeepsakesScene } from "@/components/doodles/scenes";
 
 const SUGGESTIONS: IdentityItemInput[] = [
   { label: "Running", category: "hobby" },
@@ -76,11 +76,11 @@ export default function IdentityPage() {
         </>
       }
     >
-      <MineBoxScene className="mx-auto max-h-40 w-full" />
-      <h1 className="mt-4 font-display text-3xl font-bold text-balance">
+      <KeepsakesScene className="mx-auto max-h-40 w-full" />
+      <h1 className="mt-4 font-display text-3xl font-extrabold text-balance">
         Three things that are yours.
       </h1>
-      <p className="mt-1 font-display text-xl font-bold text-pink">
+      <p className="mt-1 text-lg font-bold text-apricot-deep">
         Not the relationship&apos;s.
       </p>
 
@@ -93,10 +93,10 @@ export default function IdentityPage() {
               type="button"
               onClick={() => toggle(item)}
               className={cn(
-                "cursor-pointer rounded-sketch-sm border-[1.5px] border-ink px-4 py-2 text-sm font-semibold transition-colors",
+                "cursor-pointer rounded-full border border-border px-4 py-2 text-sm font-semibold transition-colors",
                 isSelected
-                  ? "bg-pink text-primary-foreground"
-                  : "bg-card text-foreground hover:bg-pink-soft",
+                  ? "bg-sun text-primary-foreground"
+                  : "bg-card text-foreground hover:bg-peach/60",
               )}
             >
               {item.label}
@@ -110,7 +110,7 @@ export default function IdentityPage() {
               key={item.label}
               type="button"
               onClick={() => toggle(item)}
-              className="cursor-pointer rounded-sketch-sm border-[1.5px] border-ink bg-pink px-4 py-2 text-sm font-semibold text-primary-foreground"
+              className="cursor-pointer rounded-full bg-sun shadow-soft px-4 py-2 text-sm font-semibold text-primary-foreground"
             >
               {item.label}
             </button>

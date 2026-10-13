@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { SerwistProvider } from "@serwist/turbopack/react";
-import { caveat, quicksand } from "@/lib/fonts";
+import { nunito } from "@/lib/fonts";
 import { Toaster } from "@/components/ui/sonner";
 import { InstallProvider } from "@/components/pwa/install-provider";
 import { PerfProbe } from "@/components/perf/perf-probe";
@@ -18,8 +18,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
-    { media: "(prefers-color-scheme: dark)", color: "#FFFFFF" },
+    { media: "(prefers-color-scheme: light)", color: "#FBF4EA" },
+    { media: "(prefers-color-scheme: dark)", color: "#FBF4EA" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -34,7 +34,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${caveat.variable} ${quicksand.variable} h-full antialiased`}
+      className={`${nunito.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">

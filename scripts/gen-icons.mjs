@@ -8,12 +8,14 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_ICONS = join(ROOT, "public/icons");
 const OUT_APP = join(ROOT, "src/app");
 
-const PAPER = "#FFFFFF";
-const INK = "#1D1B1A";
-const PINK = "#D6336C";
+const PAPER = "#FBF4EA";
+const INK = "#3B2E2A";
+const APRICOT = "#F4A96F";
+const PEACH = "#FDE6D0";
 
 // Bean, the app's doodle character (src/components/doodles/bean.tsx), as a
-// head-and-bow portrait. Same body path and bow, drawn in a 100x100 box.
+// head-and-bow portrait inside a soft peach sun. Same body path and bow,
+// drawn in a 100x100 box.
 function bean() {
   return `
     <g transform="translate(50 54) scale(1.05)">
@@ -22,10 +24,10 @@ function bean() {
       <circle cx="9" cy="-11" r="4.6" fill="${PAPER}" />
       <circle cx="-8" cy="-9.5" r="1.9" fill="${INK}" />
       <circle cx="9" cy="-10.5" r="1.9" fill="${INK}" />
-      <g transform="translate(15 -33) rotate(18)" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round">
-        <path d="M 0 0 C -6 -9 -15 -6 -13 1 C -12 7 -5 5 0 0 Z" fill="${PINK}" />
-        <path d="M 0 0 C 6 -9 15 -6 13 1 C 12 7 5 5 0 0 Z" fill="${PINK}" />
-        <circle cx="0" cy="0" r="2.6" fill="${PINK}" />
+      <g transform="translate(15 -33) rotate(18)" fill="${APRICOT}">
+        <path d="M 0 0 C -6 -9 -15 -6 -13 1 C -12 7 -5 5 0 0 Z" />
+        <path d="M 0 0 C 6 -9 15 -6 13 1 C 12 7 5 5 0 0 Z" />
+        <circle cx="0" cy="0" r="2.8" />
       </g>
     </g>`;
 }
@@ -37,7 +39,8 @@ function svg(size, fill) {
   return `
 <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
   <rect width="${size}" height="${size}" fill="${PAPER}" />
-  <g transform="translate(${offset} ${offset}) scale(${s})">${bean()}</g>
+  <circle cx="${size / 2}" cy="${size / 2}" r="${size * 0.42}" fill="${PEACH}" />
+  <g transform="translate(${offset} ${offset}) scale(${s}) translate(16 17) scale(0.68)">${bean()}</g>
 </svg>`;
 }
 

@@ -6,7 +6,7 @@ import { OnboardingScreen } from "@/components/onboarding/onboarding-screen";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { addFirstRecordEntry } from "@/lib/actions/onboarding";
-import { ReceiptScene } from "@/components/doodles/scenes";
+import { NoteScene } from "@/components/doodles/scenes";
 
 function todayISO() {
   const now = new Date();
@@ -57,13 +57,13 @@ export default function FirstRecordPage() {
         </>
       }
     >
-      <ReceiptScene className="mx-auto max-h-40 w-full" />
-      <h1 className="mt-4 font-display text-3xl font-bold text-balance">
+      <NoteScene className="mx-auto max-h-40 w-full" />
+      <h1 className="mt-4 font-display text-3xl font-extrabold text-balance">
         Before your brain starts editing history.
       </h1>
       <p className="mt-3 max-w-[38ch] text-sm text-muted-foreground">
         What&apos;s one thing he did that you don&apos;t want to forget?{" "}
-        <span className="font-display text-lg font-bold text-pink">Not the relationship&apos;s.</span>
+        <span className="font-display text-lg font-extrabold text-apricot-deep">Not the relationship&apos;s.</span>
       </p>
 
       <div className="mt-6 flex-1">

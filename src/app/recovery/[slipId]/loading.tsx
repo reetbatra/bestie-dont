@@ -7,7 +7,7 @@ export default function RecoveryLoading() {
       <Skeleton className="mt-3 h-8 w-full" />
       <Skeleton className="mt-2 h-8 w-3/4" />
       <Skeleton className="mt-4 h-4 w-full" />
-      <Skeleton className="mt-10 h-11 w-full rounded-sketch-sm" />
+      <Skeleton className="mt-10 h-11 w-full rounded-2xl" />
     </div>
   );
 }

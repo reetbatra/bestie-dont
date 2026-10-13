@@ -22,7 +22,7 @@ export function ScreenHeader({
         >
           <ChevronLeft className="h-3.5 w-3.5" /> Home
         </Link>
-        <h1 className="font-display text-2xl font-semibold text-balance">{title}</h1>
+        <h1 className="font-display text-2xl font-extrabold text-balance">{title}</h1>
         {subtitle && <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>}
       </div>
       {action}

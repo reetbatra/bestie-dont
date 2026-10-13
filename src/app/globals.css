@@ -7,19 +7,19 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-quicksand);
+  --font-sans: var(--font-nunito);
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  --font-display: var(--font-caveat);
-  --font-heading: var(--font-caveat);
+  --font-display: var(--font-nunito);
+  --font-heading: var(--font-nunito);
 
-  /* brand palette, exposed as utilities: bg-pink, text-blue, etc. */
-  --color-pink: var(--pink);
-  --color-pink-soft: var(--pink-soft);
+  /* brand palette, exposed as utilities: bg-apricot, text-sage, etc. */
+  --color-apricot: var(--apricot);
+  --color-apricot-deep: var(--apricot-deep);
+  --color-peach: var(--peach);
+  --color-sage: var(--sage);
   --color-red: var(--red);
-  --color-orange: var(--orange);
-  --color-blue: var(--blue);
   --color-butter: var(--butter);
-  --color-paper: var(--paper);
+  --color-cream: var(--cream);
   --color-ink: var(--ink);
 
   --color-sidebar-ring: var(--sidebar-ring);
@@ -61,126 +61,116 @@
 }
 
 /*
-  Bestie, Don't brand tokens: a doodle on white paper.
-  Visual language borrowed from hand-drawn explainer sketches (thin black ink,
-  lots of white space, handwritten margin notes in a few marker colors):
-  - ink:    the line work, characters, body text
-  - pink:   the one loud color. Primary actions, her streak, the bow
-  - red:    margin notes that matter (warnings, "this is the problem")
-  - orange: movement and direction (arrows, paths, "from here to there")
-  - blue:   quieter second-layer notes (inner thoughts, system state)
-  - butter: highlighter swipes behind words
-  No gradients, no drop shadows, no paper texture. The app is used in the dark
-  at 1am but `.dark` is never applied (there's no theme switcher), so this is
-  the single theme. Dark values below exist only so shadcn's `dark:` variants
-  in ui/ don't render unstyled if a theme switcher ever lands.
+  Bestie, Don't brand tokens: "Sunrise".
+  Calm first. The person using this is often mid-urge at 1am, so nothing on
+  screen should shout: warm cream paper, one soft apricot accent, rounded
+  type, hairline warm borders, and light that falls from the top of the
+  screen like early morning instead of hard edges and flat blocks.
+  - ink:          warm brown-black for text (never pure black)
+  - apricot:      the one accent. Primary actions, her streak, Bean's bow
+  - apricot-deep: the darker end of the apricot gradient, and accent text
+                  that has to pass contrast on cream
+  - peach:        soft fills behind things (selected states, glows)
+  - sage:         the calm second voice (recovery check-ins, "you made it")
+  - butter:       slips that didn't reset anything
+  `.dark` is never applied (no theme switcher). Its values exist only so
+  shadcn's `dark:` variants in ui/ don't render unstyled if one ever lands.
 */
 :root {
-  --paper: #ffffff;
-  --ink: #1d1b1a;
-  --ink-muted: #5f5a57;
-  --pink: #d6336c;
-  --pink-soft: #ffe3ee;
-  --red: #e03131;
-  --orange: #f08c00;
-  --blue: #3567d1;
-  --butter: #ffe066;
-  --surface: #ffffff;
-  --surface-2: #fff4f8;
+  --cream: #fbf4ea;
+  --ink: #3b2e2a;
+  --ink-muted: #7a685f;
+  --apricot: #f4a96f;
+  --apricot-deep: #b8622c;
+  --peach: #fde6d0;
+  --sage: #6f9178;
+  --red: #c4553f;
+  --butter: #f6d69c;
+  --surface: #fffcf8;
+  --surface-2: #f6ebdd;
 
-  --background: var(--paper);
+  --background: var(--cream);
   --foreground: var(--ink);
   --card: var(--surface);
   --card-foreground: var(--ink);
   --popover: var(--surface);
   --popover-foreground: var(--ink);
-  --primary: var(--pink);
-  --primary-foreground: #ffffff;
-  --secondary: var(--pink-soft);
+  --primary: var(--apricot);
+  --primary-foreground: var(--ink);
+  --secondary: var(--peach);
   --secondary-foreground: var(--ink);
   --muted: var(--surface-2);
   --muted-foreground: var(--ink-muted);
-  --accent: var(--pink-soft);
+  --accent: var(--peach);
   --accent-foreground: var(--ink);
   --destructive: var(--red);
-  --border: var(--ink);
-  --input: var(--ink);
-  --ring: var(--pink);
-  --chart-1: var(--pink);
-  --chart-2: var(--blue);
-  --chart-3: var(--orange);
-  --chart-4: var(--butter);
+  --border: #efe1d0;
+  --input: #e6d4c0;
+  --ring: var(--apricot);
+  --chart-1: var(--apricot);
+  --chart-2: var(--sage);
+  --chart-3: var(--butter);
+  --chart-4: var(--peach);
   --chart-5: var(--ink-muted);
-  --radius: 1rem;
+  --radius: 1.25rem;
   --sidebar: var(--surface);
   --sidebar-foreground: var(--ink);
-  --sidebar-primary: var(--pink);
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: var(--pink-soft);
+  --sidebar-primary: var(--apricot);
+  --sidebar-primary-foreground: var(--ink);
+  --sidebar-accent: var(--peach);
   --sidebar-accent-foreground: var(--ink);
   --sidebar-border: var(--border);
-  --sidebar-ring: var(--pink);
+  --sidebar-ring: var(--apricot);
+
+  /* Shared surfaces, so every card and button carries the same light. */
+  --glow: radial-gradient(120% 60% at 50% -10%, #fde3c9 0%, rgb(253 227 201 / 0) 70%);
+  --sun-gradient: linear-gradient(180deg, #f7b885 0%, #f19d63 100%);
+  --soft-shadow: 0 1px 2px rgb(120 80 50 / 0.04), 0 8px 24px -12px rgb(120 80 50 / 0.18);
 }
 
 .dark {
-  --paper: #161414;
-  --ink: #f6f1ee;
-  --ink-muted: #b9b1ad;
-  --pink: #ff6b9a;
-  --pink-soft: #3a2029;
-  --surface: #1f1c1c;
-  --surface-2: #2a2224;
-  --primary-foreground: #161414;
-  --sidebar-primary-foreground: #161414;
+  --cream: #1f1a17;
+  --ink: #f6ece2;
+  --ink-muted: #bca99c;
+  --surface: #29221e;
+  --surface-2: #332a24;
+  --border: #3d3229;
+  --input: #4a3d33;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
   html {
     @apply font-sans;
   }
-  h1, h2, h3 {
-    letter-spacing: -0.005em;
+  body {
+    @apply text-foreground;
+    /* Morning light from the top of the screen. Fixed so it stays put while content scrolls. */
+    background: var(--glow), var(--cream);
+    background-attachment: fixed;
   }
   ::selection {
-    background: var(--pink-soft);
+    background: var(--peach);
     color: var(--ink);
   }
 }
 
-/*
-  Hand-drawn corners. Asymmetric elliptical radii read as a box someone drew
-  with a pen instead of a box a computer drew. Two variants so neighbouring
-  shapes don't wobble in lockstep.
-*/
-@utility rounded-sketch {
-  border-radius: 28px 10px 24px 12px / 12px 26px 10px 28px;
-}
-@utility rounded-sketch-sm {
-  border-radius: 16px 7px 15px 8px / 8px 15px 7px 16px;
-}
-@utility rounded-sketch-alt {
-  border-radius: 10px 26px 12px 24px / 26px 10px 28px 12px;
+/* A filled primary surface: the soft sunrise gradient used on every main CTA. */
+@utility bg-sun {
+  background-image: var(--sun-gradient);
 }
 
-/* A marker swipe behind a word, the way you'd highlight a note. */
-@utility highlight {
-  background: linear-gradient(transparent 55%, color-mix(in oklab, var(--butter) 85%, transparent) 55%, color-mix(in oklab, var(--butter) 85%, transparent) 92%, transparent 92%);
-  padding-inline: 0.15em;
-  box-decoration-break: clone;
+/* The one shadow in the app: barely there, warm, never grey. */
+@utility shadow-soft {
+  box-shadow: var(--soft-shadow);
 }
 
 @layer utilities {
   .font-display {
     font-family: var(--font-display);
-    /* Caveat ships no italic; a browser-faked slant on handwriting looks broken. */
-    font-synthesis: none;
-    font-style: normal;
+    letter-spacing: -0.015em;
   }
   .tabular-nums {
     font-variant-numeric: tabular-nums;
@@ -200,7 +190,7 @@
   95% { transform: scaleY(0.1); }
 }
 .doodle-bob {
-  animation: doodle-bob 3.2s ease-in-out infinite;
+  animation: doodle-bob 3.6s ease-in-out infinite;
 }
 .doodle-blink {
   transform-box: fill-box;

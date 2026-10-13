@@ -1,198 +1,241 @@
-import { Bean, INK, PAPER, PINK } from "@/components/doodles/bean";
-import { Arrow, Doodle, Ground, Heart, Note, Ticks } from "@/components/doodles/marks";
+import type { ReactNode } from "react";
+import { APRICOT, Bean, CREAM, INK } from "@/components/doodles/bean";
 
 /**
- * One scene per moment. Each one is a single idea with Bean doing the work,
- * a few handwritten margin notes, and lots of empty paper around it.
+ * One soft scene per moment, in the Sunrise style: flat shapes with no
+ * outlines, light that falls in gentle gradients, Bean doing one small thing,
+ * and lots of quiet space around it.
+ *
+ * Every scene supports copy the page already says in text, so each is
+ * labelled once for screen readers and its shapes are hidden from them.
  */
 
-const STROKE = { stroke: INK, strokeWidth: 2.2, strokeLinejoin: "round" as const, strokeLinecap: "round" as const };
+const PEACH = "var(--peach)";
+const SAGE = "var(--sage)";
+const BUTTER = "var(--butter)";
 
-/** Welcome: Bean shoves his 1am text away with both hands. */
-export function PushPhoneScene({ className }: { className?: string }) {
+/**
+ * Wraps a scene and provides its gradients. `id` namespaces the gradient ids
+ * so two scenes on one page can never resolve each other's definitions.
+ */
+function Scene({
+  id,
+  label,
+  width = 300,
+  height = 220,
+  className,
+  children,
+}: {
+  id: string;
+  label: string;
+  width?: number;
+  height?: number;
+  className?: string;
+  children: ReactNode;
+}) {
   return (
-    <Doodle label="Bean pushing away a phone with a 1am text from him" className={className}>
-      <Ground y={192} />
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      role="img"
+      aria-label={label}
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <defs>
+        <radialGradient id={`${id}-sun`} cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#f9c497" />
+          <stop offset="100%" stopColor="#f4a96f" />
+        </radialGradient>
+        <radialGradient id={`${id}-glow`} cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#fbd6b3" stopOpacity="0.95" />
+          <stop offset="100%" stopColor="#fde6d0" stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id={`${id}-hill`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#f6b98a" stopOpacity="0.75" />
+          <stop offset="100%" stopColor="#fbe1c8" stopOpacity="0.4" />
+        </linearGradient>
+        <linearGradient id={`${id}-fade`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="white" stopOpacity="0" />
+          <stop offset="22%" stopColor="white" stopOpacity="1" />
+          <stop offset="78%" stopColor="white" stopOpacity="1" />
+          <stop offset="100%" stopColor="white" stopOpacity="0" />
+        </linearGradient>
+        <mask id={`${id}-edges`} maskContentUnits="objectBoundingBox">
+          <rect width="1" height="1" fill={`url(#${id}-fade)`} />
+        </mask>
+        <linearGradient id={`${id}-button`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#f7b885" />
+          <stop offset="100%" stopColor="#f19d63" />
+        </linearGradient>
+      </defs>
+      <g aria-hidden="true">{children}</g>
+    </svg>
+  );
+}
 
-      <g transform="translate(92 130) rotate(-11)">
-        <rect x={-30} y={-58} width={60} height={114} rx={11} fill={PAPER} {...STROKE} />
-        <rect x={-23} y={-45} width={46} height={86} rx={4} fill="none" stroke={INK} strokeWidth={1.2} />
-        <path d="M -6 -51.5 L 6 -51.5" {...STROKE} strokeWidth={1.6} />
-        <rect x={-19} y={-33} width={34} height={19} rx={8} fill="var(--pink-soft)" stroke={INK} strokeWidth={1.2} />
-        <Note x={-2} y={-19} size={13}>u up?</Note>
-        <rect x={-19} y={-8} width={24} height={16} rx={7} fill="var(--pink-soft)" stroke={INK} strokeWidth={1.2} />
-        <Note x={-7} y={4} size={12}>hey</Note>
+const fill = (id: string, name: "sun" | "glow" | "hill" | "button") => `url(#${id}-${name})`;
+
+function Hill({ id, y = 186 }: { id: string; y?: number }) {
+  return (
+    <path
+      d={`M 0 ${y + 10} C 70 ${y - 18} 130 ${y + 4} 175 ${y - 4} C 220 ${y - 12} 262 ${y - 4} 300 ${y - 10} L 300 220 L 0 220 Z`}
+      fill={fill(id, "hill")}
+      mask={`url(#${id}-edges)`}
+    />
+  );
+}
+
+/** Welcome: Bean standing in front of a big, slow sunrise. */
+export function SunriseScene({ className }: { className?: string }) {
+  const id = "sunrise";
+  return (
+    <Scene id={id} label="Bean standing calmly in front of a rising sun" className={className}>
+      <circle cx={150} cy={118} r={104} fill={fill(id, "glow")} />
+      <circle cx={150} cy={118} r={64} fill={fill(id, "sun")} opacity={0.85} />
+      <Hill id={id} />
+      <Bean x={150} y={138} scale={1.1} />
+    </Scene>
+  );
+}
+
+/** The Date: a soft calendar card showing day one, Bean beside it. */
+export function DayOneScene({ className }: { className?: string }) {
+  const id = "dayone";
+  return (
+    <Scene id={id} label="Bean next to a calendar showing day one" className={className}>
+      <circle cx={232} cy={56} r={46} fill={fill(id, "glow")} />
+      <circle cx={232} cy={56} r={20} fill={fill(id, "sun")} opacity={0.8} />
+      <Hill id={id} />
+      <g transform="translate(64 66)">
+        <rect width={96} height={106} rx={18} fill={CREAM} />
+        <rect width={96} height={30} rx={18} fill={fill(id, "button")} />
+        <rect y={16} width={96} height={14} fill={fill(id, "button")} />
+        <text
+          x={48}
+          y={88}
+          textAnchor="middle"
+          className="font-display"
+          fontSize={52}
+          fontWeight={800}
+          fill="var(--apricot-deep)"
+        >
+          1
+        </text>
       </g>
-      <Ticks x={60} y={74} angle={-18} />
-
-      <Bean x={178} y={134} look={-1} leftHand={[-52, -16]} rightHand={[-50, 10]} />
-
-      <Note x={58} y={36} color="red" size={19}>him. 1:07am.</Note>
-      <Arrow from={[66, 44]} to={[84, 64]} color="red" bend={-6} />
-
-      <Note x={216} y={82} color="blue" size={21} anchor="start" rotate={-4}>nope.</Note>
-
-      <Arrow from={[156, 208]} to={[74, 208]} color="orange" bend={-3} />
-    </Doodle>
+      <Bean x={204} y={140} look={-1} leftHand={[-36, -14]} />
+    </Scene>
   );
 }
 
-/** The Date: Bean circles day one on the calendar. */
-export function CalendarScene({ className }: { className?: string }) {
+/** First Record entry: Bean holding up a note so it doesn't get lost. */
+export function NoteScene({ className }: { className?: string }) {
+  const id = "note";
   return (
-    <Doodle label="Bean circling day one on a calendar" className={className}>
-      <Ground y={192} />
-
-      <path d="M 82 176 L 70 192" {...STROKE} />
-      <path d="M 148 176 L 160 192" {...STROKE} />
-      <rect x={60} y={58} width={110} height={120} rx={6} fill={PAPER} {...STROKE} />
-      <rect x={60} y={58} width={110} height={26} rx={6} fill={PINK} {...STROKE} />
-      <circle cx={86} cy={58} r={4.5} fill={PAPER} {...STROKE} strokeWidth={1.6} />
-      <circle cx={144} cy={58} r={4.5} fill={PAPER} {...STROKE} strokeWidth={1.6} />
-      <Note x={115} y={156} size={66}>1</Note>
-      <path
-        d="M 92 118 C 96 96 142 96 143 124 C 145 152 108 164 93 148 C 83 137 89 116 106 110"
-        fill="none"
-        stroke={PINK}
-        strokeWidth={2.6}
-        strokeLinecap="round"
-      />
-
-      {/* yesterday's pages, crumpled */}
-      <g fill={PAPER} stroke={INK} strokeWidth={1.5}>
-        <path d="M 30 182 C 26 172 40 168 44 176 C 48 184 36 190 30 182 Z" />
-        <path d="M 33 178 L 40 181 M 35 184 L 41 176" fill="none" />
+    <Scene id={id} label="Bean holding up a note" className={className}>
+      <circle cx={150} cy={104} r={98} fill={fill(id, "glow")} />
+      <Hill id={id} />
+      <Bean x={124} y={140} look={1} rightHand={[34, -30]} leftHand={[32, -12]} />
+      <g transform="translate(150 70) rotate(6)">
+        <rect width={64} height={78} rx={12} fill={CREAM} />
+        <g stroke="var(--input)" strokeWidth={4} strokeLinecap="round">
+          <path d="M 14 22 L 50 22" />
+          <path d="M 14 36 L 44 36" />
+          <path d="M 14 50 L 48 50" />
+        </g>
+        <circle cx={50} cy={64} r={5} fill={APRICOT} />
       </g>
-
-      <Bean x={232} y={134} look={-1} leftHand={[-58, -26]} rightHand={[28, 18]} />
-      {/* the marker in her hand */}
-      <path d="M 170 104 L 182 112" stroke={PINK} strokeWidth={4} strokeLinecap="round" />
-
-      <Note x={254} y={46} color="red" size={20}>day one.</Note>
-      <Arrow from={[236, 54]} to={[178, 84]} color="red" bend={10} />
-      <Note x={36} y={150} color="blue" size={16} rotate={-8}>old</Note>
-      <Arrow from={[36, 156]} to={[36, 166]} color="blue" bend={0} width={1.6} />
-    </Doodle>
+    </Scene>
   );
 }
 
-/** First Record entry: Bean holds up a receipt long enough to reach the floor. */
-export function ReceiptScene({ className }: { className?: string }) {
-  const lines = [112, 122, 132, 142, 152, 162];
+function SoftHeart({ x, y, scale = 1, color }: { x: number; y: number; scale?: number; color: string }) {
   return (
-    <Doodle label="Bean holding up a very long receipt" className={className}>
-      <Ground y={196} />
-
-      <path
-        d="M 138 96 L 178 96 L 178 176 C 178 190 192 192 212 189 L 270 186 L 272 196 L 200 200 C 150 203 138 192 138 178 Z"
-        fill={PAPER}
-        {...STROKE}
-      />
-      <g stroke={INK} strokeWidth={1.3} strokeLinecap="round">
-        {lines.map((y, i) => (
-          <path key={y} d={`M 145 ${y} L ${i % 2 ? 164 : 171} ${y}`} />
-        ))}
-        <path d="M 218 194 L 236 193 M 244 192 L 262 191" />
-      </g>
-      <path d="M 145 142 L 171 142" stroke="var(--red)" strokeWidth={2.4} strokeLinecap="round" />
-
-      <Bean x={102} y={138} look={1} leftHand={[38, -24]} rightHand={[40, -40]} />
-
-      <Note x={238} y={70} color="red" size={20}>the receipts.</Note>
-      <Arrow from={[228, 78]} to={[186, 112]} color="red" bend={-10} />
-      <Note x={52} y={58} color="blue" size={17} rotate={-6}>for 1am you</Note>
-      <Arrow from={[60, 66]} to={[80, 90]} color="blue" bend={-6} width={1.6} />
-    </Doodle>
+    <path
+      transform={`translate(${x} ${y}) scale(${scale})`}
+      d="M 0 6 C -12 -3 -11 -14 -3 -13 C 0 -12.5 0 -10.5 0 -9 C 0 -10.5 1 -13 4 -13 C 12 -13 11 -3 0 6 Z"
+      fill={color}
+    />
   );
 }
 
-/** What's Yours: Bean carries a box marked "mine" over her head. */
-export function MineBoxScene({ className }: { className?: string }) {
+/** What's Yours: Bean cradling a bowl of small things that belong to her. */
+export function KeepsakesScene({ className }: { className?: string }) {
+  const id = "keepsakes";
   return (
-    <Doodle label="Bean carrying a box labeled mine over her head" className={className}>
-      <Ground y={196} />
-
-      {/* things sticking out of the box */}
-      <path
-        d="M 146 40 L 149 48 L 158 48 L 151 53 L 154 61 L 146 56 L 139 61 L 141 53 L 134 48 L 143 48 Z"
-        fill="var(--butter)"
-        stroke={INK}
-        strokeWidth={1.4}
-        strokeLinejoin="round"
-      />
-      <rect x={160} y={34} width={14} height={22} rx={2} fill="var(--blue)" stroke={INK} strokeWidth={1.4} transform="rotate(10 167 45)" />
-      <Heart x={186} y={50} size={1.3} />
-
-      <path d="M 116 54 L 204 52 L 197 98 L 123 100 Z" fill={PAPER} {...STROKE} />
-      <Note x={160} y={84} color="pink" size={24}>mine</Note>
-
-      <Bean x={160} y={138} leftHand={[-30, -40]} rightHand={[30, -42]} />
-
-      <Note x={56} y={78} color="red" size={20}>not his.</Note>
-      <Arrow from={[74, 84]} to={[112, 80]} color="red" bend={-8} />
-      <Note x={258} y={130} color="blue" size={17} rotate={4}>3 is plenty</Note>
-    </Doodle>
+    <Scene id={id} label="Bean holding a bowl of small things that are hers" className={className}>
+      <circle cx={150} cy={110} r={100} fill={fill(id, "glow")} />
+      <Hill id={id} />
+      <Bean x={150} y={136} leftHand={[-24, 24]} rightHand={[24, 24]} />
+      {/* the things, resting in the bowl she holds at her belly */}
+      <SoftHeart x={137} y={158} scale={1.1} color={APRICOT} />
+      <path d="M 162 162 C 156 152 161 143 172 139 C 174 150 171 158 162 162 Z" fill={SAGE} />
+      <circle cx={151} cy={152} r={6.5} fill={BUTTER} />
+      <path d="M 120 160 C 124 182 176 182 180 160 Z" fill={PEACH} />
+    </Scene>
   );
 }
 
-/** The Deal: Bean, hand on the big pink button instead of on the phone. */
-export function ButtonScene({ className }: { className?: string }) {
+/** The Deal: Bean resting a hand on the one button she presses instead. */
+export function CalmButtonScene({ className }: { className?: string }) {
+  const id = "calmbutton";
   return (
-    <Doodle label="Bean with her hand on a big pink button instead of her phone" className={className}>
-      <Ground y={192} />
-
-      {/* the phone she didn't pick up */}
-      <rect x={28} y={50} width={26} height={44} rx={5} fill={PAPER} {...STROKE} strokeWidth={1.8} />
-      <path d="M 22 46 L 60 98 M 60 46 L 22 98" stroke="var(--red)" strokeWidth={2.4} strokeLinecap="round" />
-      <Note x={42} y={36} color="red" size={18}>not him</Note>
-
-      <rect x={160} y={138} width={72} height={54} fill={PAPER} {...STROKE} />
-      <ellipse cx={196} cy={138} rx={38} ry={9} fill={PAPER} {...STROKE} />
-      <path d="M 164 136 C 166 112 226 112 228 136 C 214 142 178 142 164 136 Z" fill={PINK} {...STROKE} />
-
-      <Bean x={112} y={134} look={1} rightHand={[58, -14]} leftHand={[-28, 18]} />
-
-      <Arrow from={[62, 74]} to={[180, 106]} color="orange" bend={-22} />
-      <Note x={240} y={112} color="pink" size={20} anchor="start">here.</Note>
-      <Ticks x={232} y={108} color="pink" angle={20} />
-    </Doodle>
+    <Scene id={id} label="Bean resting her hand on a big soft button" className={className}>
+      <Hill id={id} />
+      <circle cx={196} cy={128} r={62} fill={fill(id, "glow")} />
+      <rect x={160} y={140} width={72} height={46} rx={14} fill={PEACH} />
+      <ellipse cx={196} cy={138} rx={36} ry={12} fill={fill(id, "button")} />
+      <path d="M 164 136 C 166 116 226 116 228 136 C 214 143 178 143 164 136 Z" fill={fill(id, "button")} />
+      <Bean x={112} y={138} look={1} rightHand={[56, -16]} />
+    </Scene>
   );
 }
 
-/** Home: Bean planting a little flag on today's count. */
-export function FlagBean({ className, day }: { className?: string; day: number }) {
+/** Home: Bean in a small sun badge next to the day count. */
+export function HomeBadge({ className, day }: { className?: string; day: number }) {
+  const id = "homebadge";
   return (
-    <Doodle label={`Bean holding a flag for day ${day}`} width={120} height={132} className={className}>
-      <path d="M 92 54 L 92 8" {...STROKE} />
-      <path d="M 92 8 L 116 15 L 92 24 Z" fill={PINK} {...STROKE} strokeWidth={1.6} />
-      <Bean x={58} y={70} scale={0.95} look={1} rightHand={[34, -16]} leftHand={[-30, 14]} />
-      <Ground y={126} from={10} to={112} />
-    </Doodle>
+    <Scene id={id} label={`Bean, on day ${day}`} width={110} height={110} className={className}>
+      <circle cx={55} cy={55} r={52} fill={fill(id, "glow")} />
+      <circle cx={55} cy={55} r={40} fill={PEACH} />
+      <Bean x={55} y={62} scale={0.82} legs={false} />
+    </Scene>
   );
 }
 
-/** Panic done: Bean sitting down, done, with a couple of hearts floating up. */
-export function MadeItScene({ className }: { className?: string }) {
+/** Panic done: Bean sitting down on the hill, the sun coming up behind her. */
+export function RestScene({ className }: { className?: string }) {
+  const id = "rest";
   return (
-    <Doodle label="Bean sitting down, relieved, with hearts floating up" width={260} height={170} className={className}>
-      <Ground y={160} from={30} to={230} />
-      <Bean x={130} y={108} sitting look={0} leftHand={[-30, 20]} rightHand={[30, 20]} />
-      <Heart x={176} y={50} size={1.2} />
-      <Heart x={192} y={28} size={0.9} />
-      <Note x={70} y={44} color="blue" size={20} rotate={-6}>phew.</Note>
-    </Doodle>
+    <Scene id={id} label="Bean sitting down, resting, as the sun comes up" width={260} height={170} className={className}>
+      <circle cx={130} cy={118} r={84} fill={fill(id, "glow")} />
+      <circle cx={162} cy={82} r={38} fill={fill(id, "sun")} opacity={0.8} />
+      <path d="M 0 150 C 60 128 110 144 150 138 C 190 132 226 138 260 132 L 260 170 L 0 170 Z" fill={fill(id, "hill")} mask={`url(#${id}-edges)`} />
+      <Bean x={118} y={104} sitting />
+    </Scene>
   );
 }
 
-/** 404 and error: Bean sitting, a bit lost, question marks over her head. */
-export function LostScene({ className, note = "huh?" }: { className?: string; note?: string }) {
+/** 404 and error: Bean sitting quietly, a soft question bubble beside her. */
+export function LostScene({ className }: { className?: string }) {
+  const id = "lost";
   return (
-    <Doodle label="Bean sitting on the ground looking a little lost" width={260} height={170} className={className}>
-      <Ground y={160} from={30} to={230} />
-      <Bean x={130} y={108} sitting look={-1} leftHand={[-30, 22]} rightHand={[30, 22]} />
-      <Note x={170} y={56} color="blue" size={26} rotate={10}>?</Note>
-      <Note x={190} y={40} color="blue" size={18} rotate={-8}>?</Note>
-      <Note x={72} y={50} color="red" size={20} rotate={-6}>{note}</Note>
-    </Doodle>
+    <Scene id={id} label="Bean sitting quietly, a little lost" width={260} height={170} className={className}>
+      <circle cx={130} cy={100} r={80} fill={fill(id, "glow")} />
+      <path d="M 0 150 C 60 128 110 144 150 138 C 190 132 226 138 260 132 L 260 170 L 0 170 Z" fill={fill(id, "hill")} mask={`url(#${id}-edges)`} />
+      <Bean x={118} y={102} sitting look={1} />
+      <circle cx={178} cy={52} r={18} fill={CREAM} />
+      <circle cx={162} cy={70} r={4} fill={CREAM} />
+      <text
+        x={178}
+        y={60}
+        textAnchor="middle"
+        className="font-display"
+        fontSize={22}
+        fontWeight={800}
+        fill={INK}
+      >
+        ?
+      </text>
+    </Scene>
   );
 }

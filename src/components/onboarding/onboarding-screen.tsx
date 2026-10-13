@@ -19,8 +19,8 @@ export function OnboardingScreen({
           <span
             key={i}
             className={cn(
-              "h-2 flex-1 rounded-sketch-sm border border-ink transition-colors",
-              i <= step ? "bg-pink" : "bg-paper",
+              "h-1.5 flex-1 rounded-full transition-colors duration-500",
+              i <= step ? "bg-sun" : "bg-peach",
             )}
           />
         ))}
