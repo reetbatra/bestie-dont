@@ -7,13 +7,17 @@ import { toast } from "sonner";
 import { OnboardingScreen } from "@/components/onboarding/onboarding-screen";
 import { Button } from "@/components/ui/button";
 import { startAnonymousSession } from "@/lib/actions/auth";
+import { PushPhoneScene } from "@/components/doodles/scenes";
 
 /**
  * Maps technical auth errors to copy she'd actually understand. Anything
  * unmapped falls back to a generic retry message - never surface a raw
  * Supabase error string to her.
  */
-function friendlyAuthError(message: string): string {
+function friendlyAuthError(message: string, unreachable: boolean): string {
+  if (unreachable) {
+    return "We can't reach our servers right now. That's on us, not you. Try again in a few minutes.";
+  }
   if (message.toLowerCase().includes("anonymous")) {
     return "We're not quite ready yet. Give us a minute and try again.";
   }
@@ -30,7 +34,7 @@ export default function WelcomePage() {
     startTransition(async () => {
       const result = await startAnonymousSession();
       if ("error" in result && result.error) {
-        const friendly = friendlyAuthError(result.error);
+        const friendly = friendlyAuthError(result.error, "unreachable" in result && result.unreachable === true);
         setError(friendly);
         toast.error(friendly);
         return;
@@ -52,18 +56,19 @@ export default function WelcomePage() {
           </p>
           <Link
             href="/why"
-            className="text-center text-xs font-medium text-terracotta underline underline-offset-4"
+            className="text-center text-sm font-semibold text-pink underline decoration-wavy underline-offset-4"
           >
-            Skeptical? Here's why this works.
+            Skeptical? Here&apos;s why this works.
           </Link>
           {error && <p className="text-center text-xs text-destructive">{error}</p>}
         </>
       }
     >
       <div className="flex flex-1 flex-col justify-center">
-        <p className="font-display text-2xl italic text-terracotta">Hey.</p>
-        <h1 className="mt-2 font-display text-4xl font-semibold leading-tight text-balance">
-          You&apos;re not going to text him.
+        <PushPhoneScene className="mb-6 w-full" />
+        <p className="font-display text-3xl font-bold text-pink">Hey.</p>
+        <h1 className="mt-1 font-display text-4xl font-bold leading-tight text-balance">
+          You&apos;re not going to <span className="highlight">text him.</span>
         </h1>
         <p className="mt-4 max-w-[38ch] text-lg text-muted-foreground">
           We&apos;re going to make sure of it.

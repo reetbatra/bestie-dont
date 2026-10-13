@@ -89,9 +89,9 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
       <div className="flex flex-col gap-6 px-6">
         <Link
           href="/why"
-          className="rounded-3xl border border-terracotta/30 bg-terracotta/5 p-5 shadow-sm transition-colors hover:border-terracotta/50"
+          className="rounded-sketch border border-pink/30 bg-pink/5 p-5 transition-colors hover:border-pink/50"
         >
-          <p className="text-xs font-semibold uppercase tracking-wide text-terracotta">
+          <p className="font-display text-xl font-bold leading-tight text-pink">
             Not just vibes
           </p>
           <p className="mt-1 text-sm font-medium text-foreground">
@@ -99,8 +99,8 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
           </p>
         </Link>
 
-        <section className="rounded-3xl border border-border bg-card p-5 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        <section className="rounded-sketch border border-border bg-card p-5">
+          <p className="font-display text-xl font-bold leading-tight text-blue">
             Notifications
           </p>
           <p className="mt-2 text-sm font-medium">Zero. On purpose.</p>
@@ -110,8 +110,8 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
           </p>
         </section>
 
-        <section className="rounded-3xl border border-border bg-card p-5 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        <section className="rounded-sketch border border-border bg-card p-5">
+          <p className="font-display text-xl font-bold leading-tight text-blue">
             Account access
           </p>
           {settings.email ? (
@@ -131,13 +131,13 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
         </section>
 
         {!isInstalled && (
-          <section className="rounded-3xl border border-border bg-card p-5 shadow-sm">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <section className="rounded-sketch border border-border bg-card p-5">
+            <p className="font-display text-xl font-bold leading-tight text-blue">
               Put your bestie one tap away
             </p>
             {isIOS ? (
               <div className="mt-3 flex items-center gap-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-butter/40 text-ink">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sketch-sm bg-butter/40 text-ink">
                   <Share className="h-5 w-5" />
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -146,7 +146,7 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
               </div>
             ) : (
               <div className="mt-3 flex items-center gap-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-butter/40 text-ink">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sketch-sm bg-butter/40 text-ink">
                   {canInstall ? (
                     <Smartphone className="h-5 w-5" />
                   ) : (
@@ -166,8 +166,8 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
           </section>
         )}
 
-        <section className="rounded-3xl border border-border bg-card p-5 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        <section className="rounded-sketch border border-border bg-card p-5">
+          <p className="font-display text-xl font-bold leading-tight text-blue">
             His name
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
@@ -186,8 +186,8 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-border bg-card p-5 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        <section className="rounded-sketch border border-border bg-card p-5">
+          <p className="font-display text-xl font-bold leading-tight text-blue">
             Your data
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
@@ -199,8 +199,8 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
           </Button>
         </section>
 
-        <section className="rounded-3xl border border-destructive/30 bg-destructive/5 p-5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-destructive">
+        <section className="rounded-sketch border border-destructive/30 bg-destructive/5 p-5">
+          <p className="font-display text-xl font-bold leading-tight text-red">
             Delete account
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
@@ -246,7 +246,7 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
       <Dialog open={signOutWarningOpen} onOpenChange={setSignOutWarningOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Wait - you'll lose this.</DialogTitle>
+            <DialogTitle>Wait - you&apos;ll lose this.</DialogTitle>
             <DialogDescription>
               You have no email saved. Signing out means there&apos;s no way back into this
               account, including anything you&apos;ve paid for. Save an email first, or sign out

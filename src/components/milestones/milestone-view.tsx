@@ -16,59 +16,53 @@ async function drawCard(canvas: HTMLCanvasElement, data: MilestoneData) {
 
   await document.fonts.ready;
   const root = getComputedStyle(document.documentElement);
-  const fraunces = root.getPropertyValue("--font-fraunces").trim() || "serif";
-  const dmSans = root.getPropertyValue("--font-dmsans").trim() || "sans-serif";
+  const hand = root.getPropertyValue("--font-caveat").trim() || "cursive";
+  const body = root.getPropertyValue("--font-quicksand").trim() || "sans-serif";
 
   canvas.width = CARD_WIDTH;
   canvas.height = CARD_HEIGHT;
 
-  // the final milestone of the program (day 60, or day 90 if extended) trades terracotta for gold
+  // Same doodle-on-paper look as the app. The final milestone of the program
+  // (day 60, or day 90 if extended) swaps the pink number for ink with a
+  // pink highlighter swipe behind it.
   const graduated = data.isFinalMilestone;
-  const accent = graduated ? "#F3C969" : "#E06A4E";
-  const glowRgb = graduated ? "243, 201, 105" : "224, 106, 78";
-  const statColor = graduated ? "#E06A4E" : "#F3C969";
+  const ink = "#1D1B1A";
+  const muted = "#5F5A57";
+  const pink = "#D6336C";
+  const accent = graduated ? ink : pink;
+  const statColor = graduated ? pink : ink;
 
-  // background
-  ctx.fillStyle = "#1C1917";
+  ctx.fillStyle = "#FFFFFF";
   ctx.fillRect(0, 0, CARD_WIDTH, CARD_HEIGHT);
 
-  // soft glow behind the number
-  const gradient = ctx.createRadialGradient(
-    CARD_WIDTH / 2,
-    720,
-    100,
-    CARD_WIDTH / 2,
-    720,
-    620,
-  );
-  gradient.addColorStop(0, `rgba(${glowRgb}, 0.28)`);
-  gradient.addColorStop(1, `rgba(${glowRgb}, 0)`);
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, CARD_WIDTH, CARD_HEIGHT);
+  if (graduated) {
+    ctx.fillStyle = "#FFE3EE";
+    ctx.fillRect(CARD_WIDTH / 2 - 330, 700, 660, 210);
+  }
 
   ctx.textAlign = "center";
 
   // wordmark
-  ctx.fillStyle = "#B0A699";
-  ctx.font = `600 32px ${dmSans}`;
+  ctx.fillStyle = muted;
+  ctx.font = `700 32px ${body}`;
   ctx.letterSpacing = "4px";
   ctx.fillText("BESTIE, DON'T.", CARD_WIDTH / 2, 220);
   ctx.letterSpacing = "0px";
 
   // big day number
   ctx.fillStyle = accent;
-  ctx.font = `600 420px ${fraunces}`;
+  ctx.font = `700 460px ${hand}`;
   ctx.fillText(String(data.day), CARD_WIDTH / 2, 900);
 
-  ctx.fillStyle = "#F5EFE7";
-  ctx.font = `500 48px ${dmSans}`;
+  ctx.fillStyle = ink;
+  ctx.font = `700 48px ${body}`;
   ctx.letterSpacing = graduated ? "6px" : "0px";
   ctx.fillText(graduated ? "DAYS. GRADUATED." : "DAYS", CARD_WIDTH / 2, 990);
   ctx.letterSpacing = "0px";
 
   // subtext
-  ctx.fillStyle = "#F5EFE7";
-  ctx.font = `400 42px ${fraunces}`;
+  ctx.fillStyle = ink;
+  ctx.font = `700 60px ${hand}`;
   wrapText(ctx, streakSubtext(data.day), CARD_WIDTH / 2, 1130, 780, 56);
 
   // stats row; a zero on a celebration card reads as failure, so only
@@ -83,10 +77,10 @@ async function drawCard(canvas: HTMLCanvasElement, data: MilestoneData) {
   stats.forEach((stat, i) => {
     const x = colWidth * i + colWidth / 2;
     ctx.fillStyle = statColor;
-    ctx.font = `600 72px ${fraunces}`;
+    ctx.font = `700 96px ${hand}`;
     ctx.fillText(String(stat.value), x, statY);
-    ctx.fillStyle = "#B0A699";
-    ctx.font = `500 28px ${dmSans}`;
+    ctx.fillStyle = muted;
+    ctx.font = `500 28px ${body}`;
     wrapText(ctx, stat.label, x, statY + 50, colWidth - 40, 32);
   });
 }
@@ -150,7 +144,7 @@ export function MilestoneView({ data }: { data: MilestoneData }) {
 
   return (
     <div className="mx-auto flex h-dvh w-full max-w-[480px] flex-col items-center px-6 pb-6 pt-8 text-center">
-      <p className="font-display text-2xl italic text-terracotta">{data.day} days.</p>
+      <p className="font-display text-2xl font-bold text-pink">{data.day} days.</p>
       <h1 className="mt-2 font-display text-3xl font-semibold text-balance [@media(max-height:700px)]:text-2xl">
         {streakSubtext(data.day)}
       </h1>
@@ -162,7 +156,7 @@ export function MilestoneView({ data }: { data: MilestoneData }) {
           ref={canvasRef}
           width={CARD_WIDTH}
           height={CARD_HEIGHT}
-          className="max-h-full max-w-full rounded-3xl border border-border bg-[#1C1917] shadow-lg"
+          className="max-h-full max-w-full rounded-sketch border border-border bg-paper"
         />
       </div>
 

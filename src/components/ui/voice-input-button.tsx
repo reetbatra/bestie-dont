@@ -114,7 +114,7 @@ export function VoiceInputButton({ className, disabled, onTranscript }: VoiceInp
         {status === "recording" ? "Recording. Press the microphone again when you are done." : status === "transcribing" ? "Transcribing your recording." : error}
       </span>
       {error && (
-        <span role="alert" className="absolute right-0 top-full z-20 mt-1 whitespace-nowrap rounded bg-foreground px-2 py-1 text-xs text-background shadow-md">
+        <span role="alert" className="absolute right-0 top-full z-20 mt-1 whitespace-nowrap rounded bg-foreground px-2 py-1 text-xs text-background">
           {error}
         </span>
       )}

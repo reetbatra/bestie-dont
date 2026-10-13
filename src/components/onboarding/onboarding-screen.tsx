@@ -14,13 +14,13 @@ export function OnboardingScreen({
 }) {
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col px-6 pb-8 pt-10">
-      <div className="mb-10 flex items-center gap-1.5">
+      <div className="mb-6 flex items-center gap-1.5" aria-label={`Step ${step + 1} of ${TOTAL_STEPS}`} role="img">
         {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
           <span
             key={i}
             className={cn(
-              "h-1.5 flex-1 rounded-full transition-colors",
-              i < step ? "bg-terracotta" : "bg-muted",
+              "h-2 flex-1 rounded-sketch-sm border border-ink transition-colors",
+              i <= step ? "bg-pink" : "bg-paper",
             )}
           />
         ))}

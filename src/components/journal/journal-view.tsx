@@ -53,7 +53,7 @@ export function JournalView({
       />
 
       {today.inTrial && (
-        <div className="mx-6 mb-4 rounded-2xl bg-forest/10 px-4 py-2.5 text-center text-xs font-medium text-forest">
+        <div className="mx-6 mb-4 rounded-sketch-sm bg-blue/10 px-4 py-2.5 text-center text-xs font-medium text-blue">
           Free trial week. Unlimited, no card needed.
         </div>
       )}
@@ -63,9 +63,9 @@ export function JournalView({
           <button
             type="button"
             onClick={() => setPaywallOpen(true)}
-            className="w-full rounded-3xl border border-dashed border-terracotta/40 bg-terracotta/5 p-8 text-center"
+            className="w-full rounded-sketch border border-dashed border-pink/40 bg-pink/5 p-8 text-center"
           >
-            <p className="text-sm font-medium text-terracotta">
+            <p className="text-sm font-medium text-pink">
               Day {today.dayIndex} is part of the full 8-week arc.
             </p>
             <p className="mt-2 text-xs text-muted-foreground">
@@ -74,8 +74,8 @@ export function JournalView({
           </button>
         ) : (
           <>
-            <div className="rounded-3xl border border-border bg-card p-5 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <div className="rounded-sketch border border-border bg-card p-5">
+              <p className="font-display text-xl font-bold leading-tight text-blue">
                 Day {today.dayIndex}
               </p>
               <p className="mt-2 text-lg leading-snug text-foreground">{today.promptText}</p>
@@ -107,11 +107,11 @@ export function JournalView({
 
       {history.length > 0 && (
         <div className="mt-10 flex flex-col gap-3 px-6">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <p className="font-display text-xl font-bold leading-tight text-blue">
             Past days
           </p>
           {history.map((item) => (
-            <div key={item.dayIndex} className="rounded-3xl border border-border bg-card p-5">
+            <div key={item.dayIndex} className="rounded-sketch border border-border bg-card p-5">
               <p className="text-xs font-medium text-muted-foreground">Day {item.dayIndex}</p>
               <p className="mt-1 text-sm text-foreground">{item.promptText}</p>
               {item.skipped ? (

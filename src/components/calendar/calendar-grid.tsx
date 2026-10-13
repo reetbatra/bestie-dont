@@ -99,16 +99,16 @@ export function CalendarGrid({
               aria-pressed={isSelected}
               className={cn(
                 "relative flex aspect-square cursor-pointer items-center justify-center rounded-lg text-[10px] font-medium tabular-nums transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                filled ? "bg-terracotta text-primary-foreground" : "bg-muted text-muted-foreground",
-                isToday && "ring-2 ring-terracotta ring-offset-2 ring-offset-background",
-                isSlipped && "bg-butter text-[#23201C]",
-                isMilestone && !filled && "border border-dashed border-terracotta/50",
+                filled ? "bg-pink text-primary-foreground" : "bg-muted text-muted-foreground",
+                isToday && "ring-2 ring-pink ring-offset-2 ring-offset-background",
+                isSlipped && "bg-butter text-ink",
+                isMilestone && !filled && "border border-dashed border-pink/50",
                 isSelected && !isToday && "ring-2 ring-ring ring-offset-2 ring-offset-background",
               )}
             >
               {d}
               {isSlipped && (
-                <span className="absolute -right-0.5 -top-0.5 text-[8px] text-[#23201C]">*</span>
+                <span className="absolute -right-0.5 -top-0.5 text-[8px] text-ink">*</span>
               )}
             </button>
           );
@@ -124,7 +124,7 @@ export function CalendarGrid({
           initialNote={currentDaySlip?.note ?? undefined}
           triggerClassName={cn(
             buttonVariants({ size: "lg" }),
-            "mt-4 w-full bg-butter text-[#23201C] hover:bg-butter/90",
+            "mt-4 w-full bg-butter text-ink hover:bg-butter/90",
           )}
           trigger={
             currentDaySlip ? "See or edit what you logged today" : "Slipped today? Log it - nothing resets."
@@ -133,8 +133,8 @@ export function CalendarGrid({
       )}
 
       {sel !== null && (
-        <div className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        <div className="mt-4 rounded-sketch-sm border border-border bg-card p-4">
+          <p className="font-display text-xl font-bold leading-tight text-blue">
             Day {sel} · {dayLabel(startDate, sel)}
           </p>
           <p className="mt-1.5 text-sm text-foreground">
@@ -159,7 +159,7 @@ export function CalendarGrid({
               slipId={selSlip?.id}
               initialNote={selSlip?.note ?? undefined}
               trigger={
-                <span className="mt-3 inline-block cursor-pointer text-sm font-medium text-terracotta underline underline-offset-4">
+                <span className="mt-3 inline-block cursor-pointer text-sm font-medium text-pink underline underline-offset-4">
                   {selIsSlipped ? "Edit what happened" : "Something happened this day? Log a slip"}
                 </span>
               }
@@ -170,13 +170,13 @@ export function CalendarGrid({
 
       <div className="mt-6 flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground">
         <span className="inline-flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-terracotta" /> Done
+          <span className="h-2.5 w-2.5 rounded-full bg-pink" /> Done
         </span>
         <span className="inline-flex items-center gap-1.5">
           <span className="h-2.5 w-2.5 rounded-full bg-butter" /> Logged a slip, kept going
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full border border-dashed border-terracotta/50 bg-transparent" />{" "}
+          <span className="h-2.5 w-2.5 rounded-full border border-dashed border-pink/50 bg-transparent" />{" "}
           Milestone
         </span>
         <span className="inline-flex items-center gap-1.5">
@@ -189,8 +189,8 @@ export function CalendarGrid({
       </p>
 
       {slipInsight && (
-        <div className="mt-6 rounded-3xl border border-butter/60 bg-butter/10 p-5 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        <div className="mt-6 rounded-sketch border border-butter/60 bg-butter/10 p-5">
+          <p className="font-display text-xl font-bold leading-tight text-blue">
             Pattern
           </p>
           <p className="mt-2 text-sm leading-relaxed text-foreground/90">
@@ -199,8 +199,8 @@ export function CalendarGrid({
         </div>
       )}
 
-      <div className="mt-8 rounded-3xl border border-border bg-card p-5 shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+      <div className="mt-8 rounded-sketch border border-border bg-card p-5">
+        <p className="font-display text-xl font-bold leading-tight text-blue">
           Why sixty, specifically
         </p>
         <p className="mt-2 text-sm leading-relaxed text-foreground/90">
@@ -213,7 +213,7 @@ export function CalendarGrid({
         </p>
         <Link
           href="/why"
-          className="mt-3 inline-block text-xs font-medium text-terracotta underline underline-offset-4"
+          className="mt-3 inline-block text-xs font-medium text-pink underline underline-offset-4"
         >
           See all the research →
         </Link>

@@ -51,20 +51,20 @@ export function BreathingCircle({ onDone }: { onDone: () => void }) {
     <div className="flex flex-1 flex-col items-center justify-center">
       <div className="relative flex h-56 w-56 items-center justify-center">
         <div
-          className="absolute inset-0 rounded-full bg-terracotta/15 motion-reduce:transition-none"
+          className="absolute inset-0 rounded-sketch-alt border-[1.5px] border-dashed border-ink bg-pink-soft motion-reduce:transition-none"
           style={{
             transform: phase.label === "breathe in" || phase.label === "hold" ? "scale(1)" : "scale(0.6)",
             transition: `transform ${phase.duration}ms ease-in-out`,
           }}
         />
         <div
-          className="absolute h-32 w-32 rounded-full bg-terracotta/30 motion-reduce:transition-none"
+          className="absolute h-32 w-32 rounded-sketch border-[1.5px] border-ink bg-paper motion-reduce:transition-none"
           style={{
             transform: phase.label === "breathe in" || phase.label === "hold" ? "scale(1)" : "scale(0.7)",
             transition: `transform ${phase.duration}ms ease-in-out`,
           }}
         />
-        <span className="relative font-display text-lg italic text-terracotta">{phase.label}</span>
+        <span className="relative font-display text-2xl font-bold text-pink">{phase.label}</span>
       </div>
 
       <p className="mt-10 font-display text-4xl font-semibold tabular-nums">

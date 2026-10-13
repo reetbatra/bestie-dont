@@ -9,7 +9,7 @@ export default function RecordLoading() {
       <Skeleton className="mt-6 h-9 w-full rounded-full" />
       <div className="mt-4 flex flex-col gap-3">
         {[0, 1, 2].map((i) => (
-          <Skeleton key={i} className="h-24 w-full rounded-3xl" />
+          <Skeleton key={i} className="h-24 w-full rounded-sketch" />
         ))}
       </div>
     </div>

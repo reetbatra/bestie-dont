@@ -4,7 +4,14 @@ import { requireUserId } from "@/lib/supabase/server";
 import { encryptField } from "@/lib/crypto";
 import { profileAction } from "@/lib/perf/wrap";
 
-/** Screen 02, The Date - sets the breakup date and starts the streak immediately. */
+/**
+ * Screen 02, The Date - sets the breakup date and starts the streak immediately.
+ *
+ * Safe to run twice. Going back a screen and picking a different date used to
+ * insert a second active streak every time; reads all take the newest one, so
+ * nothing looked wrong, but every resubmit left a stray active row behind.
+ * Now a resubmit moves the existing streak's start date instead.
+ */
 export async function startStreak(startDate: string) {
   return profileAction("startStreak", async () => {
     const { supabase, userId } = await requireUserId();
@@ -15,9 +22,21 @@ export async function startStreak(startDate: string) {
       .eq("id", userId);
     if (profileError) return { error: profileError.message };
 
-    const { error: streakError } = await supabase
+    const { data: existing, error: lookupError } = await supabase
       .from("streaks")
-      .insert({ user_id: userId, start_date: startDate, is_active: true });
+      .select("id")
+      .eq("user_id", userId)
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (lookupError) return { error: lookupError.message };
+
+    const { error: streakError } = existing
+      ? await supabase.from("streaks").update({ start_date: startDate }).eq("id", existing.id)
+      : await supabase
+          .from("streaks")
+          .insert({ user_id: userId, start_date: startDate, is_active: true });
     if (streakError) return { error: streakError.message };
 
     return { success: true };
@@ -73,9 +92,19 @@ export async function addIdentityItems(items: IdentityItemInput[]) {
     const { supabase, userId } = await requireUserId();
     if (items.length === 0) return { success: true };
 
+    // Coming back to this screen and saving again shouldn't double her list.
+    const { data: existing, error: lookupError } = await supabase
+      .from("identity_items")
+      .select("label")
+      .eq("user_id", userId);
+    if (lookupError) return { error: lookupError.message };
+    const saved = new Set((existing ?? []).map((row) => row.label.toLowerCase()));
+    const fresh = items.filter((item) => !saved.has(item.label.toLowerCase()));
+    if (fresh.length === 0) return { success: true };
+
     const { error } = await supabase
       .from("identity_items")
-      .insert(items.map((item) => ({ user_id: userId, ...item })));
+      .insert(fresh.map((item) => ({ user_id: userId, ...item })));
     if (error) return { error: error.message };
     return { success: true };
   });

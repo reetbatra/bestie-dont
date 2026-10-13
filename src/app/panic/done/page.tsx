@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LogSlipDialog } from "@/components/panic/log-slip-dialog";
 import type { ResistCard } from "@/lib/actions/panic";
+import { MadeItScene } from "@/components/doodles/scenes";
 
 export default function PanicDonePage() {
   const [card, setCard] = useState<ResistCard | null>(null);
@@ -20,7 +21,8 @@ export default function PanicDonePage() {
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col px-6 pb-8 pt-10">
-      <h1 className="font-display text-2xl font-semibold text-balance">You made it.</h1>
+      <MadeItScene className="mx-auto mb-4 w-full max-w-72" />
+      <h1 className="font-display text-4xl font-bold text-balance">You made it.</h1>
       <p className="mt-2 text-base text-muted-foreground">
         Twenty minutes. Done. It&apos;s gone.
       </p>
@@ -28,16 +30,16 @@ export default function PanicDonePage() {
       {(card?.recordFact || card?.identityLabel) && (
         <div className="mt-8 flex flex-col gap-3">
           {card.recordFact && (
-            <div className="rounded-3xl border border-border bg-card p-5 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <div className="rounded-sketch border border-border bg-card p-5">
+              <p className="font-display text-xl font-bold leading-tight text-blue">
                 He said to you. The Record.
               </p>
               <p className="mt-2 text-sm leading-snug text-foreground">{card.recordFact}</p>
             </div>
           )}
           {card.identityLabel && (
-            <div className="rounded-3xl border border-border bg-card p-5 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <div className="rounded-sketch border border-border bg-card p-5">
+              <p className="font-display text-xl font-bold leading-tight text-blue">
                 You are also someone who
               </p>
               <p className="mt-2 text-sm leading-snug text-foreground">{card.identityLabel}</p>
@@ -50,7 +52,7 @@ export default function PanicDonePage() {
         <Button
           render={<Link href="/home" />}
           size="lg"
-          className="w-full bg-forest text-primary-foreground hover:bg-forest/90"
+          className="w-full bg-blue text-primary-foreground hover:bg-blue/90"
         >
           I made it through.
         </Button>

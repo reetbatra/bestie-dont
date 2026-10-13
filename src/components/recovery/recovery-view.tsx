@@ -5,7 +5,7 @@ import type { RecoveryData } from "@/lib/actions/recovery";
 export function RecoveryView({ data }: { data: RecoveryData }) {
   return (
     <div className="mx-auto flex h-dvh w-full max-w-[480px] flex-col items-center justify-center px-6 pb-6 pt-8 text-center">
-      <p className="font-display text-2xl italic text-forest">Still here.</p>
+      <p className="font-display text-2xl font-bold text-blue">Still here.</p>
       <h1 className="mt-3 max-w-[28ch] text-balance font-display text-3xl font-semibold">
         {data.daysSince} {data.daysSince === 1 ? "day" : "days"} since that slip, and you kept going anyway.
       </h1>

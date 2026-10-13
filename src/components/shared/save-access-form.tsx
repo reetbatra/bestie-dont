@@ -42,7 +42,7 @@ export function SaveAccessForm({
 
   if (sent) {
     return (
-      <p className={compact ? "text-xs text-forest" : "text-sm text-forest"}>
+      <p className={compact ? "text-xs text-blue" : "text-sm text-blue"}>
         Check {email} for a confirmation link. Until you click it, this device stays your access
         - nothing changes today.
       </p>

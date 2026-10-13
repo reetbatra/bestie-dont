@@ -50,7 +50,7 @@ export function PaywallDialog({
         <ul className="flex flex-col gap-2 text-sm text-foreground">
           <li>Unlimited entries in your Record, not just three</li>
           <li>The full 8-week journaling arc, not just the first 3 days</li>
-          <li>Vault drafts resurface after 30 days, so you can see how far you've come</li>
+          <li>Vault drafts resurface after 30 days, so you can see how far you&apos;ve come</li>
           <li>Milestone share cards</li>
         </ul>
         <p className="text-xs text-muted-foreground">

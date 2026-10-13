@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { LostScene } from "@/components/doodles/scenes";
 
 export default function Error({
   error,
@@ -17,7 +18,8 @@ export default function Error({
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col items-center justify-center px-6 pb-8 pt-10 text-center">
-      <p className="font-display text-2xl italic text-terracotta">Ugh.</p>
+      <LostScene note="oops." className="mb-4 w-full max-w-72" />
+      <p className="font-display text-2xl font-bold text-pink">Ugh.</p>
       <h1 className="mt-2 font-display text-3xl font-semibold text-balance">
         Something broke on our end.
       </h1>

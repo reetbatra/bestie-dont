@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Home, NotebookText, BookOpen, PenLine, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DETOX_RULES } from "@/lib/streak";
+import { FlagBean } from "@/components/doodles/scenes";
 
 const NAV_ITEMS = [
   { href: "/home", label: "Home", icon: Home },
@@ -37,7 +38,7 @@ export function HomeShell({
     <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col">
       <div className="flex-1 overflow-y-auto px-6 pb-40 pt-10">
         <div className="flex items-center justify-between">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <p className="font-display text-2xl font-bold leading-none text-pink">
             bestie, don&apos;t.
           </p>
           <Link href="/settings" className="text-muted-foreground" aria-label="Settings">
@@ -46,10 +47,13 @@ export function HomeShell({
         </div>
 
         <div className="mt-8">
-          <span className="font-display text-8xl font-semibold tabular-nums leading-none text-terracotta">
-            {day}
-          </span>
-          <p className="mt-2 text-sm font-medium uppercase tracking-wide text-muted-foreground">
+          <div className="flex items-end gap-2">
+            <span className="font-display text-8xl font-bold tabular-nums leading-none text-pink">
+              {day}
+            </span>
+            <FlagBean day={day} className="-mb-1 h-28 w-auto" />
+          </div>
+          <p className="mt-1 font-display text-2xl font-bold text-muted-foreground">
             {day === 1 ? "day" : "days"}
           </p>
           <p className="mt-4 max-w-[36ch] text-base text-foreground">{subtext}</p>
@@ -57,10 +61,10 @@ export function HomeShell({
 
         <Link
           href="/calendar"
-          className="mt-6 flex items-center justify-between rounded-3xl border border-border bg-card p-5 shadow-sm transition-colors hover:border-terracotta/40"
+          className="mt-6 flex items-center justify-between rounded-sketch border border-border bg-card p-5 transition-colors hover:border-pink/40"
         >
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="font-display text-xl font-bold leading-tight text-blue">
               The {programLengthDays} days
             </p>
             <p className="mt-1 text-sm text-foreground">
@@ -69,18 +73,18 @@ export function HomeShell({
                 : `You made it through all ${programLengthDays === 90 ? "ninety" : "sixty"}.`}
             </p>
           </div>
-          <span className="text-sm font-medium text-terracotta">View →</span>
+          <span className="text-sm font-medium text-pink">View →</span>
         </Link>
 
         {isExtended && daysLeft > 0 && (
-          <div className="mt-6 rounded-3xl border border-terracotta/30 bg-terracotta/5 p-5 shadow-sm">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <div className="mt-6 rounded-sketch border border-pink/30 bg-pink/5 p-5">
+            <p className="font-display text-xl font-bold leading-tight text-blue">
               Detox mode
             </p>
             <ul className="mt-2 flex flex-col gap-1.5 text-sm text-foreground">
               {DETOX_RULES.map((rule) => (
                 <li key={rule} className="flex gap-2">
-                  <span className="text-terracotta">•</span>
+                  <span className="text-pink">•</span>
                   {rule}
                 </li>
               ))}
@@ -91,9 +95,9 @@ export function HomeShell({
         {pendingRecovery && (
           <Link
             href={`/recovery/${pendingRecovery.slipId}`}
-            className="mt-8 block rounded-3xl border border-forest/40 bg-forest/10 p-5 shadow-sm transition-colors hover:border-forest/60"
+            className="mt-8 block rounded-sketch border border-blue/40 bg-blue/10 p-5 transition-colors hover:border-blue/60"
           >
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="font-display text-xl font-bold leading-tight text-blue">
               Checking in
             </p>
             <p className="mt-1 font-display text-lg font-semibold text-foreground">
@@ -105,9 +109,9 @@ export function HomeShell({
         {pendingMilestone && (
           <Link
             href={`/milestones/${pendingMilestone}`}
-            className="mt-8 block rounded-3xl border border-butter/60 bg-butter/15 p-5 shadow-sm transition-colors hover:border-butter"
+            className="mt-8 block rounded-sketch border border-butter/60 bg-butter/15 p-5 transition-colors hover:border-butter"
           >
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="font-display text-xl font-bold leading-tight text-blue">
               Milestone
             </p>
             <p className="mt-1 font-display text-lg font-semibold text-foreground">
@@ -119,13 +123,13 @@ export function HomeShell({
         {promptText && (
           <Link
             href="/journal"
-            className="mt-10 block rounded-3xl border border-border bg-card p-5 shadow-sm transition-colors hover:border-terracotta/40"
+            className="mt-10 block rounded-sketch border border-border bg-card p-5 transition-colors hover:border-pink/40"
           >
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="font-display text-xl font-bold leading-tight text-blue">
               Today&apos;s prompt
             </p>
             <p className="mt-2 text-base leading-snug text-foreground">{promptText}</p>
-            <p className="mt-3 text-sm font-medium text-terracotta">
+            <p className="mt-3 text-sm font-medium text-pink">
               {promptAnswered ? "Read what you wrote →" : "Start writing →"}
             </p>
           </Link>
@@ -136,7 +140,7 @@ export function HomeShell({
         <div className="border-t border-border bg-background/95 px-6 pb-3 pt-4 backdrop-blur">
           <Link
             href="/panic/reset"
-            className="block w-full rounded-2xl bg-terracotta px-6 py-4 text-center text-base font-semibold text-primary-foreground shadow-lg transition-transform active:scale-[0.98]"
+            className="block w-full rounded-sketch-sm border-[1.5px] border-ink bg-pink px-6 py-4 text-center font-display text-xl font-bold text-primary-foreground transition-transform active:scale-[0.98]"
           >
             don&apos;t text him. come here.
           </Link>
@@ -147,7 +151,7 @@ export function HomeShell({
                 href={href}
                 className={cn(
                   "flex flex-col items-center gap-1 rounded-xl px-4 py-1.5 text-xs text-muted-foreground transition-colors",
-                  href === "/home" && "text-terracotta",
+                  href === "/home" && "text-pink",
                 )}
               >
                 <Icon className="h-5 w-5" />

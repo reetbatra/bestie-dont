@@ -7,6 +7,7 @@ import { OnboardingScreen } from "@/components/onboarding/onboarding-screen";
 import { Button } from "@/components/ui/button";
 import { useInstallPrompt } from "@/components/pwa/install-provider";
 import { Smartphone, Share, MoreVertical } from "lucide-react";
+import { ButtonScene } from "@/components/doodles/scenes";
 
 export default function TheDealPage() {
   const router = useRouter();
@@ -40,16 +41,17 @@ export default function TheDealPage() {
         </>
       }
     >
-      <h1 className="font-display text-2xl font-semibold text-balance">
+      <ButtonScene className="mx-auto max-h-40 w-full" />
+      <h1 className="mt-4 font-display text-3xl font-bold text-balance">
         When you want to text him.
       </h1>
-      <p className="mt-2 font-display text-lg italic text-terracotta">Come here first.</p>
+      <p className="mt-1 font-display text-xl font-bold text-pink">Come here first.</p>
 
-      <div className="mt-8 rounded-3xl border border-border bg-card p-6 shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+      <div className="mt-6 rounded-sketch border border-border bg-card p-6">
+        <p className="font-display text-xl font-bold leading-tight text-blue">
           Your panic button
         </p>
-        <div className="mt-4 w-full rounded-2xl bg-terracotta px-6 py-4 text-center font-semibold text-primary-foreground">
+        <div className="mt-3 w-full rounded-sketch-sm border-[1.5px] border-ink bg-pink px-6 py-4 text-center font-display text-xl font-bold text-primary-foreground">
           don&apos;t text him. come here.
         </div>
         <p className="mt-4 text-sm text-muted-foreground">
@@ -59,9 +61,9 @@ export default function TheDealPage() {
       </div>
 
       {!isInstalled && !installed && isIOS && (
-        <div className="mt-4 rounded-3xl border border-border bg-card p-5 shadow-sm">
+        <div className="mt-4 rounded-sketch border border-border bg-card p-5">
           <div className="flex items-center gap-4">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-butter/40 text-ink">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sketch-sm bg-butter/40 text-ink">
               <Share className="h-5 w-5" />
             </div>
             <div className="flex-1">
@@ -75,8 +77,8 @@ export default function TheDealPage() {
       )}
 
       {!isInstalled && !installed && !isIOS && (
-        <div className="mt-4 flex items-center gap-4 rounded-3xl border border-border bg-card p-5 shadow-sm">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-butter/40 text-ink">
+        <div className="mt-4 flex items-center gap-4 rounded-sketch border border-border bg-card p-5">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sketch-sm bg-butter/40 text-ink">
             {canInstall ? (
               <Smartphone className="h-5 w-5" />
             ) : (
@@ -95,7 +97,7 @@ export default function TheDealPage() {
         </div>
       )}
 
-      <div className="mt-4 rounded-3xl border border-border bg-card p-5 shadow-sm">
+      <div className="mt-4 rounded-sketch border border-border bg-card p-5">
         <p className="text-sm font-semibold">Zero notifications. On purpose.</p>
         <p className="mt-1 text-xs text-muted-foreground">
           We don&apos;t ping, buzz, or check in on you. Come back when you want to, not when we

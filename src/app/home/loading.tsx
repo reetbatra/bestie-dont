@@ -12,7 +12,7 @@ export default function HomeLoading() {
         <Skeleton className="mt-3 h-3 w-10" />
         <Skeleton className="mt-4 h-4 w-56" />
       </div>
-      <Skeleton className="mt-10 h-28 w-full rounded-3xl" />
+      <Skeleton className="mt-10 h-28 w-full rounded-sketch" />
     </div>
   );
 }

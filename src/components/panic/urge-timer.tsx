@@ -91,7 +91,7 @@ export function UrgeTimer() {
       <h1 className="font-display text-2xl font-semibold text-balance">This feeling has a timer.</h1>
 
       <div className="mt-10 flex flex-col items-center">
-        <p className="font-display text-6xl font-semibold tabular-nums text-terracotta">
+        <p className="font-display text-6xl font-semibold tabular-nums text-pink">
           {mm}:{ss}
         </p>
         <p className="mt-3 max-w-[34ch] text-center text-sm text-muted-foreground">
@@ -102,23 +102,23 @@ export function UrgeTimer() {
 
       <div className="mt-10 flex flex-col gap-3">
         {card?.recordFact && (
-          <div className="rounded-3xl border border-border bg-card p-5 shadow-sm">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <div className="rounded-sketch border border-border bg-card p-5">
+            <p className="font-display text-xl font-bold leading-tight text-blue">
               He said to you. The Record.
             </p>
             <p className="mt-2 text-base leading-snug text-foreground">{card.recordFact}</p>
           </div>
         )}
         {card?.identityLabel && (
-          <div className="rounded-3xl border border-border bg-card p-5 shadow-sm">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <div className="rounded-sketch border border-border bg-card p-5">
+            <p className="font-display text-xl font-bold leading-tight text-blue">
               You are also someone who
             </p>
             <p className="mt-2 text-base leading-snug text-foreground">{card.identityLabel}</p>
           </div>
         )}
         {card && !card.recordFact && !card.identityLabel && (
-          <div className="rounded-3xl border border-border bg-card p-5 text-sm text-muted-foreground shadow-sm">
+          <div className="rounded-sketch border border-border bg-card p-5 text-sm text-muted-foreground">
             Nothing in the Record yet. When you add something, it&apos;ll show up right here, at
             exactly the moment it&apos;s useful.
           </div>

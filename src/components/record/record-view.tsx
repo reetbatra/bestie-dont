@@ -127,21 +127,21 @@ export function RecordView({
       />
 
       {inTrial && !hasPurchased && (
-        <div className="mx-6 mb-4 rounded-2xl bg-forest/10 px-4 py-2.5 text-center text-xs font-medium text-forest">
+        <div className="mx-6 mb-4 rounded-sketch-sm bg-blue/10 px-4 py-2.5 text-center text-xs font-medium text-blue">
           Free trial week. Unlimited, no card needed.
         </div>
       )}
 
       <div className="mt-4 flex flex-col gap-3 px-6">
         {entries.length === 0 && (
-          <div className="rounded-3xl border border-dashed border-border p-8 text-center">
+          <div className="rounded-sketch border border-dashed border-border p-8 text-center">
             <p className="text-sm text-muted-foreground">
               Nothing here yet. Your memory is still doing PR for him. Fix that.
             </p>
           </div>
         )}
         {entries.map((entry) => (
-          <div key={entry.id} className="rounded-3xl border border-border bg-card p-5 shadow-sm">
+          <div key={entry.id} className="rounded-sketch border border-border bg-card p-5">
             <p className="text-xs font-medium text-muted-foreground">
               {formatDate(entry.occurredOn)}
             </p>
@@ -150,8 +150,8 @@ export function RecordView({
               <p className="mt-2 text-sm text-muted-foreground">{entry.feeling}</p>
             )}
             {entry.selfFacing && (
-              <div className="mt-3 rounded-2xl bg-butter/15 p-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <div className="mt-3 rounded-sketch-sm bg-butter/15 p-3">
+                <p className="font-display text-xl font-bold leading-tight text-blue">
                   What you told yourself
                 </p>
                 <p className="mt-1 text-sm text-foreground">{entry.selfFacing}</p>
@@ -164,7 +164,7 @@ export function RecordView({
           <button
             type="button"
             onClick={() => setPaywallOpen(true)}
-            className="rounded-3xl border border-dashed border-terracotta/40 bg-terracotta/5 p-5 text-center text-sm font-medium text-terracotta"
+            className="rounded-sketch border border-dashed border-pink/40 bg-pink/5 p-5 text-center text-sm font-medium text-pink"
           >
             Unlock the full Record →
           </button>

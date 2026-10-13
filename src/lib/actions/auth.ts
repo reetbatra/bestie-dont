@@ -20,7 +20,20 @@ export async function startAnonymousSession() {
 
     const { data, error } = await supabase.auth.signInAnonymously();
     if (error || !data.user) {
-      return { error: error?.message ?? "Could not start a session." };
+      // The client only ever shows her friendly copy, so this log line is the
+      // one place the real cause survives. It's how the October 2026 outage
+      // (Supabase project auto-paused, every request failing DNS) would have
+      // been obvious from the Vercel logs instead of a vague "try again".
+      console.error("[startAnonymousSession] signInAnonymously failed", {
+        name: error?.name,
+        status: error?.status,
+        code: error?.code,
+        message: error?.message,
+      });
+      return {
+        error: error?.message ?? "Could not start a session.",
+        unreachable: error?.name === "AuthRetryableFetchError" || error?.status === 0,
+      };
     }
     return { userId: data.user.id };
   });

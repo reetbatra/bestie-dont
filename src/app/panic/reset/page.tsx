@@ -19,7 +19,7 @@ export default function SomaticResetPage() {
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col px-6 pb-8 pt-10">
       <div>
-        <p className="font-display text-2xl font-semibold italic text-terracotta">Good.</p>
+        <p className="font-display text-2xl font-bold text-pink">Good.</p>
         <p className="mt-1 max-w-[36ch] text-base text-muted-foreground">
           You came here instead. Let&apos;s get your body first. The thinking can wait.
         </p>

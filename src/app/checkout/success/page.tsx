@@ -10,7 +10,7 @@ async function CheckoutSuccessPage() {
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col justify-center px-6 pb-8 pt-10 text-center">
-      <p className="font-display text-2xl italic text-terracotta">You&apos;re in.</p>
+      <p className="font-display text-2xl font-bold text-pink">You&apos;re in.</p>
       <h1 className="mt-2 font-display text-3xl font-semibold text-balance">
         The full sixty days, unlocked.
       </h1>
@@ -25,7 +25,7 @@ async function CheckoutSuccessPage() {
       </p>
 
       {!hasEmail && (
-        <div className="mt-8 rounded-3xl border border-terracotta/30 bg-terracotta/5 p-5 text-left">
+        <div className="mt-8 rounded-sketch border border-pink/30 bg-pink/5 p-5 text-left">
           <p className="text-sm font-semibold text-foreground">
             One more thing, before you go.
           </p>

@@ -7,16 +7,19 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-dmsans);
+  --font-sans: var(--font-quicksand);
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  --font-display: var(--font-fraunces);
+  --font-display: var(--font-caveat);
+  --font-heading: var(--font-caveat);
 
-  /* brand palette, exposed as utilities: bg-terracotta, text-forest, etc. */
-  --color-terracotta: var(--terracotta);
-  --color-forest: var(--forest);
+  /* brand palette, exposed as utilities: bg-pink, text-blue, etc. */
+  --color-pink: var(--pink);
+  --color-pink-soft: var(--pink-soft);
+  --color-red: var(--red);
+  --color-orange: var(--orange);
+  --color-blue: var(--blue);
   --color-butter: var(--butter);
-  --color-blush: var(--blush);
-  --color-cream: var(--cream);
+  --color-paper: var(--paper);
   --color-ink: var(--ink);
 
   --color-sidebar-ring: var(--sidebar-ring);
@@ -58,98 +61,77 @@
 }
 
 /*
-  Bestie, Don't brand tokens.
-  Light = cream/ink/terracotta from the wireframe swatches.
-  Dark is the primary mode this app gets used in (1am, post-breakup) -
-  it is not a dimmed-down afterthought, terracotta brightens rather than just fading.
+  Bestie, Don't brand tokens: a doodle on white paper.
+  Visual language borrowed from hand-drawn explainer sketches (thin black ink,
+  lots of white space, handwritten margin notes in a few marker colors):
+  - ink:    the line work, characters, body text
+  - pink:   the one loud color. Primary actions, her streak, the bow
+  - red:    margin notes that matter (warnings, "this is the problem")
+  - orange: movement and direction (arrows, paths, "from here to there")
+  - blue:   quieter second-layer notes (inner thoughts, system state)
+  - butter: highlighter swipes behind words
+  No gradients, no drop shadows, no paper texture. The app is used in the dark
+  at 1am but `.dark` is never applied (there's no theme switcher), so this is
+  the single theme. Dark values below exist only so shadcn's `dark:` variants
+  in ui/ don't render unstyled if a theme switcher ever lands.
 */
 :root {
-  --cream: #faf5ef;
-  --ink: #23201c;
-  --ink-muted: #6f6659;
-  --terracotta: #b5442d;
-  --forest: #2e4b3f;
-  --butter: #f3c969;
-  --blush: #e8b4a8;
-  --surface: #fffefb;
-  --surface-2: #f1e9de;
+  --paper: #ffffff;
+  --ink: #1d1b1a;
+  --ink-muted: #5f5a57;
+  --pink: #d6336c;
+  --pink-soft: #ffe3ee;
+  --red: #e03131;
+  --orange: #f08c00;
+  --blue: #3567d1;
+  --butter: #ffe066;
+  --surface: #ffffff;
+  --surface-2: #fff4f8;
 
-  --background: var(--cream);
+  --background: var(--paper);
   --foreground: var(--ink);
   --card: var(--surface);
   --card-foreground: var(--ink);
   --popover: var(--surface);
   --popover-foreground: var(--ink);
-  --primary: var(--terracotta);
-  --primary-foreground: var(--cream);
-  --secondary: var(--forest);
-  --secondary-foreground: var(--cream);
+  --primary: var(--pink);
+  --primary-foreground: #ffffff;
+  --secondary: var(--pink-soft);
+  --secondary-foreground: var(--ink);
   --muted: var(--surface-2);
   --muted-foreground: var(--ink-muted);
-  --accent: var(--blush);
+  --accent: var(--pink-soft);
   --accent-foreground: var(--ink);
-  --destructive: #b3261e;
-  --border: color-mix(in oklab, var(--ink) 12%, transparent);
-  --input: color-mix(in oklab, var(--ink) 18%, transparent);
-  --ring: var(--terracotta);
-  --chart-1: var(--terracotta);
-  --chart-2: var(--forest);
-  --chart-3: var(--butter);
-  --chart-4: var(--blush);
+  --destructive: var(--red);
+  --border: var(--ink);
+  --input: var(--ink);
+  --ring: var(--pink);
+  --chart-1: var(--pink);
+  --chart-2: var(--blue);
+  --chart-3: var(--orange);
+  --chart-4: var(--butter);
   --chart-5: var(--ink-muted);
-  --radius: 1.125rem;
+  --radius: 1rem;
   --sidebar: var(--surface);
   --sidebar-foreground: var(--ink);
-  --sidebar-primary: var(--terracotta);
-  --sidebar-primary-foreground: var(--cream);
-  --sidebar-accent: var(--blush);
+  --sidebar-primary: var(--pink);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--pink-soft);
   --sidebar-accent-foreground: var(--ink);
   --sidebar-border: var(--border);
-  --sidebar-ring: var(--terracotta);
+  --sidebar-ring: var(--pink);
 }
 
 .dark {
-  --cream: #1c1917;
-  --ink: #f5efe7;
-  --ink-muted: #b0a699;
-  --terracotta: #e06a4e;
-  --forest: #5c9179;
-  --butter: #f3c969;
-  --blush: #d9a192;
-  --surface: #252120;
-  --surface-2: #2e2926;
-
-  --background: var(--cream);
-  --foreground: var(--ink);
-  --card: var(--surface);
-  --card-foreground: var(--ink);
-  --popover: var(--surface);
-  --popover-foreground: var(--ink);
-  --primary: var(--terracotta);
-  --primary-foreground: #1c1917;
-  --secondary: var(--forest);
-  --secondary-foreground: #1c1917;
-  --muted: var(--surface-2);
-  --muted-foreground: var(--ink-muted);
-  --accent: var(--blush);
-  --accent-foreground: #1c1917;
-  --destructive: #e5493b;
-  --border: color-mix(in oklab, var(--ink) 12%, transparent);
-  --input: color-mix(in oklab, var(--ink) 18%, transparent);
-  --ring: var(--terracotta);
-  --chart-1: var(--terracotta);
-  --chart-2: var(--forest);
-  --chart-3: var(--butter);
-  --chart-4: var(--blush);
-  --chart-5: var(--ink-muted);
-  --sidebar: var(--surface);
-  --sidebar-foreground: var(--ink);
-  --sidebar-primary: var(--terracotta);
-  --sidebar-primary-foreground: #1c1917;
-  --sidebar-accent: var(--blush);
-  --sidebar-accent-foreground: #1c1917;
-  --sidebar-border: var(--border);
-  --sidebar-ring: var(--terracotta);
+  --paper: #161414;
+  --ink: #f6f1ee;
+  --ink-muted: #b9b1ad;
+  --pink: #ff6b9a;
+  --pink-soft: #3a2029;
+  --surface: #1f1c1c;
+  --surface-2: #2a2224;
+  --primary-foreground: #161414;
+  --sidebar-primary-foreground: #161414;
 }
 
 @layer base {
@@ -162,17 +144,72 @@
   html {
     @apply font-sans;
   }
+  h1, h2, h3 {
+    letter-spacing: -0.005em;
+  }
   ::selection {
-    background: var(--butter);
+    background: var(--pink-soft);
     color: var(--ink);
   }
+}
+
+/*
+  Hand-drawn corners. Asymmetric elliptical radii read as a box someone drew
+  with a pen instead of a box a computer drew. Two variants so neighbouring
+  shapes don't wobble in lockstep.
+*/
+@utility rounded-sketch {
+  border-radius: 28px 10px 24px 12px / 12px 26px 10px 28px;
+}
+@utility rounded-sketch-sm {
+  border-radius: 16px 7px 15px 8px / 8px 15px 7px 16px;
+}
+@utility rounded-sketch-alt {
+  border-radius: 10px 26px 12px 24px / 26px 10px 28px 12px;
+}
+
+/* A marker swipe behind a word, the way you'd highlight a note. */
+@utility highlight {
+  background: linear-gradient(transparent 55%, color-mix(in oklab, var(--butter) 85%, transparent) 55%, color-mix(in oklab, var(--butter) 85%, transparent) 92%, transparent 92%);
+  padding-inline: 0.15em;
+  box-decoration-break: clone;
 }
 
 @layer utilities {
   .font-display {
     font-family: var(--font-display);
+    /* Caveat ships no italic; a browser-faked slant on handwriting looks broken. */
+    font-synthesis: none;
+    font-style: normal;
   }
   .tabular-nums {
     font-variant-numeric: tabular-nums;
+  }
+}
+
+/*
+  Bean's idle life: a slow breath and the occasional blink. Both stop for
+  anyone who asked their OS for less motion.
+*/
+@keyframes doodle-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-1.5px); }
+}
+@keyframes doodle-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.1); }
+}
+.doodle-bob {
+  animation: doodle-bob 3.2s ease-in-out infinite;
+}
+.doodle-blink {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: doodle-blink 5.5s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .doodle-bob,
+  .doodle-blink {
+    animation: none;
   }
 }

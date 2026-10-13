@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { startStreak } from "@/lib/actions/onboarding";
+import { CalendarScene } from "@/components/doodles/scenes";
 
 function toISODate(date: Date) {
   const offset = date.getTimezoneOffset();
@@ -53,14 +54,15 @@ export default function DatePage() {
         </>
       }
     >
-      <h1 className="font-display text-2xl font-semibold text-balance">
+      <CalendarScene className="mx-auto max-h-44 w-full" />
+      <h1 className="mt-4 font-display text-3xl font-bold text-balance">
         When did you last contact him?
       </h1>
 
-      <div className="mt-10 flex flex-1 flex-col items-center justify-center gap-6">
+      <div className="mt-6 flex flex-1 flex-col items-center justify-center gap-6">
         <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger className="rounded-3xl border border-border bg-card px-8 py-6 text-center shadow-sm transition-colors hover:border-terracotta/40">
-            <span className="block font-display text-4xl font-semibold tabular-nums">
+          <PopoverTrigger className="cursor-pointer rounded-sketch border-[1.5px] border-ink bg-card px-8 py-5 text-center transition-colors hover:bg-pink-soft">
+            <span className="block font-display text-4xl font-bold tabular-nums">
               {formatted}
             </span>
             <span className="mt-1 block text-xs text-muted-foreground">tap to change</span>
