@@ -1,23 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LogSlipDialog } from "@/components/panic/log-slip-dialog";
 import type { ResistCard } from "@/lib/actions/panic";
+import { useStoredJson } from "@/hooks/use-stored-json";
 import { RestScene } from "@/components/doodles/scenes";
 
 export default function PanicDonePage() {
-  const [card, setCard] = useState<ResistCard | null>(null);
-
-  useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem("bestie:last-resist-card");
-      if (raw) setCard(JSON.parse(raw));
-    } catch {
-      // no recap available, screen still works without it
-    }
-  }, []);
+  // Written by the urge timer on its way here. Missing in private mode or on
+  // a direct visit, and the screen works fine without the recap.
+  const card = useStoredJson<ResistCard>("session", "bestie:last-resist-card");
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col px-6 pb-8 pt-10">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { useStoredJson } from "@/hooks/use-stored-json";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { getResistCard, type ResistCard } from "@/lib/actions/panic";
@@ -8,15 +9,6 @@ import { CrisisLink } from "@/components/shared/crisis-link";
 
 const TOTAL_SECONDS = 20 * 60;
 const CACHE_KEY = "bestie:resist-card-cache";
-
-function readCachedCard(): ResistCard | null {
-  try {
-    const raw = localStorage.getItem(CACHE_KEY);
-    return raw ? (JSON.parse(raw) as ResistCard) : null;
-  } catch {
-    return null;
-  }
-}
 
 function writeCachedCard(card: ResistCard) {
   try {
@@ -30,24 +22,24 @@ function writeCachedCard(card: ResistCard) {
 export function UrgeTimer() {
   const router = useRouter();
   const [secondsLeft, setSecondsLeft] = useState(TOTAL_SECONDS);
-  const [card, setCard] = useState<ResistCard | null>(null);
+  const cachedCard = useStoredJson<ResistCard>("local", CACHE_KEY);
+  const [freshCard, setFreshCard] = useState<ResistCard | null>(null);
   const [isPending, startTransition] = useTransition();
   const navigated = useRef(false);
 
-  // Hydrate instantly from whatever was last synced (works with zero
-  // signal), then try for a fresh one in the background if we're online.
+  // Show whatever was last synced straight away (works with zero signal),
+  // then swap in a fresh card from the server if we're online.
+  const card = freshCard ?? cachedCard;
   useEffect(() => {
-    setCard(readCachedCard());
     startTransition(async () => {
       try {
         const fresh = await getResistCard();
-        setCard(fresh);
+        setFreshCard(fresh);
         writeCachedCard(fresh);
       } catch {
         // offline or the action failed - the cached card (if any) stands
       }
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const finish = useCallback(() => {
@@ -75,7 +67,7 @@ export function UrgeTimer() {
     startTransition(async () => {
       try {
         const next = await getResistCard();
-        setCard(next);
+        setFreshCard(next);
         writeCachedCard(next);
       } catch {
         // offline - keep showing the current card, nothing to rotate to

@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 import { isIOS, isStandalone } from "@/lib/platform";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -26,10 +33,27 @@ export function useInstallPrompt() {
   return useContext(InstallContext);
 }
 
+// The platform never changes during a session; nothing to subscribe to.
+const subscribeNever = () => () => {};
+
+// Re-check standalone mode when the display mode flips (e.g. the app gets
+// opened from the home screen in the same browser session).
+function subscribeDisplayMode(onChange: () => void) {
+  const query = window.matchMedia("(display-mode: standalone)");
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+}
+
 export function InstallProvider({ children }: { children: ReactNode }) {
   const [deferredEvent, setDeferredEvent] = useState<BeforeInstallPromptEvent | null>(null);
-  const [isInstalled, setIsInstalled] = useState(false);
-  const [onIOS, setOnIOS] = useState(false);
+  // Server snapshots are `false`: the server can't know, and the client
+  // corrects it on its first render without a mismatch.
+  const onIOS = useSyncExternalStore(subscribeNever, isIOS, () => false);
+  const standalone = useSyncExternalStore(subscribeDisplayMode, isStandalone, () => false);
+  // Installing from a browser tab fires `appinstalled` but the tab itself
+  // stays non-standalone, so that case needs its own flag.
+  const [justInstalled, setJustInstalled] = useState(false);
+  const isInstalled = standalone || justInstalled;
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -38,10 +62,7 @@ export function InstallProvider({ children }: { children: ReactNode }) {
     };
     window.addEventListener("beforeinstallprompt", handler);
 
-    setIsInstalled(isStandalone());
-    setOnIOS(isIOS());
-
-    const installedHandler = () => setIsInstalled(true);
+    const installedHandler = () => setJustInstalled(true);
     window.addEventListener("appinstalled", installedHandler);
 
     return () => {
