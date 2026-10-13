@@ -6,9 +6,24 @@ import { InstallProvider } from "@/components/pwa/install-provider";
 import { PerfProbe } from "@/components/perf/perf-probe";
 import "./globals.css";
 
+const siteUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : "http://localhost:3000";
+
+const description = "The friend who takes your phone. No contact, but make it survivable.";
+
 export const metadata: Metadata = {
-  title: "bestie, don't.",
-  description: "The friend who takes your phone. No contact, but make it survivable.",
+  metadataBase: new URL(siteUrl),
+  title: { default: "bestie, don't.", template: "%s · bestie, don't." },
+  description,
+  applicationName: "bestie, don't.",
+  openGraph: {
+    type: "website",
+    siteName: "bestie, don't.",
+    title: "bestie, don't.",
+    description,
+  },
+  twitter: { card: "summary_large_image", title: "bestie, don't.", description },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

@@ -27,6 +27,12 @@ const SUGGESTIONS: IdentityItemInput[] = [
   { label: "Being the funny one", category: "trait" },
 ];
 
+function pickedHint(count: number): string {
+  if (count === 0) return "Pick three. More is fine too.";
+  if (count < 3) return `${count} picked. ${3 - count} more to go.`;
+  return `${count} picked. Good.`;
+}
+
 export default function IdentityPage() {
   const router = useRouter();
   const [selected, setSelected] = useState<IdentityItemInput[]>([]);
@@ -92,11 +98,12 @@ export default function IdentityPage() {
               key={item.label}
               type="button"
               onClick={() => toggle(item)}
+              aria-pressed={isSelected}
               className={cn(
-                "cursor-pointer rounded-full border border-border px-4 py-2 text-sm font-semibold transition-colors",
+                "min-h-11 cursor-pointer rounded-full border px-4 text-sm font-semibold transition-colors",
                 isSelected
-                  ? "bg-sun text-primary-foreground"
-                  : "bg-card text-foreground hover:bg-peach/60",
+                  ? "border-transparent bg-sun text-primary-foreground shadow-soft"
+                  : "border-border bg-card text-foreground hover:bg-peach/60",
               )}
             >
               {item.label}
@@ -110,7 +117,8 @@ export default function IdentityPage() {
               key={item.label}
               type="button"
               onClick={() => toggle(item)}
-              className="cursor-pointer rounded-full bg-sun shadow-soft px-4 py-2 text-sm font-semibold text-primary-foreground"
+              aria-pressed
+              className="min-h-11 cursor-pointer rounded-full border border-transparent bg-sun px-4 text-sm font-semibold text-primary-foreground shadow-soft"
             >
               {item.label}
             </button>
@@ -129,13 +137,15 @@ export default function IdentityPage() {
           }}
           placeholder="Add your own"
         />
-        <Button variant="secondary" onClick={addCustom} type="button">
+        <Button variant="secondary" onClick={addCustom} type="button" className="h-12 px-5" disabled={!customValue.trim()}>
           Add
         </Button>
       </div>
 
-      <p className="mt-6 text-xs text-muted-foreground">{selected.length} selected</p>
-      {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
+      <p className="mt-4 px-1 text-sm text-muted-foreground" aria-live="polite">
+        {pickedHint(selected.length)}
+      </p>
+      {error && <p role="alert" className="mt-2 text-sm text-destructive">{error}</p>}
     </OnboardingScreen>
   );
 }

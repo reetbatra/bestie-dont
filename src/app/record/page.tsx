@@ -3,6 +3,8 @@ import { listRecordEntries } from "@/lib/actions/record";
 import { RecordView } from "@/components/record/record-view";
 import { profilePage } from "@/lib/perf/wrap";
 
+export const metadata = { title: "The Record" };
+
 async function RecordPage() {
   const { email } = await requireSession();
 

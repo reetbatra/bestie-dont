@@ -4,6 +4,8 @@ import { getJournalScreen } from "@/lib/actions/journal";
 import { JournalView } from "@/components/journal/journal-view";
 import { profilePage } from "@/lib/perf/wrap";
 
+export const metadata = { title: "Journal" };
+
 async function JournalPage() {
   await requireSession();
 

@@ -42,7 +42,7 @@ export function SaveAccessForm({
 
   if (sent) {
     return (
-      <p className={compact ? "text-xs text-sage" : "text-sm text-sage"}>
+      <p role="status" className={compact ? "text-xs text-sage" : "text-sm text-sage"}>
         Check {email} for a confirmation link. Until you click it, this device stays your access
         - nothing changes today.
       </p>
@@ -57,17 +57,18 @@ export function SaveAccessForm({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@email.com"
-          className={compact ? "h-9 text-sm" : undefined}
+          autoComplete="email"
+          aria-label="Email"
         />
         <Button
-          size={compact ? "sm" : "default"}
+          className="h-12 px-5"
           onClick={handleSubmit}
           disabled={isPending || !email.trim()}
         >
           {isPending ? "Saving…" : "Save"}
         </Button>
       </div>
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && <p role="alert" className="px-1 text-xs text-destructive">{error}</p>}
     </div>
   );
 }

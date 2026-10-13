@@ -79,7 +79,7 @@ export function UrgeTimer() {
   const ss = String(secondsLeft % 60).padStart(2, "0");
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col px-6 pb-8 pt-10">
+    <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col px-6 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(2.5rem,env(safe-area-inset-top))]">
       <h1 className="font-display text-2xl font-extrabold text-balance">This feeling has a timer.</h1>
 
       <div className="mt-10 flex flex-col items-center">
@@ -117,16 +117,16 @@ export function UrgeTimer() {
         )}
       </div>
 
-      <div className="mt-auto flex flex-col items-center gap-3 pt-8">
+      <div className="mt-auto flex flex-col items-center gap-1 pt-8">
         <button
           type="button"
           onClick={rotateCard}
           disabled={isPending}
-          className="text-sm font-medium text-muted-foreground underline underline-offset-4"
+          className="min-h-11 cursor-pointer px-2 text-sm font-medium text-muted-foreground underline underline-offset-4 disabled:opacity-60"
         >
           Show me another
         </button>
-        <Button variant="ghost" className="text-xs text-muted-foreground" onClick={finish}>
+        <Button variant="ghost" className="h-11 text-sm text-muted-foreground" onClick={finish}>
           Already past this? Continue →
         </Button>
         <CrisisLink className="mt-2 text-center" />

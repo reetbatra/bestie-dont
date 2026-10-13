@@ -53,7 +53,7 @@ export default function FirstRecordPage() {
           <Button variant="ghost" className="w-full text-muted-foreground" onClick={handleSkip}>
             Skip for now
           </Button>
-          {error && <p className="text-center text-xs text-destructive">{error}</p>}
+          {error && <p role="alert" className="text-center text-sm text-destructive">{error}</p>}
         </>
       }
     >
@@ -61,20 +61,20 @@ export default function FirstRecordPage() {
       <h1 className="mt-4 font-display text-3xl font-extrabold text-balance">
         Before your brain starts editing history.
       </h1>
-      <p className="mt-3 max-w-[38ch] text-sm text-muted-foreground">
+      <p className="mt-3 max-w-[38ch] text-base leading-relaxed text-muted-foreground">
         What&apos;s one thing he did that you don&apos;t want to forget?{" "}
-        <span className="font-display text-lg font-extrabold text-apricot-deep">Not the relationship&apos;s.</span>
+        <span className="font-bold text-apricot-deep">Not the relationship&apos;s.</span>
       </p>
 
-      <div className="mt-6 flex-1">
+      <div className="mt-6">
         <Textarea
           value={fact}
           onChange={(e) => setFact(e.target.value)}
           placeholder="He said he'd call by the time he landed. Didn't, and told everyone he 'forgot' to."
-          className="min-h-40 resize-none text-base"
+          className="min-h-36 resize-none"
           autoFocus
         />
-        <p className="mt-3 text-xs text-muted-foreground">Future you at 1am needs this.</p>
+        <p className="mt-2.5 px-1 text-sm text-muted-foreground">Future you at 1am needs this.</p>
       </div>
     </OnboardingScreen>
   );

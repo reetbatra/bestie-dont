@@ -97,7 +97,7 @@ export function VoiceInputButton({ className, disabled, onTranscript }: VoiceInp
         disabled={disabled || status === "transcribing"}
         onClick={status === "recording" ? stopRecording : startRecording}
         className={cn(
-          "absolute right-1.5 top-1/2 z-10 grid size-7 -translate-y-1/2 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+          "absolute right-1.5 top-1/2 z-10 grid size-9 -translate-y-1/2 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
           status === "recording" && "bg-destructive/10 text-destructive hover:bg-destructive/15 hover:text-destructive",
           className,
         )}
@@ -107,7 +107,7 @@ export function VoiceInputButton({ className, disabled, onTranscript }: VoiceInp
         ) : status === "transcribing" ? (
           <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
         ) : (
-          <Mic className="size-4" aria-hidden="true" />
+          <Mic className="size-[18px]" aria-hidden="true" />
         )}
       </button>
       <span className="sr-only" aria-live="polite">

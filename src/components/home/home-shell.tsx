@@ -36,12 +36,12 @@ export function HomeShell({
 }) {
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col">
-      <div className="flex-1 overflow-y-auto px-6 pb-40 pt-10">
+      <div className="flex-1 overflow-y-auto px-6 pb-44 pt-[max(1.75rem,env(safe-area-inset-top))]">
         <div className="flex items-center justify-between">
           <p className="font-display text-lg font-extrabold leading-none text-foreground">
             bestie, don&apos;t.
           </p>
-          <Link href="/settings" className="text-muted-foreground" aria-label="Settings">
+          <Link href="/settings" className="-mr-2.5 grid size-11 place-items-center rounded-full text-muted-foreground transition-colors hover:text-foreground" aria-label="Settings">
             <Settings className="h-5 w-5" />
           </Link>
         </div>
@@ -63,7 +63,7 @@ export function HomeShell({
 
         <Link
           href="/calendar"
-          className="mt-6 flex items-center justify-between rounded-3xl border border-border bg-card shadow-soft p-5 transition-colors hover:border-apricot/40"
+          className="mt-8 flex items-center justify-between rounded-3xl border border-border bg-card p-5 shadow-soft transition-colors hover:border-apricot/40"
         >
           <div>
             <p className="text-sm font-semibold text-muted-foreground">
@@ -79,7 +79,7 @@ export function HomeShell({
         </Link>
 
         {isExtended && daysLeft > 0 && (
-          <div className="mt-6 rounded-3xl border border-apricot/30 bg-peach/40 p-5">
+          <div className="mt-4 rounded-3xl border border-apricot/30 bg-peach/40 p-5">
             <p className="text-sm font-semibold text-muted-foreground">
               Detox mode
             </p>
@@ -97,7 +97,7 @@ export function HomeShell({
         {pendingRecovery && (
           <Link
             href={`/recovery/${pendingRecovery.slipId}`}
-            className="mt-8 block rounded-3xl border border-sage/40 bg-sage/10 p-5 transition-colors hover:border-sage/60"
+            className="mt-4 block rounded-3xl border border-sage/40 bg-sage/10 p-5 transition-colors hover:border-sage/60"
           >
             <p className="text-sm font-semibold text-muted-foreground">
               Checking in
@@ -111,7 +111,7 @@ export function HomeShell({
         {pendingMilestone && (
           <Link
             href={`/milestones/${pendingMilestone}`}
-            className="mt-8 block rounded-3xl border border-butter/60 bg-butter/15 p-5 transition-colors hover:border-butter"
+            className="mt-4 block rounded-3xl border border-butter/60 bg-butter/15 p-5 transition-colors hover:border-butter"
           >
             <p className="text-sm font-semibold text-muted-foreground">
               Milestone
@@ -125,7 +125,7 @@ export function HomeShell({
         {promptText && (
           <Link
             href="/journal"
-            className="mt-10 block rounded-3xl border border-border bg-card shadow-soft p-5 transition-colors hover:border-apricot/40"
+            className="mt-4 block rounded-3xl border border-border bg-card shadow-soft p-5 transition-colors hover:border-apricot/40"
           >
             <p className="text-sm font-semibold text-muted-foreground">
               Today&apos;s prompt
@@ -139,7 +139,7 @@ export function HomeShell({
       </div>
 
       <div className="fixed inset-x-0 bottom-0 mx-auto w-full max-w-[480px]">
-        <div className="bg-gradient-to-t from-background via-background/95 to-background/0 px-6 pb-3 pt-6">
+        <div className="bg-gradient-to-t from-background via-background/95 to-background/0 px-6 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-6">
           <Link
             href="/panic/reset"
             className="block w-full rounded-full bg-sun px-6 py-4 text-center font-display text-lg font-extrabold text-primary-foreground shadow-soft transition-transform active:scale-[0.98]"
@@ -151,6 +151,7 @@ export function HomeShell({
               <Link
                 key={href}
                 href={href}
+                aria-current={href === "/home" ? "page" : undefined}
                 className={cn(
                   "flex flex-col items-center gap-1 rounded-xl px-4 py-1.5 text-xs text-muted-foreground transition-colors",
                   href === "/home" && "font-bold text-foreground",

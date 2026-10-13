@@ -3,6 +3,8 @@ import { getSettings } from "@/lib/actions/settings";
 import { SettingsView } from "@/components/settings/settings-view";
 import { profilePage } from "@/lib/perf/wrap";
 
+export const metadata = { title: "Settings" };
+
 async function SettingsPage() {
   await requireSession();
 

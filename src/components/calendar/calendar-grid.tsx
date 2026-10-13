@@ -60,12 +60,12 @@ export function CalendarGrid({
   const currentDaySlip = slipMap.get(currentDay);
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col px-6 pb-16 pt-10">
+    <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col px-6 pb-16 pt-[max(1.75rem,env(safe-area-inset-top))]">
       <Link
         href="/home"
-        className="mb-3 inline-flex w-fit items-center gap-1 text-xs font-medium text-muted-foreground"
+        className="-ml-2 mb-2 inline-flex min-h-11 w-fit items-center gap-1 rounded-full pl-1 pr-3 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
       >
-        <ChevronLeft className="h-3.5 w-3.5" /> Home
+        <ChevronLeft className="h-4 w-4" /> Home
       </Link>
 
       <h1 className="font-display text-2xl font-extrabold text-balance">The 60 days.</h1>
@@ -98,7 +98,7 @@ export function CalendarGrid({
               }
               aria-pressed={isSelected}
               className={cn(
-                "relative flex aspect-square cursor-pointer items-center justify-center rounded-lg text-[10px] font-medium tabular-nums transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "relative flex aspect-square cursor-pointer items-center justify-center rounded-lg text-[11px] font-semibold tabular-nums transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 filled ? "bg-sun text-primary-foreground" : "bg-muted text-muted-foreground",
                 isToday && "ring-2 ring-apricot ring-offset-2 ring-offset-background",
                 isSlipped && "bg-butter text-ink",
@@ -133,7 +133,7 @@ export function CalendarGrid({
       )}
 
       {sel !== null && (
-        <div className="mt-4 rounded-2xl border border-border bg-card shadow-soft p-4">
+        <div className="mt-4 rounded-3xl border border-border bg-card p-5 shadow-soft">
           <p className="text-sm font-semibold text-muted-foreground">
             Day {sel} · {dayLabel(startDate, sel)}
           </p>
@@ -147,7 +147,7 @@ export function CalendarGrid({
                 : "Not here yet."}
           </p>
           {selIsSlipped && (
-            <p className="mt-2 whitespace-pre-wrap rounded-lg bg-muted/60 p-3 text-sm text-foreground/90">
+            <p className="mt-3 whitespace-pre-wrap rounded-2xl bg-muted/60 p-3.5 text-sm text-foreground/90">
               {selSlip?.note || "No details added."}
             </p>
           )}

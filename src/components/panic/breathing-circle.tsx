@@ -11,7 +11,10 @@ const PHASES = [
 
 export function BreathingCircle({ onDone }: { onDone: () => void }) {
   const [secondsLeft, setSecondsLeft] = useState(60);
-  const [phaseIndex, setPhaseIndex] = useState(0);
+  // -1 = resting, before the first inhale. The circles start contracted and
+  // the first phase is applied a frame later, so "breathe in" visibly
+  // expands instead of the screen opening on an already-full circle.
+  const [phaseIndex, setPhaseIndex] = useState(-1);
 
   useEffect(() => {
     const tick = setInterval(() => {
@@ -28,22 +31,20 @@ export function BreathingCircle({ onDone }: { onDone: () => void }) {
   }, [onDone]);
 
   useEffect(() => {
-    let cancelled = false;
     let index = 0;
+    let timer: ReturnType<typeof setTimeout>;
     function next() {
-      if (cancelled) return;
       setPhaseIndex(index % PHASES.length);
       const phase = PHASES[index % PHASES.length];
       index += 1;
-      setTimeout(next, phase.duration);
+      timer = setTimeout(next, phase.duration);
     }
-    next();
-    return () => {
-      cancelled = true;
-    };
+    timer = setTimeout(next, 50);
+    return () => clearTimeout(timer);
   }, []);
 
-  const phase = PHASES[phaseIndex];
+  const phase = PHASES[Math.max(phaseIndex, 0)];
+  const expanded = phaseIndex === 0 || phaseIndex === 1;
   const mm = Math.floor(secondsLeft / 60);
   const ss = String(secondsLeft % 60).padStart(2, "0");
 
@@ -53,18 +54,20 @@ export function BreathingCircle({ onDone }: { onDone: () => void }) {
         <div
           className="absolute inset-0 rounded-full bg-[radial-gradient(circle,var(--peach)_0%,rgb(253_230_208/0.35)_70%)] motion-reduce:transition-none"
           style={{
-            transform: phase.label === "breathe in" || phase.label === "hold" ? "scale(1)" : "scale(0.6)",
+            transform: expanded ? "scale(1)" : "scale(0.6)",
             transition: `transform ${phase.duration}ms ease-in-out`,
           }}
         />
         <div
           className="absolute h-32 w-32 rounded-full bg-sun opacity-85 shadow-soft motion-reduce:transition-none"
           style={{
-            transform: phase.label === "breathe in" || phase.label === "hold" ? "scale(1)" : "scale(0.7)",
+            transform: expanded ? "scale(1)" : "scale(0.7)",
             transition: `transform ${phase.duration}ms ease-in-out`,
           }}
         />
-        <span className="relative font-display text-lg font-bold text-ink">{phase.label}</span>
+        <span className="relative font-display text-lg font-bold text-ink" aria-live="polite">
+          {phase.label}
+        </span>
       </div>
 
       <p className="mt-10 font-display text-4xl font-extrabold tabular-nums">

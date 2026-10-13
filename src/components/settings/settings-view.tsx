@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ScreenHeader } from "@/components/shared/screen-header";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Dialog,
@@ -158,7 +158,7 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
                     ? "One tap and it's on your homescreen, like a real app."
                     : "Check your browser menu to install."}
                 </p>
-                <Button size="sm" variant="secondary" onClick={handleInstallClick}>
+                <Button variant="secondary" onClick={handleInstallClick}>
                   Add
                 </Button>
               </div>
@@ -178,9 +178,10 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
             <Input
               value={hisName}
               onChange={(e) => setHisName(e.target.value)}
-              placeholder="Leave blank to keep it as &quot;him&quot;"
+              placeholder="Leave blank for &quot;him&quot;"
+              aria-label="His name"
             />
-            <Button variant="secondary" onClick={handleSaveName}>
+            <Button variant="secondary" className="h-12 px-5" onClick={handleSaveName}>
               {nameSaved ? "Saved" : "Save"}
             </Button>
           </div>
@@ -194,7 +195,7 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
             Everything you&apos;ve written, encrypted at rest, never used to train anything, never
             sold. Export it whenever you want.
           </p>
-          <Button variant="secondary" className="mt-3 w-full" onClick={handleExport} disabled={isExporting}>
+          <Button variant="secondary" className="mt-3 h-11 w-full" onClick={handleExport} disabled={isExporting}>
             {isExporting ? "Preparing…" : "Export my data"}
           </Button>
         </section>
@@ -207,7 +208,7 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
             Deletes everything, immediately, with no way back. Export first if you want a copy.
           </p>
           <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-            <DialogTrigger className="mt-3 w-full rounded-lg border border-destructive/40 bg-transparent px-3 py-2 text-sm font-medium text-destructive">
+            <DialogTrigger className={buttonVariants({ variant: "destructive", className: "mt-3 h-11 w-full" })}>
               Delete my account
             </DialogTrigger>
             <DialogContent>
@@ -221,6 +222,9 @@ export function SettingsView({ settings }: { settings: SettingsData }) {
                 value={deleteConfirm}
                 onChange={(e) => setDeleteConfirm(e.target.value)}
                 placeholder="DELETE"
+                aria-label="Type DELETE to confirm"
+                voice={false}
+                autoCapitalize="characters"
               />
               <DialogFooter>
                 <Button

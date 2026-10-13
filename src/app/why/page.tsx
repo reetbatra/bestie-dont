@@ -59,13 +59,13 @@ export default function WhyPage() {
   const router = useRouter();
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col px-6 pb-16 pt-10">
+    <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col px-6 pb-16 pt-[max(1.75rem,env(safe-area-inset-top))]">
       <button
         type="button"
         onClick={() => router.back()}
-        className="mb-3 inline-flex w-fit items-center gap-1 text-xs font-medium text-muted-foreground"
+        className="-ml-2 mb-2 inline-flex min-h-11 w-fit cursor-pointer items-center gap-1 rounded-full pl-1 pr-3 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
       >
-        <ChevronLeft className="h-3.5 w-3.5" /> Back
+        <ChevronLeft className="h-4 w-4" /> Back
       </button>
 
       <p className="font-display text-2xl font-extrabold text-apricot-deep">Not just vibes.</p>

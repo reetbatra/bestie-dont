@@ -115,7 +115,7 @@ export function LogSlipDialog({
         {error && <p className="text-xs text-destructive">{error}</p>}
         <DialogFooter className="flex-col gap-2 sm:flex-col">
           {isEditing && confirmingDelete ? (
-            <div className="flex w-full items-center justify-between gap-2 rounded-lg border border-destructive/30 bg-destructive/5 p-3">
+            <div className="flex w-full items-center justify-between gap-2 rounded-2xl border border-destructive/30 bg-destructive/5 p-3">
               <p className="text-xs text-foreground/80">Remove this log for good?</p>
               <div className="flex shrink-0 gap-2">
                 <Button
@@ -140,7 +140,7 @@ export function LogSlipDialog({
             </div>
           ) : (
             <>
-              <Button onClick={handleSubmit} disabled={isPending} className="w-full">
+              <Button size="lg" onClick={handleSubmit} disabled={isPending} className="w-full text-base">
                 {isPending ? "Saving…" : isEditing ? "Save" : "Log it"}
               </Button>
               {isEditing && (
@@ -148,7 +148,7 @@ export function LogSlipDialog({
                   type="button"
                   onClick={() => setConfirmingDelete(true)}
                   disabled={isPending}
-                  className="text-xs font-medium text-muted-foreground underline underline-offset-4"
+                  className="min-h-11 cursor-pointer text-sm font-medium text-muted-foreground underline underline-offset-4"
                 >
                   Un-log this slip
                 </button>

@@ -7,6 +7,8 @@ import { decryptOptionalField } from "@/lib/crypto";
 import { CalendarGrid, type SlipDetail } from "@/components/calendar/calendar-grid";
 import { profilePage } from "@/lib/perf/wrap";
 
+export const metadata = { title: "The 60 days" };
+
 const WEEKDAYS = [
   "Sunday",
   "Monday",

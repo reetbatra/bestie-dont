@@ -91,7 +91,7 @@ export default function TheDealPage() {
               {canInstall ? "Add to your homescreen" : "Check your browser menu to install"}
             </p>
           </div>
-          <Button size="sm" variant="secondary" onClick={handleInstall}>
+          <Button variant="secondary" onClick={handleInstall}>
             Add
           </Button>
         </div>

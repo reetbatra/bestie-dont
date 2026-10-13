@@ -42,10 +42,8 @@ export function ExtendProgramDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="w-full">
-        <Button variant="outline" size="lg" className="w-full">
-          Extend 30 more days
-        </Button>
+      <DialogTrigger render={<Button variant="outline" size="lg" className="w-full" />}>
+        Extend 30 more days
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

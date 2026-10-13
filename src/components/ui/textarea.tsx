@@ -27,14 +27,15 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, React.ComponentProps<"tex
       disabled={disabled}
       data-slot="textarea"
       className={cn(
-        "flex field-sizing-content min-h-16 w-full rounded-3xl border border-input bg-card px-2.5 py-2 text-base transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
+        "flex field-sizing-content min-h-24 w-full rounded-[1.25rem] border border-input bg-card px-4 py-3.5 text-base leading-relaxed shadow-soft transition-[border-color,box-shadow] outline-none placeholder:text-muted-foreground/80 focus-visible:border-apricot focus-visible:ring-4 focus-visible:ring-apricot/15 disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
         className,
-        "pr-10"
+        // room for the mic so typed text never runs underneath it
+        "pr-13"
       )}
       {...props}
     />
         <VoiceInputButton
-          className="top-1.5 -translate-y-0"
+          className="top-2 right-2 translate-y-0"
           disabled={disabled}
           onTranscript={(text) => {
             const element = textareaRef.current

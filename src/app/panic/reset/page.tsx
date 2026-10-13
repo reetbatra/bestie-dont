@@ -17,7 +17,7 @@ export default function SomaticResetPage() {
   }, [router]);
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col px-6 pb-8 pt-10">
+    <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col px-6 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(2.5rem,env(safe-area-inset-top))]">
       <div>
         <p className="font-display text-2xl font-extrabold text-apricot-deep">Good.</p>
         <p className="mt-1 max-w-[36ch] text-base text-muted-foreground">
@@ -27,7 +27,7 @@ export default function SomaticResetPage() {
 
       <BreathingCircle onDone={goToTimer} />
 
-      <Button variant="ghost" className="w-full text-muted-foreground" onClick={goToTimer}>
+      <Button variant="ghost" className="h-11 w-full text-muted-foreground" onClick={goToTimer}>
         Skip breathing →
       </Button>
       <CrisisLink className="mt-4 text-center" />

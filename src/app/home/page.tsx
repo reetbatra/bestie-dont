@@ -12,6 +12,8 @@ import { getPendingRecovery } from "@/lib/actions/recovery";
 import { HomeShell } from "@/components/home/home-shell";
 import { profilePage } from "@/lib/perf/wrap";
 
+export const metadata = { title: "Home" };
+
 async function HomePage() {
   const { supabase, userId } = await requireSession();
 

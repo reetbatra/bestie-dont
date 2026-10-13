@@ -41,8 +41,9 @@ function ResurfaceCard({ entry }: { entry: DecryptedVaultEntry }) {
             value={response}
             onChange={(e) => setResponse(e.target.value)}
             placeholder="A few words is enough"
+            aria-label="Still feel this way?"
           />
-          <Button size="sm" variant="secondary" onClick={submit} disabled={isPending}>
+          <Button variant="secondary" className="h-11" onClick={submit} disabled={isPending}>
             {isPending ? "Saving…" : "Save"}
           </Button>
         </div>
@@ -93,7 +94,8 @@ export function VaultView({ initialEntries }: { initialEntries: DecryptedVaultEn
         <Button
           onClick={handleLockIn}
           disabled={isPending || !draft.trim()}
-          className="mt-3 w-full"
+          size="lg"
+          className="mt-4 w-full text-base"
         >
           {isPending ? "Locking in…" : "Lock it in"}
         </Button>
